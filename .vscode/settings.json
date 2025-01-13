@@ -1,0 +1,9 @@
+{
+    "idf.portWin": "COM3",
+    "files.associations": {
+        "constants.h": "c",
+        "wire.h": "c",
+        "esp_wifi.h": "c",
+        "spi.h": "c"
+    }
+}
