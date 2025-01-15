@@ -4,23 +4,14 @@
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 *********/
-/*
+
 #include <esp_now.h>
 #include <WiFi.h>
 #include "constants.h"
 
 
-
-// Structure example to send data
-// Must match the receiver structure
-typedef struct struct_message {
-    int id; // must be unique for each sender board
-    int x;
-    int y;
-} struct_message;
-
 // Create a struct_message called myData
-struct_message myData;
+Sensor_message myData;
 
 // Create peer interface
 esp_now_peer_info_t peerInfo;
@@ -77,4 +68,3 @@ void loop() {
   }
   delay(10000);
 }
-*/

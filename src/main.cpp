@@ -50,14 +50,14 @@ void loop() {
     return;
   }
    unsigned long timeend = millis();
-   /*
+   
   Serial.print(F("It took "));
   Serial.print(timetook);
   Serial.println(" milliseconds");
-*/
+
  
  
-  /*
+  
   unsigned long endTime = bme.beginReading();
   
   unsigned long willtake = endTime - timetook  ;
@@ -91,8 +91,7 @@ void loop() {
   Serial.println(millis());
    Serial.print(F(" and it actually took "));
   Serial.println(timetook);
- */
- /*
+ 
   Serial.print(F("Temperature = "));
   Serial.print(bme.temperature);
   Serial.println(F(" *C"));
@@ -112,7 +111,7 @@ void loop() {
   Serial.print(F("Approx. Altitude = "));
   Serial.print(bme.readAltitude(SEALEVELPRESSURE_HPA));
   Serial.println(F(" m"));
-    */
+  
   int aba = millis() - counter;
  /*
   Serial.print("aba=");

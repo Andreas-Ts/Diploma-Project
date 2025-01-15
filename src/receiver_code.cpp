@@ -6,7 +6,7 @@
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.  
   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 *********/
-/*
+
 #include <esp_now.h>
 #include <WiFi.h>
 
@@ -65,16 +65,7 @@ void setup() {
 }
  
 void loop() {
-  // Acess the variables for each board
-  /*int board1X = boardsStruct[0].x;
-  int board1Y = boardsStruct[0].y;
-  int board2X = boardsStruct[1].x;
-  int board2Y = boardsStruct[1].y;
-  int board3X = boardsStruct[2].x;
-  int board3Y = boardsStruct[2].y;
-
-  delay(10000);  
-  
+   
 }
-*/
+
 
