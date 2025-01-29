@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <esp_wifi.h>
 #include <WiFi.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME680.h>
+#include <esp_now.h>
 
 extern  uint8_t my_MAC[6];
 
@@ -46,6 +49,12 @@ typedef struct SensorMessage{
 
 extern SensorMessage myData;
 extern uint8_t id;
+
+extern const uint8_t BME_SCK;
+extern const uint8_t BME_MISO;
+extern const uint8_t BME_MOSI;
+extern const uint8_t BME_CS;
+const float SEALEVELPRESSURE_HPA = SEALEVELPRESSURE_HPA (1013.25);
 esp_now_peer_info_t peerInfo;
 
 

@@ -4,6 +4,7 @@
         "constants.h": "c",
         "wire.h": "c",
         "esp_wifi.h": "c",
-        "spi.h": "c"
+        "spi.h": "c",
+        "esp_now.h": "c"
     }
 }

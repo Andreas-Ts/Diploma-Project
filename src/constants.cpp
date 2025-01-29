@@ -13,3 +13,9 @@ const uint8_t *MAC_LIBRARY[ESP32_TOTAL_DEVICES_NUMBER] = {
     ESP32_MAC_OF_TRANSPARENT_BREADBOARD,
     ESP32_MAC_OF_YELLOW_BREADBOARD
 };
+
+ const uint8_t BME_SCK = 13;
+ const uint8_t BME_MISO = 12;
+ const uint8_t BME_MOSI = 11;
+ const uint8_t BME_CS = 10;
+ 

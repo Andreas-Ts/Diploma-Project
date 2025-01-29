@@ -20,8 +20,6 @@ void setReceiverMAC(const uint8_t targetMAC[6]){
   memcpy(ESP32_MAC_OF_RECEIVER, targetMAC, sizeof(6));
 }
 
-
-
 void setBME680(Adafruit_BME680 *bme){
 
   if (!bme->begin()) {
@@ -75,8 +73,8 @@ if (!bme->performReading()) {
   Serial.print( myData->altitude);
   Serial.println(" m");
 
-  Serial.print("Came from device with MAC address:")
-  Serial.println(makeMACAdressEasilyPrintable());
+  Serial.print("Came from device with MAC address:");
+  Serial.println(makeMACAdressEasilyPrintable(my_MAC));
   Serial.println();
 }
 
@@ -110,9 +108,14 @@ uint8_t amITheReceiverESP32NOW(){
   }
 }
 
-char* makeMACAdressEasilyPrintable(uint8_t mac_addr[6]){
-  char macAdressStr[18];
+char* makeMACAdressEasilyPrintable(const uint8_t mac_addr[6]){
+  char* macAdressStr;
   snprintf(macAdressStr, sizeof(macAdressStr), "%02x:%02x:%02x:%02x:%02x:%02x",
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
   return macAdressStr;
+}
+void sendDataToSerial(byte *pointerToSensorMessage,int lengthOfSensorMessage){
+
+  Serial.write(pointerToSensorMessage,lengthOfSensorMessage);
+
 }

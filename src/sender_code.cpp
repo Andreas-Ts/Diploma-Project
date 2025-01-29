@@ -19,12 +19,7 @@ SensorMessage myData;
 
 // Create peer interface
 
-
-
 Adafruit_BME680 *bme;
-
-
-
 
  
 void setup() {

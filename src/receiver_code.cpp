@@ -9,22 +9,18 @@
 
 #include <esp_now.h>
 #include <WiFi.h>
+#include "customFunctions.h"
 
 
+/*
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t * sender_mac_addr, const uint8_t *incomingData, int len) {
   char macStr[18];
   Serial.print("Packet received from: ");
-  snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-           mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-  Serial.println(macStr);
+  Serial.println(makeMACAdressEasilyPrintable(sender_mac_addr));
   memcpy(&myData, incomingData, sizeof(myData));
   Serial.printf("Board ID %u: %u bytes\n", myData.id, len);
   // Update the structures with the new incoming data
-  boardsStruct[myData.id-1].x = myData.x;
-  boardsStruct[myData.id-1].y = myData.y;
-  Serial.printf("x value: %d \n", boardsStruct[myData.id-1].x);
-  Serial.printf("y value: %d \n", boardsStruct[myData.id-1].y);
-  Serial.println();
+  
 }
-
+*/
