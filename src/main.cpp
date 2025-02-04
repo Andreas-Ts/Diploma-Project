@@ -14,7 +14,9 @@
 
 
 void setup() {
-  setReceiverMAC(MAC_LIBRARY[0]);
+  Serial.println("hiiiiii");
+  readMacAddress();
+  setReceiverMAC(MAC_LIBRARY[2]);
   int8_t potential_id = chooseIDBasedOfMCA();
   if (potential_id<0){
     Serial.println("Problem with reading the MCA address.");
@@ -22,6 +24,7 @@ void setup() {
   }
   else{
     id =  potential_id;
+    myData.id = id;
   }
 
     // Init Serial Monitor
@@ -45,7 +48,13 @@ void setup() {
 }
 
 void loop() {
+  Serial.println("hi");
+  if (amITheReceiverESP32NOW()){
+   loopReceiver();
+  }
+  else{
    loopSender();
+   }
 }
 
 void setupSender(){
@@ -61,10 +70,16 @@ void setupSender(){
 }
 
 void loopSender(){
-  performBME680Reading(&bme,&myData);
+  performBME680Reading(&bme,&myData,id);
 
   esp_now_send(ESP32_MAC_OF_RECEIVER, (uint8_t *) &myData, sizeof(myData)); 
 }
+void loopReceiver(){
+      performBME680Reading(&bme,&myData,id);
+      Serial.print("I created this data.");
+      sendDataToSerial((byte*) &myData,sizeof(myData));
+}
+
 
 // callback when data is sent from multiple senders
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
@@ -74,10 +89,6 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 
 void OnDataRecv(const uint8_t *mac_addr,const uint8_t *incomingData, int len) {
   char macStr[18];
-  Serial.print("Packet received from: ");
-  Serial.println(makeMACAdressEasilyPrintable(mac_addr));
-  memcpy(&myData, incomingData, sizeof(myData));
-  Serial.printf("Board ID %u: %u bytes\n", myData.id, len);
   // Write the data into serial
   sendDataToSerial((byte*)incomingData,sizeof(incomingData));
 }

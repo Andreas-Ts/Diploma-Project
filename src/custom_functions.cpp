@@ -4,6 +4,7 @@
 #include "Adafruit_BME680.h"
 #include "constants.h"
 #include "customFunctions.h"
+
 #include <WiFi.h>
 #include <esp_wifi.h>
 
@@ -13,11 +14,20 @@
 #define BME_CS 10
 #define SEALEVELPRESSURE_HPA (1013.25)
 
+void readMacAddress(){
+  esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, my_MAC);
+  if (ret == ESP_OK) {
+    Serial.printf("%02x:%02x:%02x:%02x:%02x:%02x\n",
+                  my_MAC[0], my_MAC[1], my_MAC[2],
+                  my_MAC[3], my_MAC[4], my_MAC[5]);
+  } else {
+    Serial.println("Failed to read MAC address");
+  }
+}
 
-// Set up oversampling and filter initialization
 void setReceiverMAC(const uint8_t targetMAC[6]){
   
-  memcpy(ESP32_MAC_OF_RECEIVER, targetMAC, sizeof(6));
+  memcpy(ESP32_MAC_OF_RECEIVER, targetMAC, 6);
 }
 
 void setBME680(Adafruit_BME680 *bme){
@@ -36,7 +46,7 @@ void setBME680(Adafruit_BME680 *bme){
   
 }
 
-void performBME680Reading(Adafruit_BME680 *bme,SensorMessage *myData){
+void performBME680Reading(Adafruit_BME680 *bme,SensorMessage *myData,int id){
 
 
 if (!bme->performReading()) {
@@ -97,10 +107,13 @@ int chooseIDBasedOfMCA(){
        Serial.println("Failed to find a saved MAC address");
         return -1;
   }
+  //just a safe check
+  return -1;
 }
 
+//The memcmp returns 0 when both of the data are equal
 uint8_t amITheReceiverESP32NOW(){
-  if (! memcmp(ESP32_MAC_OF_RECEIVER,my_MAC,sizeof(my_MAC))) {
+  if (!memcmp(ESP32_MAC_OF_RECEIVER,my_MAC,sizeof(my_MAC))) {
     return 1;
   }  
   else {
@@ -109,12 +122,14 @@ uint8_t amITheReceiverESP32NOW(){
 }
 
 char* makeMACAdressEasilyPrintable(const uint8_t mac_addr[6]){
-  char* macAdressStr;
+  char *macAdressStr ;
   snprintf(macAdressStr, sizeof(macAdressStr), "%02x:%02x:%02x:%02x:%02x:%02x",
            mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
   return macAdressStr;
 }
 void sendDataToSerial(byte *pointerToSensorMessage,int lengthOfSensorMessage){
+  Serial.println("The size of the message is:");
+  Serial.println(lengthOfSensorMessage);
 
   Serial.write(pointerToSensorMessage,lengthOfSensorMessage);
 
