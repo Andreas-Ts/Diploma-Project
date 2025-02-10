@@ -5,6 +5,9 @@
         "wire.h": "c",
         "esp_wifi.h": "c",
         "spi.h": "c",
-        "esp_now.h": "c"
+        "esp_now.h": "c",
+        "array": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
     }
 }

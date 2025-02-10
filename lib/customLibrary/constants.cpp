@@ -1,5 +1,5 @@
 #include "constants.h"
-#include "customFunctions.h"
+#include <customFunctions.h>
 
 
 const int ESP32_TOTAL_DEVICES_NUMBER = 3;
@@ -17,13 +17,11 @@ const uint8_t *MAC_LIBRARY[ESP32_TOTAL_DEVICES_NUMBER] = {
     ESP32_MAC_OF_YELLOW_BREADBOARD
 };
 
-const uint8_t BME_SCK = 13;
-const uint8_t BME_MISO = 12;
-const uint8_t BME_MOSI = 11;
-const uint8_t BME_CS = 10;
+const uint8_t BME_SCK = 39;
+const uint8_t BME_SDI = 42;
  
-const float SEALEVELPRESSURE_HPA = 1013.25;
+const float SEALEVELPRESSURE_HPA = 1030;
 
 esp_now_peer_info_t peerInfo;
 SensorMessage myData;
-uint8_t id;
+int id;

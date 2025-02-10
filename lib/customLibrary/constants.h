@@ -26,7 +26,7 @@ extern const int ESP32_ID_YELLOW_BREADBOARD;
 
 typedef struct SensorMessage{
 /*Id of the microcontroller having the sensor*/
-  uint8_t id;
+  int id;
     /** Temperature (Celsius) assigned after calling performReading() or
    * endReading() **/
   float temperature;
@@ -49,7 +49,7 @@ typedef struct SensorMessage{
 }SensorMessage;
 
 extern SensorMessage myData;
-extern uint8_t id;
+extern int id;
 
 extern const uint8_t BME_SCK;
 extern const uint8_t BME_MISO;
