@@ -2,7 +2,11 @@ import serial
 import struct
 import os
 import csv
-from datetime import datetime
+import datetime as datetime
+import zoneinfo as zoneinfo
+
+# Replace 'Your/Timezone' with your actual timezone, e.g., 'America/New_York'
+local_timezone = zoneinfo('Europe/Athens')
 
 # Replace 'COMX' with your port ('/dev/ttyUSB0' on Linux/Mac, 'COM3' on Windows)
 serial_port = "COM6"
@@ -32,16 +36,16 @@ try:
     if not file_exists:
         with open(csv_file_path, mode='w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file)
-            csv_writer.writerow(['Timestap','Id', 'Temperature', 'Humidity', 'Pressure', 'Gas Resistance', 'Altitude'])
+            csv_writer.writerow(['Date','Time','Id', 'Temperature', 'Humidity', 'Pressure', 'Gas Resistance', 'Altitude'])
             print("Header written to new CSV file.")
         
 
        
     with open(csv_file_path, mode='a', newline='') as csv_file:
 
+        csv_writer = csv.writer(csv_file)
 
         while True:
-            csv_writer = csv.writer(csv_file)
 
             # Step 1: Read struct size (2 bytes)
             size_bytes = ser.read(2) 
@@ -56,18 +60,27 @@ try:
             data_bytes = ser.read(struct_size)
             print(f"Received {len(data_bytes)} bytes: {data_bytes.hex()}")  # Print in HEX
             # Step 2: Read the struct data
-            print("hiiiiii")
             print(data_bytes)
             print(struct_size)
 
             if len(data_bytes) == struct_size:
                 currentDateAndTime = datetime.now()
+                current_date = current_time.date()
+                current_time = current_time.time()
                 id, temperature, pressure, humidity, gas_resistance, altitude = struct.unpack('<IfIfIf', data_bytes)
                 # Write data row into CSV file
-                csv_writer.writerow(([currentDateAndTime,id, temperature, humidity, pressure, gas_resistance, altitude]))
-
+                csv_writer.writerow([current_date,
+                                     current_time,
+                                     id, 
+                                     temperature, 
+                                     humidity, 
+                                     pressure, 
+                                     gas_resistance,
+                                     altitude])
+                csv_file.flush()
                 # Also print the data for debugging
-                print(f"Timestap : {currentDateAndTime}, "
+                print(f"Date : {current_date}, "
+                      f"Time : {current_time}, "
                       f"Id: {id}, "
                       f"Temperature: {temperature:.2f} °C, "
                       f"Humidity: {humidity:.2f} %, "

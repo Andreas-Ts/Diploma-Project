@@ -1,8 +1,7 @@
 #include "constants.h"
-#include <customFunctions.h>
 
 
-const int ESP32_TOTAL_DEVICES_NUMBER = 3;
+const int ESP32_TOTAL_DEVICES_NUMBER = sizeof(MAC_LIBRARY) / (16* sizeof(uint8_t));
 
 uint8_t ESP32_MAC_OF_RECEIVER[6] = {0x0,0x0,0x0,0x0,0x0,0x0};
 uint8_t my_MAC[6] = {0x0,0x0,0x0,0x0,0x0,0x0};
@@ -22,6 +21,10 @@ const uint8_t BME_SDI = 42;
  
 const float SEALEVELPRESSURE_HPA = 1030;
 
+
 esp_now_peer_info_t peerInfo;
 SensorMessage myData;
+Adafruit_BME680 bme; 
 int id;
+
+bool is_Everything_Ok = true;

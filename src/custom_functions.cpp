@@ -127,12 +127,12 @@ int chooseIDBasedOfMCA(){
 }
 
 //The memcmp returns 0 when both of the data are equal
-uint8_t amITheReceiverESP32NOW(){
-  if (memcmp(ESP32_MAC_OF_RECEIVER,my_MAC,6) == 0) {
-    return 1;
+bool isTheReceiverESP32NOW(const uint8_t *mac_Address){
+  if (memcmp(ESP32_MAC_OF_RECEIVER,mac_Address,6) == 0) {
+    return true;
   }  
   else {
-    return 0;
+    return false;
   }
 }
 
