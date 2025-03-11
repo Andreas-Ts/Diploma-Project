@@ -17,14 +17,14 @@ const uint8_t ESP32_MAC_OF_YELLOW_BREADBOARD[6] = {0x44,0x17,0x93,0xFA,0xED,0x34
 
 
 
-const uint8_t BME_SCK = 39;
-const uint8_t BME_SDI = 42;
+//const uint8_t BME_SCK = 39;
+//const uint8_t BME_SDI = 42;
  
 const float SEALEVELPRESSURE_HPA = 1030;
 
 
 esp_now_peer_info_t peerInfo;
-SensorMessage myData;
+SensorMessage sensorMessage;
 Adafruit_BME680 bme; 
 int id;
 

@@ -18,9 +18,9 @@ void setupReceiver(){
 }
 
 void loopReceiver(){
-    is_Everything_Ok = performBME680Reading(&bme,&myData,id);
+    is_Everything_Ok = performBME680Reading(&bme,&sensorMessage,id);
     setTimerAndFlagWaiting();
-    sendDataToSerial((uint8_t*) &myData ) ;   // Convert struct to bytes);
+    sendDataToSerial((uint8_t*) &sensorMessage ) ;   // Convert struct to bytes);
 }
 
 

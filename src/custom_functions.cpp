@@ -44,7 +44,7 @@ bool setBME680(Adafruit_BME680 *bme){
   return true;
 }
 
-bool performBME680Reading(Adafruit_BME680 *bme,SensorMessage *myData,int id){
+bool performBME680Reading(Adafruit_BME680 *bme,SensorMessage *sensorMessage,int id){
 
 
   bool success = bme->performReading();
@@ -62,38 +62,38 @@ bool performBME680Reading(Adafruit_BME680 *bme,SensorMessage *myData,int id){
     Serial.println(F("Failed to complete reading :("));
     return false;
   }
-  myData->id = id;
+  sensorMessage->id = id;
   /*
   Serial.print("id of the device = ");
-  Serial.print(myData->id);
+  Serial.print(sensorMessage->id);
   */
-  myData->temperature=bme->temperature ;
+  sensorMessage->temperature=bme->temperature ;
   /*
   Serial.print("Temperature = ");
-  Serial.print(myData->temperature);
+  Serial.print(sensorMessage->temperature);
   Serial.println(" *C");
   */
-  myData->pressure=bme->pressure / 100.0;
+  sensorMessage->pressure=bme->pressure / 100.0;
  /*
   Serial.print("Pressure = ");
-  Serial.print(myData->pressure);
+  Serial.print(sensorMessage->pressure);
   Serial.println(" hPa");
 */
-  myData->humidity=bme->humidity ;
+  sensorMessage->humidity=bme->humidity ;
   /*
   Serial.print("Humidity = ");
-  Serial.print( myData->humidity);
+  Serial.print( sensorMessage->humidity);
   Serial.println(" %");
  */ 
-  myData->gas_resistance  = bme->gas_resistance / 1000.0 ;
+  sensorMessage->gas_resistance  = bme->gas_resistance / 1000.0 ;
  /* Serial.print("Gas = ");
-  Serial.print( myData->gas_resistance);
+  Serial.print( sensorMessage->gas_resistance);
   Serial.println(" KOhms");
   */
-  myData->altitude=bme->readAltitude(SEALEVELPRESSURE_HPA) ;
+  sensorMessage->altitude=bme->readAltitude(SEALEVELPRESSURE_HPA) ;
   /*
   Serial.print("Approx. Altitude = ");
-  Serial.print( myData->altitude);
+  Serial.print( sensorMessage->altitude);
   Serial.println(" m");
  */
   return true;

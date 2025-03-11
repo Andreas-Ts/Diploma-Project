@@ -19,7 +19,7 @@ void setup() {
     Serial.println(potential_id);
 
     id =  potential_id;
-    myData.id = id;
+    sensorMessage.id = id;
   }
    // Setup Sensor
   is_Everything_Ok = setBME680(&bme);
