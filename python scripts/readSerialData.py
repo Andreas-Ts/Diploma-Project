@@ -5,6 +5,8 @@ import csv
 import datetime as datetime
 import zoneinfo as zoneinfo
 
+
+
 # Replace 'Your/Timezone' with your actual timezone, e.g., 'America/New_York'
 local_timezone = zoneinfo('Europe/Athens')
 
@@ -86,9 +88,13 @@ try:
                       f"Humidity: {humidity:.2f} %, "
                       f"Gas resistance: {gas_resistance} Ohms, "
                       f"Altitude: {altitude:.2f} m.")
+                
+                ser.write(struct.pack("<i?",id,True))
+
 
 except serial.SerialException as e:
     print(f"Error: {e}")
+    ser.write(struct.pack("<i?",id,False))
 
 finally:
     if 'ser' in locals() and ser.is_open:

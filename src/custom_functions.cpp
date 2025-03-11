@@ -1,26 +1,22 @@
-#include <Wire.h>
-#include <SPI.h>
-#include <Adafruit_Sensor.h>
-#include "Adafruit_BME680.h"
+
+
 #include "constants.h"
 #include "customFunctions.h"
 
-#include <WiFi.h>
-#include <esp_wifi.h>
-
-
-void readMacAddress(){
+bool readMacAddress(){
   esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, my_MAC);
   if (ret == ESP_OK) {
      printMAC(my_MAC);
+     return true;
   } else {
     Serial.println("Failed to read MAC address");
+    return false;
   }
 }
 
-void setReceiverMAC(const uint8_t targetMAC[6]){
+void setReceiverMAC(const uint8_t *MAC_LIBRARY[],const int library_position){
   
-  memcpy(ESP32_MAC_OF_RECEIVER, targetMAC, 6);
+  memcpy(ESP32_MAC_OF_RECEIVER, MAC_LIBRARY[library_position], 6);
 }
 
 bool setBME680(Adafruit_BME680 *bme){
@@ -51,8 +47,8 @@ bool setBME680(Adafruit_BME680 *bme){
 bool performBME680Reading(Adafruit_BME680 *bme,SensorMessage *myData,int id){
 
 
-  unsigned long endTime = bme->beginReading();
-  if (endTime == 0) {
+  bool success = bme->performReading();
+  if (!success) {
     Serial.println(F("Failed to begin reading :("));
     return false;
   }
@@ -103,7 +99,7 @@ bool performBME680Reading(Adafruit_BME680 *bme,SensorMessage *myData,int id){
   return true;
 }
 
-int chooseIDBasedOfMCA(){
+int chooseIDBasedOfMAC(const uint8_t *MAC_LIBRARY[]){
   int id;
   esp_err_t  res= esp_wifi_get_mac(WIFI_IF_STA,my_MAC);
   if (res != ESP_OK){
@@ -126,9 +122,10 @@ int chooseIDBasedOfMCA(){
   return -1;
 }
 
+
 //The memcmp returns 0 when both of the data are equal
-bool isTheReceiverESP32NOW(const uint8_t *mac_Address){
-  if (memcmp(ESP32_MAC_OF_RECEIVER,mac_Address,6) == 0) {
+bool isTheReceiverESP32NOW(const uint8_t *MAC_ADDRESS){
+  if (memcmp(ESP32_MAC_OF_RECEIVER,MAC_ADDRESS,6) == 0) {
     return true;
   }  
   else {
@@ -144,18 +141,50 @@ uint8_t* structToBytes(SensorMessage data) {
   return buffer;
 }
 
-void sendDataToSerial(const uint8_t *myData){
- // Serial.println("The size of the message is:");
- // Serial.println(lengthOfSensorMessage);
-   
+void sendDataToSerial(const uint8_t *dataToBeSentToSerial){
+ 
+    int bytesSend = 0;
     uint16_t struct_size = sizeof(SensorMessage);
 
     Serial.write( (uint8_t*) &struct_size, sizeof(struct_size));  // Send struct size (2 bytes)
-    Serial.write(myData, struct_size);  // Send struct data
+    Serial.write(dataToBeSentToSerial, struct_size);  // Send struct data
 
-}
-void printMAC(const uint8_t myMAC[6]){
+  }
+  
+void printMAC(const uint8_t MAC_ADDRESS[6]){
  Serial.printf("Device MAC: %02X:%02X:%02X:%02X:%02X:%02X\n",
-                  my_MAC[0], my_MAC[1], my_MAC[2], 
-                  my_MAC[3], my_MAC[4], my_MAC[5]);
+                  MAC_ADDRESS[0], MAC_ADDRESS[1], MAC_ADDRESS[2], 
+                  MAC_ADDRESS[3], MAC_ADDRESS[4], MAC_ADDRESS[5]);
 }
+
+bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend){
+    unsigned long current_time = millis();
+    unsigned long remaining_time = current_time - *timeLastMessageWasSend ;
+    if (remaining_time > maxWaitingTime){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+void setTimerAndFlag(char* flag,bool *waitingResponse,unsigned long *timeLastMessageWasSend){
+  if (strcmp(flag,"waiting") == 0){
+    *timeLastMessageWasSend = millis();
+    *waitingResponse = true;
+  }
+  if (strcmp(flag,"finished") == 0){
+    *waitingResponse = false;
+
+  }
+}
+
+/*
+
+ErrorMessage createErrorMessage(char* errorText){
+  ErrorMessage error;
+  error.id = id;
+  strncpy(error.error,errorText,sizeof(errorText))
+  return error;
+}
+
+*/
