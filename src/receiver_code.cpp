@@ -11,29 +11,67 @@ void setupReceiver(){
             }  
         }
     }
-    MessageQueue* receiverQueue = createMessageQueue(ESP32_TOTAL_DEVICES_NUMBER);
     esp_now_register_send_cb(OnDataSentAsReceiver);
     esp_now_register_recv_cb(OnDataRecvAsReceiver);
 
 }
 
 void loopReceiver(){
-    is_Everything_Ok = performBME680Reading(&bme,&sensorMessage,id);
-    setTimerAndFlagWaiting();
-    sendDataToSerial((uint8_t*) &sensorMessage ) ;   // Convert struct to bytes);
+    byte readBuffer[5];
+    if (Serial.available() > 0){
+        Serial.readBytes(readBuffer,5);
+
+        bool writtenSuccessfully;
+        int id;
+
+        memcpy(&id,readBuffer,sizeof(id));
+        writtenSuccessfully = readBuffer[5];
+
+        ResponseMessageFromReceiver response = createResponseFromReceiver(id,true,writtenSuccessfully);      
+        setTimerAndFlag(FINISHED_SUCCESSFULLY,&waitingResponseSerial,&timeLastMessageWasSendSerial);
+
+        esp_now_send(MAC_LIBRARY[response.id],(uint8_t *) &response, sizeof(response)); 
+    }
+
+    if (checkForInactivityOverThreshold(&timeLastMessageWasSendSerial,maxWaitingTimeSerial)){
+        ResponseMessageFromReceiver response = createResponseFromReceiver(id,true,false);      
+
+        esp_now_send(MAC_LIBRARY[response.id],(uint8_t *) &response, sizeof(response)); 
+
+      }
+    if (waitingResponse == false and isQueueFull(receiverQueue) == false){
+        
+        is_Everything_Ok = performBME680Reading(&bme,&sensorMessage,id);
+        if (is_Everything_Ok){
+            setTimerAndFlag(WAITING,&waitingResponse,&timeLastMessageWasSend);
+            insertMessageIntoQueue(receiverQueue,sensorMessage);
+        }    
+        
+    }
+    if ( isQueueEmpty(receiverQueue) and Serial.availableForWrite()> MINIMUM_BYTE_TO_WRITE_AT_SERIAL){
+        insertMessageIntoSerial(receiverQueue);
+        setTimerAndFlag(WAITING,&waitingResponseSerial,&timeLastMessageWasSendSerial);
+    }
 }
 
 
 void OnDataSentAsReceiver(const uint8_t *mac_addr, esp_now_send_status_t status) {
-    
+    //We don't care what happen with the peer
     }
   
 void OnDataRecvAsReceiver(const uint8_t *mac_addr,const uint8_t *incomingData, int len) {
 
-    
+    SensorMessage *incomingDataStructified;
+    memcpy(incomingDataStructified,incomingData,sizeof(incomingData));
 
-    
-}
-void ReadFromSerial(){
+    if (isQueueFull){
+       
+        ResponseMessageFromReceiver response = createResponseFromReceiver(incomingDataStructified->id,false,false);      
+        esp_now_send(MAC_LIBRARY[response.id],(uint8_t *) &response, sizeof(response)); 
+    }
+    else{
+        insertMessageIntoQueue(receiverQueue,*incomingDataStructified);
+
+    }
     
 }

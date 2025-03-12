@@ -18,9 +18,15 @@ void setupSender(){
 }
 
 void loopSender(){
-
-  is_Everything_Ok =  performBME680Reading(&bme,&myData,id);
-  esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &myData, sizeof(myData)); 
+  if (checkForInactivityOverThreshold(&timeLastMessageWasSend,maxWaitingTime)){
+    esp_deep_sleep_start();
+  }
+  if (waitingResponse == false){
+     is_Everything_Ok =  performBME680Reading(&bme,&sensorMessage,id);
+  }
+  if (is_Everything_Ok){
+    esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &sensorMessage, sizeof(sensorMessage)); 
+  }
 
 }
 
@@ -29,28 +35,27 @@ void OnDataSentAsSender(const uint8_t *mac_addr, esp_now_send_status_t status) {
     //Serial.print("\r\nLast Packet Send Status:\t");
     Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
     if (status == ESP_NOW_SEND_SUCCESS){
-      setTimerAndFlagWaiting();
+      setTimerAndFlag(WAITING,&waitingResponse,&timeLastMessageWasSend);
     }
     else {
-      //try again in 5 seconds
-      delay(5000);
+      //try again in 10 seconds
+      delay(10 * 1000);
     }
   }
   
 void OnDataRecvAsSender(const uint8_t *mac_addr,const uint8_t *incomingData, int len) {
 
-    ResponseMessageFromPython response;
-    if (sizeof(ResponseMessageFromPython) == sizeof(incomingData)){
-      memcpy(&response,incomingData,sizeof(ResponseMessageFromPython));
-    }
-    if (response.writtenSuccesufully){
-      waitingResponse = false;
+  ResponseMessageFromReceiver *incomingDataStructified;
+  memcpy(incomingDataStructified,incomingData,sizeof(incomingData));
+  if (incomingDataStructified->writtenIntoQueue == false or incomingDataStructified->writtenSuccessfully == false){
+    setTimerAndFlag(FINISHED_STANDBY,&waitingResponse,&timeLastMessageWasSend);
 
-    }
-    else {
-      Serial.println("Something bad happened");
-      is_Everything_Ok = false;
-    }
+    //try again in 60 seconds
+    delay(60 * 1000);
+  }
+  else {
+    setTimerAndFlag(FINISHED_SUCCESSFULLY,&waitingResponse,&timeLastMessageWasSend);
 
+  }
 }
 

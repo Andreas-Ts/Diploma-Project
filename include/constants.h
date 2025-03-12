@@ -22,6 +22,8 @@ extern uint8_t ESP32_MAC_OF_RECEIVER[6];
 //It is known only Locally.The MAC address of the particular device.Set at main.cpp 
 extern uint8_t my_MAC[6];
 
+//It is known Globally.We set the minimum number of bytes we need available to write something at Serial.Set at constants.cpp
+extern int MINIMUM_BYTE_TO_WRITE_AT_SERIAL;
 
 //The structure of message that will contain an instance of sensor's information.
 typedef struct SensorMessage{
@@ -57,12 +59,12 @@ typedef struct MessageQueue {
 extern MessageQueue* receiverQueue;
 
 //The response message that the receiver sends to the sender devices after it read the confirmation back from the python script
-typedef struct ResponseMessageFromPython {
+typedef struct ResponseMessageFromReceiver {
   int id;
-  bool writtenSuccesufully;
-}ResponseMessageFromPython;
+  bool writtenIntoQueue;
+  bool writtenSuccessfully;
+}ResponseMessageFromReceiver;
 
-extern ResponseMessageFromPython responseFromReceiver;
 
 //Just in case
 typedef struct ErrorMessage{
@@ -94,11 +96,24 @@ extern esp_now_peer_info_t peerInfo;
 //It is known only Locally.Flag for stopping the device for reading sensor readings.Set at false at constants.cpp
 extern bool waitingResponse;
 
+extern bool waitingResponseSerial;
+
+//Enum variable for the parameter of the function that activates the waitingResponse
+enum Setting {
+  WAITING,
+  FINISHED_SUCCESSFULLY,
+  FINISHED_STANDBY
+};
+
 //It is known only Locally.Time since last Sensor Message was sent. Set to zero 0 at constants.cpp
 extern unsigned long timeLastMessageWasSend;
 
 //It is known Globally.Max waiting time for a device to take back a confirmation of sucessuful or not writing from the receiver.
 //Set currently at 5 minutes.Set at constants.cpp
 extern unsigned long maxWaitingTime;
+
+extern unsigned long timeLastMessageWasSendSerial;
+
+extern unsigned long maxWaitingTimeSerial;
 
 #endif

@@ -157,27 +157,40 @@ void printMAC(const uint8_t MAC_ADDRESS[6]){
                   MAC_ADDRESS[3], MAC_ADDRESS[4], MAC_ADDRESS[5]);
 }
 
-bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend){
+bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend,unsigned long threshold){
     unsigned long current_time = millis();
     unsigned long remaining_time = current_time - *timeLastMessageWasSend ;
-    if (remaining_time > maxWaitingTime){
+    if (remaining_time > threshold){
         return true;
     }
     else {
         return false;
     }
 }
-void setTimerAndFlag(char* flag,bool *waitingResponse,unsigned long *timeLastMessageWasSend){
-  if (strcmp(flag,"waiting") == 0){
+void setTimerAndFlag(Setting flag,bool *waitingResponse,unsigned long *timeLastMessageWasSend){
+  if (flag == WAITING){
     *timeLastMessageWasSend = millis();
     *waitingResponse = true;
   }
-  if (strcmp(flag,"finished") == 0){
+  if (flag == FINISHED_SUCCESSFULLY){
+    *timeLastMessageWasSend = millis();
     *waitingResponse = false;
-
+  }
+  if (flag == FINISHED_STANDBY){
+    //do nothing
   }
 }
 
+
+
+ResponseMessageFromReceiver createResponseFromReceiver(const int sensorMessage,bool writtenIntoQueue,bool writtenIntoPython){
+
+  ResponseMessageFromReceiver response;
+  response.id = id;
+  response.writtenIntoQueue = writtenIntoQueue;
+  response.writtenSuccessfully = writtenIntoPython;
+  return response;
+}
 /*
 
 ErrorMessage createErrorMessage(char* errorText){

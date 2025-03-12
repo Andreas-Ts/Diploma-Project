@@ -1,4 +1,5 @@
 #include "constants.h"
+#include "customFunctions.h"
 
 const uint8_t *MAC_LIBRARY[] = {
     ESP32_MAC_OF_WHITE_BREADBOARD,
@@ -20,7 +21,10 @@ const uint8_t ESP32_MAC_OF_YELLOW_BREADBOARD[6] = {0x44,0x17,0x93,0xFA,0xED,0x34
 //const uint8_t BME_SCK = 39;
 //const uint8_t BME_SDI = 42;
  
+int MINIMUM_BYTE_TO_WRITE_AT_SERIAL = 40;
+
 const float SEALEVELPRESSURE_HPA = 1030;
+MessageQueue* receiverQueue = createMessageQueue(ESP32_TOTAL_DEVICES_NUMBER);
 
 
 esp_now_peer_info_t peerInfo;
@@ -30,5 +34,9 @@ int id;
 
 bool is_Everything_Ok = true;
 bool waitingResponse = false;
+bool waitingResponseSerial = false;
+
 unsigned long timeLastMessageWasSend = 0;
+unsigned long timeLastMessageWasSendSerial = 0;
+unsigned long maxWaitingTimeSerial = 1000 * 10; //10 seconds
 unsigned long maxWaitingTime = 60000 * 10; //60000 milliseconds is 1 minute, so 1 multiply them by 10

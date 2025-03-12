@@ -21,6 +21,8 @@ void setup() {
     id =  potential_id;
     sensorMessage.id = id;
   }
+
+
    // Setup Sensor
   is_Everything_Ok = setBME680(&bme);
   
@@ -34,6 +36,8 @@ void setup() {
   peerInfo.encrypt = false;
  
   delay(10);
+
+
   if (isTheReceiverESP32NOW(my_MAC)){
       setupReceiver();
   }

@@ -2,16 +2,16 @@ import serial
 import struct
 import os
 import csv
-import datetime as datetime
-import zoneinfo as zoneinfo
+from zoneinfo  import ZoneInfo
+from datetime import datetime, timedelta
 
 
 
 # Replace 'Your/Timezone' with your actual timezone, e.g., 'America/New_York'
-local_timezone = zoneinfo('Europe/Athens')
+local_timezone = ZoneInfo('Europe/Athens')
 
 # Replace 'COMX' with your port ('/dev/ttyUSB0' on Linux/Mac, 'COM3' on Windows)
-serial_port = "COM6"
+serial_port = "COM7"
 baud_rate = 115200
 
 # Path to save the CSV file
@@ -26,7 +26,7 @@ try:
     expected_size = struct.calcsize(struct_format)  # Compute expected size
     print(f"Expected struct size: {expected_size} bytes")
 
-    ser = serial.Serial(serial_port, baud_rate, timeout=1)
+    ser = serial.Serial(serial_port, baud_rate, timeout=1,write_timeout =1)
     print(f"Connected to {serial_port}")
     
 
@@ -66,9 +66,9 @@ try:
             print(struct_size)
 
             if len(data_bytes) == struct_size:
-                currentDateAndTime = datetime.now()
-                current_date = current_time.date()
-                current_time = current_time.time()
+                currentDateAndTime = datetime.now(local_timezone)
+                current_date = currentDateAndTime.date()
+                current_time = currentDateAndTime.time()
                 id, temperature, pressure, humidity, gas_resistance, altitude = struct.unpack('<IfIfIf', data_bytes)
                 # Write data row into CSV file
                 csv_writer.writerow([current_date,
@@ -79,6 +79,9 @@ try:
                                      pressure, 
                                      gas_resistance,
                                      altitude])
+                ser.write(bytearray([id,True]))
+                ser.flush()
+
                 csv_file.flush()
                 # Also print the data for debugging
                 print(f"Date : {current_date}, "
@@ -89,12 +92,12 @@ try:
                       f"Gas resistance: {gas_resistance} Ohms, "
                       f"Altitude: {altitude:.2f} m.")
                 
-                ser.write(struct.pack("<i?",id,True))
+                
 
 
 except serial.SerialException as e:
     print(f"Error: {e}")
-    ser.write(struct.pack("<i?",id,False))
+   
 
 finally:
     if 'ser' in locals() and ser.is_open:

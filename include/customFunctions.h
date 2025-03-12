@@ -65,24 +65,26 @@ uint8_t* structToBytes(SensorMessage data);
 
 /// @brief In order for the sender devices not to overflow the receiver device, we stop the device for reading
 ///       new reading and sending new messages until it has taken a confirmation that the message has been read.
-/// @param flag it sets the flag waitingResponse either to true sending the word "waiting"
-///        or false with the word finished
-/// @param waitingResponse the waitingResponse constant of the device
-/// @param timeLastMessageWasSend the timeLastMessageWasSend constant of the device
-void setTimerAndFlag(char* setting,bool *waitingResponse,unsigned long *timeLastMessageWasSend);
+/// @param flag it uses the Enum Setting sets the flag waitingResponse either to true sending the variable WAITING
+///        or false with the word FINISHED
+/// @param waitingResponse  waitingResponse constant of the device
+/// @param timeLastMessageWasSend pointer to the timeLastMessageWasSend constant of the device
+void setTimerAndFlag(Setting setting,bool *waitingResponse,unsigned long *timeLastMessageWasSend);
 
 /// @brief We check if the time the device has spent waiting is over the thereshold set 
 /// by maxWaitingTime, constant of the device
 /// @param timeLastMessageWasSend the timeLastMessageWasSend constant of the device 
 /// @return true if the time passed exceeded the thereshold, false if not.
-bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend);
+bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend,unsigned long threshold);
 
 /// @brief Read the response of the python script when it has succesfully or not read the input
 void ReadFromSerial();
 
-/////////////////////////
+ResponseMessageFromReceiver createResponseFromReceiver(const int sensorMessage,bool writtenIntoQueue,bool writtenIntoPython);
+//////////////////////////////////////////////
 //At the file customQueue.cpp
-//////////////////////////
+////////////////////////////////////////////
+
 /// @brief We create the Queue that it will handle the sensor messages at the receiver device. 
 /// We only create it at the receiver device as the esp32 has limited space
 /// @param sizeOfQueue The maximum size of the message queue.The ESP32_TOTAL_DEVICES_NUMBER constant will set it
@@ -93,8 +95,18 @@ MessageQueue* createMessageQueue(const int sizeOfQueue);
 ///@param queue the queue that handles the messages
 void freeQueueMemory(MessageQueue* queue);
 
-/// @brief Insert a new message into the back of the queue
+/// @brief We check if the queue is empty
 /// @param queue the queue that handles the messages
+/// @return true if queue is empty, false if not empty
+bool isQueueEmpty(MessageQueue* queue);
+
+/// @brief We check if the queue is full
+/// @param queue the queue that handles the messages
+/// @return true if queue is full, false if not full
+bool isQueueFull(MessageQueue* queue);
+
+/// @brief Insert a new message into the back of the queue
+/// @param queue pointer to the queue that handles the messages
 /// @param message the message we want to insert into the queue
 /// @return true if it the insertion was successful,false if not (probably because of full queue)
 bool insertMessageIntoQueue(MessageQueue* queue,SensorMessage message);

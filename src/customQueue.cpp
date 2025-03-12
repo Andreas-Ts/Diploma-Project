@@ -3,52 +3,72 @@
 #include "customFunctions.h"
 
 MessageQueue* createMessageQueue(const int sizeOfQueue) {
-    MessageQueue *queue = (MessageQueue*)malloc(sizeof(MessageQueue));
-    if (queue == NULL) {
+
+     
+    MessageQueue *receiverQueue = (MessageQueue*)malloc(sizeof(MessageQueue));
+    if (receiverQueue == NULL) {
       return NULL;  // error in allocation
     }
   
-    queue->messages = (SensorMessage*)malloc(sizeOfQueue * sizeof(SensorMessage));
-    if (queue->messages == NULL) {
-      free(queue); //free previous memory allocated
+    receiverQueue->messages = (SensorMessage*)malloc(sizeOfQueue * sizeof(SensorMessage));
+    if (receiverQueue->messages == NULL) {
+      free(receiverQueue); //free previous memory allocated
       return NULL;
     }
     
-    queue->maxSize = sizeOfQueue; //max size of queue
-    queue->front = 0;
-    queue->rear = 0;
-    queue->currentSize = 0;
+    receiverQueue->maxSize = sizeOfQueue; //max size of queue
+    receiverQueue->front = 0;
+    receiverQueue->rear = 0;
+    receiverQueue->currentSize = 0;
   
-    return queue;
+    return receiverQueue;
   }
-void freeQueueMemory(MessageQueue* queue){
+void freeQueueMemory(MessageQueue* receiverQueue){
 
-  free(queue->messages);
-  free(queue);
+  free(receiverQueue->messages);
+  free(receiverQueue);
 
 }  
+bool isQueueEmpty(MessageQueue* receiverQueue){
+  if (receiverQueue->currentSize == 0){ 
 
-bool insertMessageIntoQueue(MessageQueue* queue,SensorMessage message){
-    //Check if queue is at max size
-    if (queue->currentSize == queue->maxSize ){ 
-
-      return false;
-    }
-    queue->rear = (queue->rear + 1) % queue->maxSize;
-    queue->messages[queue->rear] = message;
-    queue->currentSize++;
     return true;
   }
-bool insertMessageIntoSerial(MessageQueue* queue){
-    SensorMessage messageToSend;
-    if (queue->currentSize == 0){ 
+  else{
+    return false;
+  }
+}
 
-      return false;
-    }
-    messageToSend = queue->messages[queue->front];
+bool isQueueFull(MessageQueue* receiverQueue){
+  if (receiverQueue->currentSize == receiverQueue->maxSize){ 
+
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+
+
+bool insertMessageIntoQueue(MessageQueue* receiverQueue,SensorMessage message){
+    
+    if (isQueueFull){return false;}
+    
+    receiverQueue->rear = (receiverQueue->rear + 1) % receiverQueue->maxSize;
+    receiverQueue->messages[receiverQueue->rear] = message;
+    receiverQueue->currentSize++;
+    return true;
+  }
+bool insertMessageIntoSerial(MessageQueue* receiverQueue){
+
+    if (isQueueEmpty) {return false;}
+    SensorMessage messageToSend;
+
+    messageToSend = receiverQueue->messages[receiverQueue->front];
     
     sendDataToSerial(structToBytes(messageToSend));
-    queue->front =(queue->front - 1) % queue->maxSize;
-    queue->currentSize--;
+    receiverQueue->front =(receiverQueue->front - 1) % receiverQueue->maxSize;
+    receiverQueue->currentSize--;
     return true;
   }
