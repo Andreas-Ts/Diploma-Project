@@ -5,15 +5,31 @@
 #ifndef customFunctions
 #define customFunctions
 
-
+#include "library_dependencies.h"
 #include "constants.h"
+
+
+bool setupBME680();
+
+
+bool setupCCS811();
+
+void loopSensor(sensorMessage *message);
+
+void loopBME680(sensorMessage *message);
+
+
+// Helper functions declarations for the bme680 bsec
+bool checkIaqSensorStatus(bool atSetup);
+void errLeds(void);
+
 
 /// @brief Set the BME680 sensor if it exists using the adafruit library
 /// @param bme Adafruit_BME680 Class for both I2C and SPI usage.
 ///     Wraps the Bosch library for Arduino usage 
 /// @return True if the BME680 setup correctly,
 /// false if no bme680 exists in the board,the wiring is wrong,some other problem occured or BME680 doesn't exists into the breadboard.
-bool setBME680(Adafruit_BME680 *bme);
+//bool setBME680(Adafruit_BME680 *bme);
 
 
 /// @brief Set the BME680 if exists
@@ -22,7 +38,7 @@ bool setBME680(Adafruit_BME680 *bme);
 /// @param myData the data read from the bme680 sensor that get returned as a parameter reference
 /// @param id The id of the device that had read the bme680 sensor
 /// @return Return true if the reading of the bme680 executed correctly, false if any error occured
-bool performBME680Reading(Adafruit_BME680 *bme,SensorMessage *myData,int id);
+//bool performBME680Reading(Adafruit_BME680 *bme,SensorMessage *myData,int id);
 
 
 /// @brief We assign an ID to the device for identifying messages with particular devices without hardwriting a MAC address
@@ -61,7 +77,7 @@ void sendDataToSerial(const uint8_t *dataToBeSentToSerial);
 /// @brief We still work on this 
 /// @param data 
 /// @return 
-uint8_t* structToBytes(SensorMessage data);
+uint8_t* structToBytes(sensorMessage data);
 
 /// @brief In order for the sender devices not to overflow the receiver device, we stop the device for reading
 ///       new reading and sending new messages until it has taken a confirmation that the message has been read.
@@ -76,6 +92,11 @@ void setTimerAndFlag(Setting setting,bool *waitingResponse,unsigned long *timeLa
 /// @param timeLastMessageWasSend the timeLastMessageWasSend constant of the device 
 /// @return true if the time passed exceeded the thereshold, false if not.
 bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend,unsigned long threshold);
+
+/// @brief we send check if some minimum time have passed before sending a message
+/// @param timeLastMessageWasSend we initialize it at loop sensor
+/// @return 
+bool isTimeToSendMessage(const unsigned long timeLastMessageWasSend);
 
 /// @brief Read the response of the python script when it has succesfully or not read the input
 void ReadFromSerial();

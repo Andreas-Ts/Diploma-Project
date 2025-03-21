@@ -1,5 +1,4 @@
-#include "customFunctions.h"
-#include "constants.h"
+#include "custom_headers.h"
 
 void setupReceiver(){
     for (int i=0;i<ESP32_TOTAL_DEVICES_NUMBER;i++){
@@ -11,6 +10,8 @@ void setupReceiver(){
             }  
         }
     }
+    MessageQueue* receiverQueue = createMessageQueue(ESP32_TOTAL_DEVICES_NUMBER);
+
     esp_now_register_send_cb(OnDataSentAsReceiver);
     esp_now_register_recv_cb(OnDataRecvAsReceiver);
 
@@ -35,19 +36,17 @@ void loopReceiver(){
 
     if (checkForInactivityOverThreshold(&timeLastMessageWasSendSerial,maxWaitingTimeSerial)){
         ResponseMessageFromReceiver response = createResponseFromReceiver(id,true,false);      
-
+      
         esp_now_send(MAC_LIBRARY[response.id],(uint8_t *) &response, sizeof(response)); 
 
       }
     if (waitingResponse == false and isQueueFull(receiverQueue) == false){
+        setTimerAndFlag(WAITING,&waitingResponse,&timeLastMessageWasSend);   
+        loopSensor(&message);
+        insertMessageIntoQueue(receiverQueue,message);
+        }
         
-        is_Everything_Ok = performBME680Reading(&bme,&sensorMessage,id);
-        if (is_Everything_Ok){
-            setTimerAndFlag(WAITING,&waitingResponse,&timeLastMessageWasSend);
-            insertMessageIntoQueue(receiverQueue,sensorMessage);
-        }    
-        
-    }
+    
     if ( isQueueEmpty(receiverQueue) and Serial.availableForWrite()> MINIMUM_BYTE_TO_WRITE_AT_SERIAL){
         insertMessageIntoSerial(receiverQueue);
         setTimerAndFlag(WAITING,&waitingResponseSerial,&timeLastMessageWasSendSerial);
@@ -61,7 +60,7 @@ void OnDataSentAsReceiver(const uint8_t *mac_addr, esp_now_send_status_t status)
   
 void OnDataRecvAsReceiver(const uint8_t *mac_addr,const uint8_t *incomingData, int len) {
 
-    SensorMessage *incomingDataStructified;
+    sensorMessage *incomingDataStructified;
     memcpy(incomingDataStructified,incomingData,sizeof(incomingData));
 
     if (isQueueFull){

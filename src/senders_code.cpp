@@ -1,5 +1,4 @@
-#include "customFunctions.h"
-#include "constants.h"
+#include "custom_headers.h"
 
 
 void setupSender(){
@@ -19,15 +18,13 @@ void setupSender(){
 
 void loopSender(){
   if (checkForInactivityOverThreshold(&timeLastMessageWasSend,maxWaitingTime)){
-    esp_deep_sleep_start();
+    errLeds();
   }
   if (waitingResponse == false){
-     is_Everything_Ok =  performBME680Reading(&bme,&sensorMessage,id);
+      loopSensor(&message);
   }
-  if (is_Everything_Ok){
-    esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &sensorMessage, sizeof(sensorMessage)); 
-  }
-
+  esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &message, sizeof(sensorMessage)); 
+  
 }
 
 // callback when data is sent from multiple senders

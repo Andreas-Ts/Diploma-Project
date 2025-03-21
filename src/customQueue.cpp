@@ -1,6 +1,5 @@
 
-#include "constants.h"
-#include "customFunctions.h"
+#include "custom_headers.h"
 
 MessageQueue* createMessageQueue(const int sizeOfQueue) {
 
@@ -10,7 +9,7 @@ MessageQueue* createMessageQueue(const int sizeOfQueue) {
       return NULL;  // error in allocation
     }
   
-    receiverQueue->messages = (SensorMessage*)malloc(sizeOfQueue * sizeof(SensorMessage));
+    receiverQueue->messages = (sensorMessage*)malloc(sizeOfQueue * sizeof(sensorMessage));
     if (receiverQueue->messages == NULL) {
       free(receiverQueue); //free previous memory allocated
       return NULL;
@@ -51,7 +50,7 @@ bool isQueueFull(MessageQueue* receiverQueue){
 
 
 
-bool insertMessageIntoQueue(MessageQueue* receiverQueue,SensorMessage message){
+bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message){
     
     if (isQueueFull){return false;}
     
@@ -63,7 +62,7 @@ bool insertMessageIntoQueue(MessageQueue* receiverQueue,SensorMessage message){
 bool insertMessageIntoSerial(MessageQueue* receiverQueue){
 
     if (isQueueEmpty) {return false;}
-    SensorMessage messageToSend;
+    sensorMessage messageToSend;
 
     messageToSend = receiverQueue->messages[receiverQueue->front];
     

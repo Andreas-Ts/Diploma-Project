@@ -1,12 +1,13 @@
-#include <constants.h>
-#include <customFunctions.h>
+#include "custom_headers.h"
 
 void setup() {
    Serial.begin(115200);
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
-  delay(50);
-   readMacAddress();
+
+  delay(1000);
+  pinMode(LED_BUILTIN, OUTPUT);
+  readMacAddress();
   setReceiverMAC(MAC_LIBRARY,1);
   
   int potential_id = chooseIDBasedOfMAC(MAC_LIBRARY);
@@ -19,14 +20,31 @@ void setup() {
     Serial.println(potential_id);
 
     id =  potential_id;
-    sensorMessage.id = id;
+    message.id = id;
   }
 
+ 
+  // Setup Sensor with enum type based of the sensor we have.You can put multiple type
 
-   // Setup Sensor
-  is_Everything_Ok = setBME680(&bme);
-  
-  
+ if (setupBME680()==true){
+    sensorLocatedIntoDevice = BME680;
+ }
+
+ if (setupCCS811()==true){
+    sensorLocatedIntoDevice = CSS811;
+ }
+
+ //If we still don't have a sensor we recognized,stop the loop
+ if (sensorLocatedIntoDevice == NO_KNOWN_SENSOR){
+    output = "No sensor was recognized";
+    Serial.println(output);
+    errLeds();
+ } 
+ 
+ //Set the variables into the Sensor Message and what variable at union we will use
+ message.id = id;
+ message.sensor = sensorLocatedIntoDevice;
+ 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
     //Serial.println("Error initializing ESP-NOW");
@@ -43,8 +61,7 @@ void setup() {
   }
   else{
       setupSender();
-  }
-  
+  } 
 }
 
 void loop() {
