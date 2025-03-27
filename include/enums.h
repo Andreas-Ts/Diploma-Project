@@ -7,7 +7,7 @@
 enum Setting {
     WAITING,
     FINISHED_SUCCESSFULLY,
-    FINISHED_STANDBY
+    FINISHED_UNSUCCESSFULLY
   };
   
   //A way to know what sensor the device has and functions we will use 

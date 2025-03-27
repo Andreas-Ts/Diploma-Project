@@ -3,62 +3,6 @@
 
 #include "enums.h"
 
-union informationFromSensorUnion {
-      
-    informationFromBME680 sensorBME680;
-    informationFromCSS811 sensorCSS811;
-  };
-  
-  typedef struct sensorMessage {
-    int id;
-    recognized_Sensor sensor;
-    union informationFromSensorUnion informationFromSensor;
-  
-  }sensorMessage;
-  
-  extern sensorMessage message;
-
-//The queue at receiver device that keeps the messages containing the sensors information of all devices, even itself
-typedef struct MessageQueue {
-    sensorMessage *messages;  // Δείκτης προς δυναμικά δεσμευμένη μνήμη
-    int maxSize;              // Μέγιστο μέγεθος ουράς
-    int front;                 // Index πρώτου στοιχείου
-    int rear;                  // Index επόμενου στοιχείου
-    int currentSize;                 // Τρέχον πλήθος στοιχείων
-  } MessageQueue;
-  
-  //Set at customQueue.cpp only for the purpose of avoiding taking too much space
-  extern MessageQueue* receiverQueue;
-  
-  //The response message that the receiver sends to the sender devices after it read the confirmation back from the python script
-  typedef struct ResponseMessageFromReceiver {
-    int id;
-    bool writtenIntoQueue;
-    bool writtenSuccessfully;
-  }ResponseMessageFromReceiver;
-  
-  
-  //Just in case
-  typedef struct ErrorMessage{
-    int id;
-    char* error;
-  }ErrorMessage;
-  
-union informationFromSensorUnion {
-      
-  informationFromBME680 sensorBME680;
-  informationFromCSS811 sensorCSS811;
-};
-
-typedef struct sensorMessage {
-  int id;
-  recognized_Sensor sensor;
-  union informationFromSensorUnion informationFromSensor;
-
-}sensorMessage;
-
-extern sensorMessage message;
-
 //It has a lot of variables the bme680
 typedef struct informationFromBME680 {
     /**
@@ -202,5 +146,46 @@ typedef struct informationFromBME680 {
  /**************************************************************************/
  uint16_t TVOC;
 }informationFromCSS811;
+
+union informationFromSensorUnion {
+      
+  informationFromBME680 sensorBME680;
+  informationFromCSS811 sensorCSS811;
+};
+
+typedef struct sensorMessage {
+  int id;
+  recognized_Sensor sensor;
+  union informationFromSensorUnion informationFromSensor;
+
+}sensorMessage;
+
+extern sensorMessage message;
+
+//The queue at receiver device that keeps the messages containing the sensors information of all devices, even itself
+typedef struct MessageQueue {
+  sensorMessage *messages;  // Δείκτης προς δυναμικά δεσμευμένη μνήμη
+  int maxSize;              // Μέγιστο μέγεθος ουράς
+  int front;                 // Index πρώτου στοιχείου
+  int rear;                  // Index επόμενου στοιχείου
+  int currentSize;                 // Τρέχον πλήθος στοιχείων
+} MessageQueue;
+
+//Set at customQueue.cpp only for the purpose of avoiding taking too much space
+extern MessageQueue receiverQueue;
+
+//The response message that the receiver sends to the sender devices after it read the confirmation back from the python script
+typedef struct ResponseMessageFromReceiver {
+  int id;
+  bool writtenIntoQueue;
+}ResponseMessageFromReceiver;
+
+
+//Just in case
+typedef struct ErrorMessage{
+  int id;
+  char* error;
+}ErrorMessage;
+
 
 #endif

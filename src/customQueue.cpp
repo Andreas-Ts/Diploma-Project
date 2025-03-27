@@ -1,31 +1,26 @@
 
 #include "custom_headers.h"
 
-MessageQueue* createMessageQueue(const int sizeOfQueue) {
+bool createMessageQueue(MessageQueue *receiverQueue,const int sizeOfQueue) {
 
-     
-    MessageQueue *receiverQueue = (MessageQueue*)malloc(sizeof(MessageQueue));
-    if (receiverQueue == NULL) {
-      return NULL;  // error in allocation
-    }
-  
     receiverQueue->messages = (sensorMessage*)malloc(sizeOfQueue * sizeof(sensorMessage));
     if (receiverQueue->messages == NULL) {
-      free(receiverQueue); //free previous memory allocated
-      return NULL;
-    }
+      free(receiverQueue->messages); //free previous memory allocated
+      return false;
+    } 
+    Serial.print("Size of queue is ");
+    Serial.println(sizeof((receiverQueue->messages)));
     
     receiverQueue->maxSize = sizeOfQueue; //max size of queue
     receiverQueue->front = 0;
     receiverQueue->rear = 0;
     receiverQueue->currentSize = 0;
   
-    return receiverQueue;
+    return true;
   }
 void freeQueueMemory(MessageQueue* receiverQueue){
 
   free(receiverQueue->messages);
-  free(receiverQueue);
 
 }  
 bool isQueueEmpty(MessageQueue* receiverQueue){
@@ -57,6 +52,7 @@ bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message){
     receiverQueue->rear = (receiverQueue->rear + 1) % receiverQueue->maxSize;
     receiverQueue->messages[receiverQueue->rear] = message;
     receiverQueue->currentSize++;
+    
     return true;
   }
 bool insertMessageIntoSerial(MessageQueue* receiverQueue){

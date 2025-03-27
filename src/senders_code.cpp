@@ -3,7 +3,8 @@
 
 void setupSender(){
     
-    
+  Serial.println("Insideo setup sender");
+
    // Add peer  
    memcpy(peerInfo.peer_addr, ESP32_MAC_OF_RECEIVER, 6);      
    if (esp_now_add_peer(&peerInfo) != ESP_OK){
@@ -22,8 +23,9 @@ void loopSender(){
   }
   if (waitingResponse == false){
       loopSensor(&message);
+      esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &message, sizeof(sensorMessage)); 
+
   }
-  esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &message, sizeof(sensorMessage)); 
   
 }
 
@@ -35,8 +37,7 @@ void OnDataSentAsSender(const uint8_t *mac_addr, esp_now_send_status_t status) {
       setTimerAndFlag(WAITING,&waitingResponse,&timeLastMessageWasSend);
     }
     else {
-      //try again in 10 seconds
-      delay(10 * 1000);
+      setTimerAndFlag(FINISHED_SUCCESSFULLY,&waitingResponse,&timeLastMessageWasSend);
     }
   }
   
@@ -44,15 +45,11 @@ void OnDataRecvAsSender(const uint8_t *mac_addr,const uint8_t *incomingData, int
 
   ResponseMessageFromReceiver *incomingDataStructified;
   memcpy(incomingDataStructified,incomingData,sizeof(incomingData));
-  if (incomingDataStructified->writtenIntoQueue == false or incomingDataStructified->writtenSuccessfully == false){
-    setTimerAndFlag(FINISHED_STANDBY,&waitingResponse,&timeLastMessageWasSend);
-
-    //try again in 60 seconds
-    delay(60 * 1000);
+  if (incomingDataStructified->writtenIntoQueue == true){
+    setTimerAndFlag(FINISHED_SUCCESSFULLY,&waitingResponse,&timeLastMessageWasSend);    
   }
   else {
-    setTimerAndFlag(FINISHED_SUCCESSFULLY,&waitingResponse,&timeLastMessageWasSend);
-
+    setTimerAndFlag(FINISHED_UNSUCCESSFULLY,&waitingResponse,&timeLastMessageWasSend);
   }
 }
 

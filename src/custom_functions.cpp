@@ -2,6 +2,7 @@
 
 
 #include "custom_headers.h"
+#include "customFunctions.h"
 
 
 
@@ -81,6 +82,7 @@ void loopSensor(sensorMessage *message){
     if (message->sensor == CSS811){
        loopCCS811(message);
     }
+    setTimerAndFlag(WAITING,&waitingResponse,&timeLastMessageWasSend);   
 }
 
 void loopBME680(sensorMessage *message){
@@ -121,17 +123,24 @@ void loopCCS811(sensorMessage *message){
 bool checkIaqSensorStatus(bool atSetup)
 {
   bool errorAppeared = false;
+
   if (iaqSensor.bsecStatus != BSEC_OK) {
     if (iaqSensor.bsecStatus < BSEC_OK) {
       output = "BSEC error code : " + String(iaqSensor.bsecStatus);
       Serial.println(output);
       bool errorAppeared = true;
       }
-    } else {
+     else {
       output = "BSEC warning code : " + String(iaqSensor.bsecStatus);
       Serial.println(output);
     }
-    
+  }
+  else{
+    output = "Bsec status is OK";
+    Serial.println(output);
+  }
+  output= "In between the bsec bme68X";
+  Serial.println(output);
   if (iaqSensor.bme68xStatus != BME68X_OK) {
     if (iaqSensor.bme68xStatus < BME68X_OK) {
       output = "BME68X error code : " + String(iaqSensor.bme68xStatus);
@@ -142,7 +151,12 @@ bool checkIaqSensorStatus(bool atSetup)
       Serial.println(output);
     }
   }
+  else{
+    output = "BME68X status is OK";
+    Serial.println(output);
+  }
   if (errorAppeared == false){
+    Serial.println("Everything from BME680 is ok.");
     return true;
   }
   else{
@@ -151,6 +165,8 @@ bool checkIaqSensorStatus(bool atSetup)
     }
     else{
       errLeds();
+      return false;
+
     }
 }
 }
@@ -197,14 +213,18 @@ uint8_t* structToBytes(sensorMessage data) {
   return buffer;
 }
 
-void sendDataToSerial(const uint8_t *dataToBeSentToSerial){
+bool sendDataToSerial(const uint8_t *dataToBeSentToSerial){
  
     int bytesSend = 0;
     uint16_t struct_size = sizeof(*dataToBeSentToSerial);
 
     Serial.write( (uint8_t*) &struct_size, sizeof(struct_size));  // Send struct size (2 bytes)
-    Serial.write(dataToBeSentToSerial, struct_size);  // Send struct data
-
+    bytesSend = Serial.write(dataToBeSentToSerial, struct_size);  // Send struct data
+    if (bytesSend > 0){
+        return true;      
+    }else{
+        return false;
+    }
   }
   
 void printMAC(const uint8_t MAC_ADDRESS[6]){
@@ -225,14 +245,26 @@ bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend,unsig
 }
 
 //keep a minimum time in order to send a new message
-bool isTimeToSendMessage(const unsigned long timeLastMessageWasSend){
+bool isTimeToSendMessage(const unsigned long timeLastMessageWasSend,Setting settingOfSensor){
   unsigned long currentTime = millis();
-    if (abs((double)(currentTime - timeLastMessageWasSend)) > messageFrequency){
+  unsigned long minimumTimeToPass;
+  switch (settingOfSensor){
+      case(FINISHED_SUCCESSFULLY):
+        minimumTimeToPass = frequencyMinimum;
+        break;
+      case(FINISHED_UNSUCCESSFULLY):
+        minimumTimeToPass = frequencyWhenFailureOccurs;
+        break;
+      default:   
+        errLeds();
+  }
+  
+  if (abs((double)(currentTime - timeLastMessageWasSend)) > minimumTimeToPass){
         return true;
-    }
-    else{
+  }
+  else{
         return false;
-    }
+ }
 }
 
 
@@ -245,8 +277,9 @@ void setTimerAndFlag(Setting flag,bool *waitingResponse,unsigned long *timeLastM
     *timeLastMessageWasSend = millis();
     *waitingResponse = false;
   }
-  if (flag == FINISHED_STANDBY){
-    //do nothing
+  if (flag == FINISHED_UNSUCCESSFULLY){
+    *timeLastMessageWasSend = millis();
+    *waitingResponse = true;
   }
 }
 
@@ -255,9 +288,30 @@ ResponseMessageFromReceiver createResponseFromReceiver(const int sensorMessage,b
   ResponseMessageFromReceiver response;
   response.id = id;
   response.writtenIntoQueue = writtenIntoQueue;
-  response.writtenSuccessfully = writtenIntoPython;
   return response;
 }
+
+String enum_recognized_Sensor_to_Strings(recognized_Sensor sensor){
+  String response;
+  switch (sensor){
+    case NO_KNOWN_SENSOR:
+        response = "NO_KNOWN_SENSOR";
+        break;
+    case BME680:
+        response = "BME680";
+        break;
+
+    case CSS811:
+       response = "CSS811";
+       break;
+    default:
+      response = "INVALID POSITION";
+  }
+  return response;
+}
+
+
+
 /* Halt in case of failure */
 void errLeds(void)
 {

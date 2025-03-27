@@ -47,3 +47,10 @@ unsigned long maxWaitingTime = 60000 * 10; //60000 milliseconds is 1 minute, so 
 recognized_Sensor sensorLocatedIntoDevice = NO_KNOWN_SENSOR;
 
 sensorMessage message;
+//Frequency of messages we want to have as minimum for normal workflow
+const float frequencyMinimum = 1.0;
+
+//Frequency when a not normal behavior occurs,as a full queue.
+const float frequencyWhenFailureOccurs = 10.0;
+
+MessageQueue receiverQueue;

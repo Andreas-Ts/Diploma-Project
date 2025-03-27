@@ -18,6 +18,7 @@ void loopSensor(sensorMessage *message);
 
 void loopBME680(sensorMessage *message);
 
+void loopCCS811(sensorMessage *message);
 
 // Helper functions declarations for the bme680 bsec
 bool checkIaqSensorStatus(bool atSetup);
@@ -72,7 +73,8 @@ bool isTheReceiverESP32NOW(const uint8_t MAC_ADDRESS[6]);
 
 /// @brief We sent data from the receiver to the personal computer that is connected through a type b cable
 /// @param dataToBeSentToSerial the data that is going to be sent from the esp32 device to the computer. 
-void sendDataToSerial(const uint8_t *dataToBeSentToSerial);
+/// @return True if data was written into the serial cable,false otherwise.
+bool sendDataToSerial(const uint8_t *dataToBeSentToSerial);
 
 /// @brief We still work on this 
 /// @param data 
@@ -102,15 +104,21 @@ bool isTimeToSendMessage(const unsigned long timeLastMessageWasSend);
 void ReadFromSerial();
 
 ResponseMessageFromReceiver createResponseFromReceiver(const int sensorMessage,bool writtenIntoQueue,bool writtenIntoPython);
+
+/// @brief take a recognized_Sensor enum variable and makes it string
+/// @param sensor recognized_Sensor enum variable
+/// @return string representation
+String enum_recognized_Sensor_to_Strings(recognized_Sensor sensor);
 //////////////////////////////////////////////
-//At the file customQueue.cpp
+// At the file customQueue.cpp
 ////////////////////////////////////////////
 
 /// @brief We create the Queue that it will handle the sensor messages at the receiver device. 
 /// We only create it at the receiver device as the esp32 has limited space
 /// @param sizeOfQueue The maximum size of the message queue.The ESP32_TOTAL_DEVICES_NUMBER constant will set it
-/// @return the created queue
-MessageQueue* createMessageQueue(const int sizeOfQueue);
+/// @param receiverQueue the queue which we will allocate the memory
+
+bool createMessageQueue(MessageQueue *receiverQueue,const int sizeOfQueue);
 
 ///@brief Release the dynamically allocated memory we got for the queue of the receiver device
 ///@param queue the queue that handles the messages
@@ -130,7 +138,7 @@ bool isQueueFull(MessageQueue* queue);
 /// @param queue pointer to the queue that handles the messages
 /// @param message the message we want to insert into the queue
 /// @return true if it the insertion was successful,false if not (probably because of full queue)
-bool insertMessageIntoQueue(MessageQueue* queue,SensorMessage message);
+bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message);
 
 /// @brief Take the front message of the queue and send it into the serial calbe
 /// @param queue the queue that handles the messages

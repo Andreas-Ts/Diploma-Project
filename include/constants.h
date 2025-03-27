@@ -52,9 +52,11 @@ extern bool waitingResponse;
 
 extern bool waitingResponseSerial;
 
-//Frequency of messages we want to have
-extern const float messageFrequency = 1.0 ;
+//Frequency of messages we want to have as minimum for normal workflow
+const float frequencyMinimum;
 
+//Frequency when a not normal behavior occurs,as a full queue.
+const float frequencyWhenFailureOccurs;
 
 
 extern recognized_Sensor sensorLocatedIntoDevice;
