@@ -19,6 +19,7 @@
         "memory": "cpp",
         "random": "cpp",
         "library_dependencies.h": "c",
-        "structures.h": "c"
+        "structures.h": "c",
+        "ostream": "cpp"
     }
 }

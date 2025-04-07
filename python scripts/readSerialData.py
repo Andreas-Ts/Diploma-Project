@@ -30,10 +30,14 @@ try:
     # Ensure the 'data' folder exists
     os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
     
+    #for bme680 
+    format_struct = "<iifBffffffffffff"
+    expected_size = struct.calcsize(format_struct)  # Compute expected size
+    print(f"Expected struct size for the BME680 are {expected_size} bytes")
 
-    struct_format = '<IfIfIf'
-    expected_size = struct.calcsize(struct_format)  # Compute expected size
-    print(f"Expected struct size: {expected_size} bytes")
+    format_struct = "<iiHH"
+    expected_size = struct.calcsize(format_struct)  # Compute expected size
+    print(f"Expected struct size for the CSS811 are {expected_size} bytes")
 
     ser = serial.Serial(serial_port, baud_rate, timeout=1,write_timeout =1)
     print(f"Connected to {serial_port}")
@@ -57,24 +61,12 @@ try:
         csv_writer = csv.DictWriter(csv_file,fieldnames=list_of_csv_variables)
 
         while True:
-
-            # Step 1: Read struct size (2 bytes)
-            size_bytes = ser.read(2) 
-            print("hi")
-            print(size_bytes) 
-            print(len(size_bytes))
-            if len(size_bytes) < 2:
-                continue  # Skip if not enough data
-            
-            struct_size = struct.unpack('<H', size_bytes)[0]  # Convert bytes to int (little-endian)
-            print(f"Struct Size: {struct_size} bytes")
-            data_bytes = ser.read(struct_size)
-            print(f"Received {len(data_bytes)} bytes: {data_bytes.hex()}")  # Print in HEX
-            # Step 2: Read the struct data
-            print(data_bytes)
-            print(struct_size)
-
-            if len(data_bytes) == struct_size:
+            data_bytes = ser.read(8)
+            length_of_read_message = len(data_bytes)
+            if (length_of_read_message>0):
+                print(f"I received a message of { length_of_read_message} bytes.")
+            #if we received all the input
+            if length_of_read_message == 8:
                 #get current date and time
                 currentDateAndTime = datetime.now(local_timezone)
                 current_date = currentDateAndTime.date()
@@ -85,13 +77,14 @@ try:
                 #Assign date,time,id and Sensor based of the interger value
                 data_dictionary["Date"] = current_date
                 data_dictionary["Time"] = current_time
-                #slice the first part of the buffer in order to take id and sensor.We need it as the sensor variable value will give
-                #us the knowledge of what format string we will use as for now,different sensors have different variables
-                
+                #first we read the id and sensor type
                 format_struct = "<ii"
-                struct_unpacked_data =  struct.unpack(data_bytes[:7],format_struct)
+                struct_unpacked_data =  struct.unpack(format_struct,data_bytes)
                 data_dictionary['Id'] = struct_unpacked_data[0]
-               
+                #enum types in c are interger
+                sensor_used = "NO-KNOWN-SENSOR"
+                print(f"ID is {struct_unpacked_data[0]}")
+                print(f" Sensor is { struct_unpacked_data[1] }")
                 if (struct_unpacked_data[1]==1):
                     sensor_used = "BME680"
                     format_struct = "<fBffffffffffff"
@@ -99,7 +92,9 @@ try:
                     sensor_used = "CSS811"
                     format_struct = "<HH"
                 data_dictionary['Sensor'] = sensor_used
-                struct_unpacked_data =struct.unpack_from(data_bytes,format_struct,sys.getsizeof(data_bytes[:7]))
+                data_bytes = ser.read(struct.calcsize(format_struct))
+                
+                struct_unpacked_data =struct.unpack_from(format_struct,data_bytes)
                 
                 corresponding_variables_that_will_insert_values = [key for key in data_dictionary if key.startswith(sensor_used)]
 
@@ -112,6 +107,8 @@ try:
                 csv_file.flush()
                 # Also print the data for debugging
                 print(data_dictionary)
+                #write a response back into the esp32 to confirm the transition
+                #ser.write(True)
                 
             
 except serial.SerialException as e:

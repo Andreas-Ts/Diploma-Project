@@ -3,7 +3,6 @@
 
 void setupSender(){
     
-  Serial.println("Insideo setup sender");
 
    // Add peer  
    memcpy(peerInfo.peer_addr, ESP32_MAC_OF_RECEIVER, 6);      
@@ -18,13 +17,16 @@ void setupSender(){
 }
 
 void loopSender(){
-  if (checkForInactivityOverThreshold(&timeLastMessageWasSend,maxWaitingTime)){
-    errLeds();
+  if (checkForInactivityOverThreshold(timeLastMessageWasSend,maxWaitingTime)){
+    Serial.println("Some error occured");
+      errLeds();
   }
-  if (waitingResponse == false){
-      loopSensor(&message);
-      esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &message, sizeof(sensorMessage)); 
-
+  if (settingOfSensor == NO_WAIT){
+      if (isTimeToSendMessage(settingOfSensor,timeLastMessageWasSend)){
+        loopSensor(&message);
+        esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &message, sizeof(sensorMessage)); 
+      }
+     
   }
   
 }
@@ -34,22 +36,21 @@ void OnDataSentAsSender(const uint8_t *mac_addr, esp_now_send_status_t status) {
     //Serial.print("\r\nLast Packet Send Status:\t");
     Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
     if (status == ESP_NOW_SEND_SUCCESS){
-      setTimerAndFlag(WAITING,&waitingResponse,&timeLastMessageWasSend);
+      setTimerAndFlag(WAIT_FOR_RESPONSE);
     }
     else {
-      setTimerAndFlag(FINISHED_SUCCESSFULLY,&waitingResponse,&timeLastMessageWasSend);
+      setTimerAndFlag(WAIT_10_SECONDS);
     }
   }
-  
+//We will check for true if the message was written into the python or not,in that case we will wait 10 seconds.
 void OnDataRecvAsSender(const uint8_t *mac_addr,const uint8_t *incomingData, int len) {
 
-  ResponseMessageFromReceiver *incomingDataStructified;
-  memcpy(incomingDataStructified,incomingData,sizeof(incomingData));
-  if (incomingDataStructified->writtenIntoQueue == true){
-    setTimerAndFlag(FINISHED_SUCCESSFULLY,&waitingResponse,&timeLastMessageWasSend);    
+ 
+  if (*incomingData == true){
+    setTimerAndFlag(NO_WAIT);    
   }
   else {
-    setTimerAndFlag(FINISHED_UNSUCCESSFULLY,&waitingResponse,&timeLastMessageWasSend);
+    setTimerAndFlag(WAIT_10_SECONDS);
   }
 }
 

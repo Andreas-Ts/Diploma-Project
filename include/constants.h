@@ -29,6 +29,9 @@ extern const uint8_t *MAC_LIBRARY[];
 //It is known Globally.The MAC address of the device that will receive the information.Set at main.cpp 
 extern uint8_t ESP32_MAC_OF_RECEIVER[6];
 
+
+extern const int idOfTheReceiver;
+
 //It is known only Locally.The MAC address of the particular device.Set at main.cpp 
 extern uint8_t my_MAC[6];
 
@@ -47,31 +50,38 @@ extern const float SEALEVELPRESSURE_HPA;
 //It is known only Locally.It is the information of the peers.Set at constants.cpp
 extern esp_now_peer_info_t peerInfo;
 
-//It is known only Locally.Flag for stopping the device for reading sensor readings.Set at false at constants.cpp
-extern bool waitingResponse;
+//It is known only Locally.Flag for checking the state of the response
+extern Setting settingOfSensor;
 
 extern bool waitingResponseSerial;
 
 //Frequency of messages we want to have as minimum for normal workflow
-const float frequencyMinimum;
+extern const float frequencyMinimum;
 
 //Frequency when a not normal behavior occurs,as a full queue.
-const float frequencyWhenFailureOccurs;
+extern const float frequencyWhenFailureOccurs;
 
 
 extern recognized_Sensor sensorLocatedIntoDevice;
 
-//It is known only Locally.Time since last Sensor Message was sent. Set to zero 0 at constants.cpp
-extern unsigned long timeLastMessageWasSend;
+//It is known only Locally.Time since we send the last message in order not to overflow the receiver.
+extern  unsigned long timeLastMessageWasSend;
 
 //It is known Globally.Max waiting time for a device to take back a confirmation of sucessuful or not writing from the receiver.
 //Set currently at 5 minutes.Set at constants.cpp
-extern unsigned long maxWaitingTime;
+extern const  unsigned long maxWaitingTime;
 
-//As timeLastMessageWasSend and maxWaitingTime,but for the serial connection
-extern unsigned long timeLastMessageWasSendSerial;
+//It is known Globally.Max waiting time for a device to take back a confirmation of sucessuful or not writing from the python
+//set at 30 second
+extern const  unsigned long maxWaitingTimeSerial;
 
-extern unsigned long maxWaitingTimeSerial;
+//The id that the last message inserted into the serial had
+
+extern int  idOfLastMessageInsertedIntoSerial;
+
+//Check if we have a message pending at Serial
+
+extern bool messageInSerialPending;
 
 
 #endif

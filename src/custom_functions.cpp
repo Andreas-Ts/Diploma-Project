@@ -1,15 +1,11 @@
 
-
-
 #include "custom_headers.h"
 #include "customFunctions.h"
-
-
 
 bool readMacAddress(){
   esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, my_MAC);
   if (ret == ESP_OK) {
-     printMAC(my_MAC);
+   //  printMAC(my_MAC);
      return true;
   } else {
     Serial.println("Failed to read MAC address");
@@ -24,12 +20,11 @@ void setReceiverMAC(const uint8_t *MAC_LIBRARY[],const int library_position){
 
 
 
-
 bool setupBME680(){
   
   iaqSensor.begin(BME68X_I2C_ADDR_HIGH, Wire);
   output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
-  Serial.println(output);
+ // Serial.println(output);
   //Perhaps the bme680 doesn't exist so we return false
   if (checkIaqSensorStatus(true) == false){
     return false;
@@ -56,17 +51,17 @@ bool setupBME680(){
 
   // Print the header
   output = "Timestamp [ms], IAQ, IAQ accuracy, Static IAQ, CO2 equivalent, breath VOC equivalent, raw temp[°C], pressure [hPa], raw relative humidity [%], gas [Ohm], Stab Status, run in status, comp temp[°C], comp humidity [%], gas percentage";
-  Serial.println(output);
+  //Serial.println(output);
   return true;
 }
 
 
 
 bool setupCCS811(){
-  Serial.println("CCS811 test");
+  //Serial.println("CCS811 test");
 
   if(!ccs.begin()){
-    Serial.println("Failed to start sensor! Please check your wiring.");
+    //Serial.println("Failed to start sensor! Please check your wiring.");
     return false;
   }
 
@@ -82,7 +77,8 @@ void loopSensor(sensorMessage *message){
     if (message->sensor == CSS811){
        loopCCS811(message);
     }
-    setTimerAndFlag(WAITING,&waitingResponse,&timeLastMessageWasSend);   
+    flashLeds();
+    settingOfSensor = WAIT_FOR_RESPONSE;
 }
 
 void loopBME680(sensorMessage *message){
@@ -135,12 +131,7 @@ bool checkIaqSensorStatus(bool atSetup)
       Serial.println(output);
     }
   }
-  else{
-    output = "Bsec status is OK";
-    Serial.println(output);
-  }
-  output= "In between the bsec bme68X";
-  Serial.println(output);
+ 
   if (iaqSensor.bme68xStatus != BME68X_OK) {
     if (iaqSensor.bme68xStatus < BME68X_OK) {
       output = "BME68X error code : " + String(iaqSensor.bme68xStatus);
@@ -151,12 +142,9 @@ bool checkIaqSensorStatus(bool atSetup)
       Serial.println(output);
     }
   }
-  else{
-    output = "BME68X status is OK";
-    Serial.println(output);
-  }
+
   if (errorAppeared == false){
-    Serial.println("Everything from BME680 is ok.");
+    //Serial.println("Everything from BME680 is ok.");
     return true;
   }
   else{
@@ -164,6 +152,7 @@ bool checkIaqSensorStatus(bool atSetup)
       return false;
     }
     else{
+      Serial.println("Some error occured");
       errLeds();
       return false;
 
@@ -206,25 +195,74 @@ bool isTheReceiverESP32NOW(const uint8_t *MAC_ADDRESS){
 }
 
 
-uint8_t* structToBytes(sensorMessage data) {
-
-  uint8_t *buffer;      // Create a byte buffer
-  memcpy(buffer, &data, sizeof(data));  // Copy struct to byte array
-  return buffer;
+//Get the size of the structs we have inside the union that repressents the payload of each sensor
+int getByteSizeOfTypeOfSensor(const recognized_Sensor sensor){
+  int byteSize=0;
+  switch (sensor){
+    case BME680:
+      byteSize = sizeof(informationFromBME680);
+      break;
+    case CSS811: 
+    byteSize = sizeof(informationFromCSS811);
+      break; 
+    default:
+      Serial.println("Sensor aren't being recognized");
+      errLeds();
+  }
+  return byteSize;
 }
 
-bool sendDataToSerial(const uint8_t *dataToBeSentToSerial){
+bool sendDataToSerial(const sensorMessage messageToBeInsertedToSerial){
  
-    int bytesSend = 0;
-    uint16_t struct_size = sizeof(*dataToBeSentToSerial);
+    unsigned int bytesSend = 0;
+    int sizeOfPayload = getByteSizeOfTypeOfSensor(messageToBeInsertedToSerial.sensor);
 
-    Serial.write( (uint8_t*) &struct_size, sizeof(struct_size));  // Send struct size (2 bytes)
-    bytesSend = Serial.write(dataToBeSentToSerial, struct_size);  // Send struct data
-    if (bytesSend > 0){
-        return true;      
-    }else{
-        return false;
+
+
+    uint8_t *dataToBeSentToSerial = (uint8_t*) malloc(sizeof(sensorMessage));
+    if (dataToBeSentToSerial == NULL){
+      Serial.println("Error: malloc failed");
+      errLeds();
+      return false;
     }
+    uint8_t *dataSent= (uint8_t*) malloc(8);//allocate 8 bytes
+
+    memcpy(dataToBeSentToSerial,&messageToBeInsertedToSerial,sizeof(messageToBeInsertedToSerial));
+    if (dataSent == NULL){
+      Serial.println("Error: malloc failed for the metadata bytes");
+      errLeds();
+      return false;
+    }
+    
+    //grab id and sensor type from dataToBeSentToSerial,which are both intergers
+    memcpy(dataSent,dataToBeSentToSerial,8);
+
+    //send the data t
+    bytesSend += Serial.write( dataSent, 8);  // Send id and sensor type
+
+    free(dataSent);
+ 
+
+    dataSent =(uint8_t*) malloc(sizeOfPayload);//allocate 8 bytes
+
+
+    if (dataSent == NULL){
+      Serial.println("Error: malloc failed for payload bytes");
+      errLeds();
+      return false;
+    }
+    //grab the rest of the data from dataToBeSentToSerial
+    memcpy(dataSent,(uint8_t*)(dataToBeSentToSerial + 8),sizeOfPayload);
+
+    bytesSend += Serial.write(dataSent, sizeOfPayload);  // Send struct data
+    free(dataSent);
+    free(dataToBeSentToSerial);
+
+    if (bytesSend>8) { //metadata and payload send
+        return true;
+    }else{
+        return false; //either no data was sent or only metadata
+    } 
   }
   
 void printMAC(const uint8_t MAC_ADDRESS[6]){
@@ -233,9 +271,9 @@ void printMAC(const uint8_t MAC_ADDRESS[6]){
                   MAC_ADDRESS[3], MAC_ADDRESS[4], MAC_ADDRESS[5]);
 }
 
-bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend,unsigned long threshold){
+bool checkForInactivityOverThreshold(const unsigned long timeLastMessageWasSend,unsigned long threshold){
     unsigned long current_time = millis();
-    unsigned long remaining_time = current_time - *timeLastMessageWasSend ;
+    unsigned long remaining_time = current_time - timeLastMessageWasSend ;
     if (remaining_time > threshold){
         return true;
     }
@@ -245,21 +283,24 @@ bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend,unsig
 }
 
 //keep a minimum time in order to send a new message
-bool isTimeToSendMessage(const unsigned long timeLastMessageWasSend,Setting settingOfSensor){
+bool isTimeToSendMessage(Setting settingOfSensor,const unsigned long timeLastMessageWasSend){
   unsigned long currentTime = millis();
   unsigned long minimumTimeToPass;
   switch (settingOfSensor){
-      case(FINISHED_SUCCESSFULLY):
+      case(NO_WAIT):
         minimumTimeToPass = frequencyMinimum;
         break;
-      case(FINISHED_UNSUCCESSFULLY):
+      case(WAIT_10_SECONDS):
         minimumTimeToPass = frequencyWhenFailureOccurs;
         break;
       default:   
+        Serial.println("Some error occured");
         errLeds();
   }
   
   if (abs((double)(currentTime - timeLastMessageWasSend)) > minimumTimeToPass){
+        //time to send the message
+        
         return true;
   }
   else{
@@ -267,19 +308,12 @@ bool isTimeToSendMessage(const unsigned long timeLastMessageWasSend,Setting sett
  }
 }
 
+//Set the flag enum that the sensor has. It could change in some flags the time of the last message that was sent
 
-void setTimerAndFlag(Setting flag,bool *waitingResponse,unsigned long *timeLastMessageWasSend){
-  if (flag == WAITING){
-    *timeLastMessageWasSend = millis();
-    *waitingResponse = true;
-  }
-  if (flag == FINISHED_SUCCESSFULLY){
-    *timeLastMessageWasSend = millis();
-    *waitingResponse = false;
-  }
-  if (flag == FINISHED_UNSUCCESSFULLY){
-    *timeLastMessageWasSend = millis();
-    *waitingResponse = true;
+void setTimerAndFlag(Setting setting){
+  settingOfSensor = setting;
+  if (settingOfSensor == NO_WAIT){
+    timeLastMessageWasSend = millis();
   }
 }
 
@@ -316,10 +350,15 @@ String enum_recognized_Sensor_to_Strings(recognized_Sensor sensor){
 void errLeds(void)
 {
   for (;;){
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(500);
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(500);
+    flashLeds();
   }
+}
+/*For debugging reasons*/
+
+void flashLeds(){
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(500);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(500);
 }

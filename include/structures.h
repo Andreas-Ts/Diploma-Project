@@ -2,6 +2,7 @@
 #define structures
 
 #include "enums.h"
+#include "constants.h"
 
 //It has a lot of variables the bme680
 typedef struct informationFromBME680 {

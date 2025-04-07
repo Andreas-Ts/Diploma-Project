@@ -22,8 +22,10 @@ void loopCCS811(sensorMessage *message);
 
 // Helper functions declarations for the bme680 bsec
 bool checkIaqSensorStatus(bool atSetup);
+//throw an infitive loop in case of an error;
 void errLeds(void);
-
+//flash leds.It is used as the python script cannot be accessed at the same time
+void flashLeds();
 
 /// @brief Set the BME680 sensor if it exists using the adafruit library
 /// @param bme Adafruit_BME680 Class for both I2C and SPI usage.
@@ -73,13 +75,16 @@ bool isTheReceiverESP32NOW(const uint8_t MAC_ADDRESS[6]);
 
 /// @brief We sent data from the receiver to the personal computer that is connected through a type b cable
 /// @param dataToBeSentToSerial the data that is going to be sent from the esp32 device to the computer. 
+/// @param sensor Sensor we use in order to set the number of bytes we are going to send
 /// @return True if data was written into the serial cable,false otherwise.
-bool sendDataToSerial(const uint8_t *dataToBeSentToSerial);
+bool sendDataToSerial(const sensorMessage messageToBeInsertedToSerial);
 
 /// @brief We still work on this 
 /// @param data 
 /// @return 
 uint8_t* structToBytes(sensorMessage data);
+//We don't want to write the number of bytes we will send as it can change
+int getByteSizeOfTypeOfSensor(recognized_Sensor sensor);
 
 /// @brief In order for the sender devices not to overflow the receiver device, we stop the device for reading
 ///       new reading and sending new messages until it has taken a confirmation that the message has been read.
@@ -87,18 +92,18 @@ uint8_t* structToBytes(sensorMessage data);
 ///        or false with the word FINISHED
 /// @param waitingResponse  waitingResponse constant of the device
 /// @param timeLastMessageWasSend pointer to the timeLastMessageWasSend constant of the device
-void setTimerAndFlag(Setting setting,bool *waitingResponse,unsigned long *timeLastMessageWasSend);
+void setTimerAndFlag(Setting setting);
 
 /// @brief We check if the time the device has spent waiting is over the thereshold set 
 /// by maxWaitingTime, constant of the device
 /// @param timeLastMessageWasSend the timeLastMessageWasSend constant of the device 
 /// @return true if the time passed exceeded the thereshold, false if not.
-bool checkForInactivityOverThreshold(unsigned long *timeLastMessageWasSend,unsigned long threshold);
+bool checkForInactivityOverThreshold(const unsigned long timeLastMessageWasSend,const unsigned long threshold);
 
 /// @brief we send check if some minimum time have passed before sending a message
 /// @param timeLastMessageWasSend we initialize it at loop sensor
 /// @return 
-bool isTimeToSendMessage(const unsigned long timeLastMessageWasSend);
+bool isTimeToSendMessage(Setting settingOfSensor,const unsigned long timeLastMessageWasSend);
 
 /// @brief Read the response of the python script when it has succesfully or not read the input
 void ReadFromSerial();
@@ -124,6 +129,8 @@ bool createMessageQueue(MessageQueue *receiverQueue,const int sizeOfQueue);
 ///@param queue the queue that handles the messages
 void freeQueueMemory(MessageQueue* queue);
 
+void printQueueElements(MessageQueue *receiverQueue);
+
 /// @brief We check if the queue is empty
 /// @param queue the queue that handles the messages
 /// @return true if queue is empty, false if not empty
@@ -143,7 +150,7 @@ bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message);
 /// @brief Take the front message of the queue and send it into the serial calbe
 /// @param queue the queue that handles the messages
 /// @return true if it the insertion was successful,false if not (probably because of empty queue) 
-bool insertMessageIntoSerial(MessageQueue* queue);
+bool insertMessageIntoSerial(MessageQueue* receiverQueue,bool *messageInSerialPending,int *idOfLastMessageInsertedIntoSerial);
 
 ///////////////////////////
 //The esp32 now related functions
