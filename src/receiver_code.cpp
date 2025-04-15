@@ -15,6 +15,7 @@ void setupReceiver(){
 
     if (!createMessageQueue(&receiverQueue,ESP32_TOTAL_DEVICES_NUMBER)){
         Serial.println("Problem while allocating memory for the queue.");
+        errLeds();
     }
     esp_now_register_send_cb(OnDataSentAsReceiver);
     esp_now_register_recv_cb(OnDataRecvAsReceiver);
@@ -30,38 +31,59 @@ void loopReceiver(){
         errLeds();
       }
     
-    
-    
+       
     if (Serial.available() > 0 and messageInSerialPending == true){
-        uint8_t *response;
+        //take space for one interger
+        uint8_t* response =(uint8_t*) malloc(1);
+        if (response == NULL){
+            Serial.println("Memory not initialized");
+            errLeds();
+        }
+        
         Serial.readBytes(response,1);
 
         bool writtenSuccessfully;
         
         if (idOfLastMessageInsertedIntoSerial == id){ //receiver send the last message
-            if (response){ //if readbuffer was true,so non zero value
-                setTimerAndFlag(NO_WAIT);
+            if (*response){ //if readbuffer was true,so non zero value
+                setFlag(NO_WAIT);
             }
             else{
-                setTimerAndFlag(WAIT_10_SECONDS);
+                setFlag(WAIT_A_BIT);
             }
 
         }
         else{ //send message into the corresponsing peer device
             esp_now_send(MAC_LIBRARY[idOfLastMessageInsertedIntoSerial],response, sizeof(response)); 
         }
-        bool messageInSerialPending = false;
+        free(response);
+        messageInSerialPending = false;
     } 
-
+    
+   
   
     //check if the receiver waits to send a message and check for the queue for better results
     if (settingOfSensor == NO_WAIT and isQueueFull(&receiverQueue) == false 
     and (isTimeToSendMessage(settingOfSensor,timeLastMessageWasSend)))
     {
         loopSensor(&message);  
-        insertMessageIntoQueue(&receiverQueue,message);
-        Serial.println("I inserted into the queue");
-        printQueueElements(&receiverQueue);
+        //output = "Id of the new message is:" + String(message.id) +" and sensor type:" +String(message.sensor);
+        //Serial.println(output);
+        if (!insertMessageIntoQueue(&receiverQueue,message)){
+            if (idOfLastMessageInsertedIntoSerial == id){ //receiver send the last message
+                setFlag(WAIT_A_BIT);
+           
+    
+            }
+            else{ //send message into the corresponsing peer device that the insertion was happened
+               
+                uint8_t response = 0;
+                esp_now_send(MAC_LIBRARY[idOfLastMessageInsertedIntoSerial],&response, 1); 
+            }
+
+        }
+       // Serial.println("I inserted into the queue");
+       // printQueueElements(&receiverQueue);
 
 
     }
@@ -73,13 +95,21 @@ void loopReceiver(){
     // output = " Serial.availableForWrite is " +  String(Serial.availableForWrite());
     // Serial.println(output);
     //finally if queue is not empty,another message is not pending and we have enough space.send a message into serial
-    if (messageInSerialPending == false and isQueueEmpty(&receiverQueue) == false
-    and Serial.availableForWrite() > MINIMUM_BYTE_TO_WRITE_AT_SERIAL){
+    if (isQueueEmpty(&receiverQueue) == false
+    and Serial.availableForWrite() > MINIMUM_BYTE_TO_WRITE_AT_SERIAL
+   ){
+        insertMessageIntoSerial(&receiverQueue,&messageInSerialPending,&idOfLastMessageInsertedIntoSerial,&timeLastMessageWasSendInSerial);
+        if (idOfLastMessageInsertedIntoSerial == id){ //receiver send the last message
+            setFlag(NO_WAIT);
+       
 
-        insertMessageIntoSerial(&receiverQueue,&messageInSerialPending,&idOfLastMessageInsertedIntoSerial);
-
+        }
+        else{ //send message into the corresponsing peer device that the insertion was happened
+           
+            uint8_t response = 1;
+            esp_now_send(MAC_LIBRARY[idOfLastMessageInsertedIntoSerial],&response, 1); 
+        }
     }
-   
 }
 
 void OnDataSentAsReceiver(const uint8_t *mac_addr, esp_now_send_status_t status) {
@@ -87,13 +117,22 @@ void OnDataSentAsReceiver(const uint8_t *mac_addr, esp_now_send_status_t status)
     }
   
 void OnDataRecvAsReceiver(const uint8_t *mac_addr,const uint8_t *incomingData, int len) {
+    //Serial.println("HI from receive receiver");
     uint8_t *response;
-    sensorMessage *incomingDataStructified;
-    memcpy(incomingDataStructified,incomingData,sizeof(incomingData));
+    sensorMessage *incomingDataStructified=(sensorMessage*) malloc(len);
+    if (incomingDataStructified== NULL){
+        perror("Failed to allocate memory");
+        errLeds();
+    }
+    memcpy(incomingDataStructified,incomingData,len);
+    //output = "Id of the new message is:" + String(incomingDataStructified->id) +" and sensor type:" +String(incomingDataStructified->sensor);
+    //Serial.println(output);
     //If it was unsuccesful to insert the message into the queue, send false in order to make the peer device re send the message after ten seconds
     if (!insertMessageIntoQueue(&receiverQueue,*incomingDataStructified)){
         *response = 0;
         esp_now_send(MAC_LIBRARY[incomingDataStructified->id],response, 1); 
     }  
+
+    free(incomingDataStructified);
 }
     

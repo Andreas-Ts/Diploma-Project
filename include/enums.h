@@ -7,7 +7,7 @@
 enum Setting {
     NO_WAIT,
     WAIT_FOR_RESPONSE,
-    WAIT_10_SECONDS
+    WAIT_A_BIT
   };
   
   //A way to know what sensor the device has and functions we will use 
@@ -15,7 +15,7 @@ enum Setting {
   enum recognized_Sensor{
     NO_KNOWN_SENSOR,
     BME680,
-    CSS811,
+    CCS811,
   };
 
 

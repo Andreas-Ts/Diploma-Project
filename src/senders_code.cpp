@@ -36,21 +36,21 @@ void OnDataSentAsSender(const uint8_t *mac_addr, esp_now_send_status_t status) {
     //Serial.print("\r\nLast Packet Send Status:\t");
     Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
     if (status == ESP_NOW_SEND_SUCCESS){
-      setTimerAndFlag(WAIT_FOR_RESPONSE);
+      setFlag(WAIT_FOR_RESPONSE);
     }
     else {
-      setTimerAndFlag(WAIT_10_SECONDS);
+      setFlag(WAIT_A_BIT);
     }
   }
-//We will check for true if the message was written into the python or not,in that case we will wait 10 seconds.
+//We will check for true if the message was written into the serial or not,in that case we will wait 10 seconds.
 void OnDataRecvAsSender(const uint8_t *mac_addr,const uint8_t *incomingData, int len) {
 
- 
-  if (*incomingData == true){
-    setTimerAndFlag(NO_WAIT);    
+
+  if (*incomingData){
+    setFlag(NO_WAIT);    
   }
   else {
-    setTimerAndFlag(WAIT_10_SECONDS);
+    setFlag(WAIT_A_BIT);
   }
 }
 

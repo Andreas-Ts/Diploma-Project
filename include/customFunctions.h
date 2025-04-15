@@ -18,6 +18,12 @@ void loopSensor(sensorMessage *message);
 
 void loopBME680(sensorMessage *message);
 
+void printMessageInformation(const sensorMessage message);
+
+void printBME680messageInformation(const informationFromBME680 sensorBME680);
+
+void printCCS811messageInformation(const informationFromCCS811 sensorCCS811);
+
 void loopCCS811(sensorMessage *message);
 
 // Helper functions declarations for the bme680 bsec
@@ -92,13 +98,15 @@ int getByteSizeOfTypeOfSensor(recognized_Sensor sensor);
 ///        or false with the word FINISHED
 /// @param waitingResponse  waitingResponse constant of the device
 /// @param timeLastMessageWasSend pointer to the timeLastMessageWasSend constant of the device
-void setTimerAndFlag(Setting setting);
+///void setTimerAndFlag(Setting setting);
 
 /// @brief We check if the time the device has spent waiting is over the thereshold set 
 /// by maxWaitingTime, constant of the device
 /// @param timeLastMessageWasSend the timeLastMessageWasSend constant of the device 
 /// @return true if the time passed exceeded the thereshold, false if not.
 bool checkForInactivityOverThreshold(const unsigned long timeLastMessageWasSend,const unsigned long threshold);
+
+bool isTimeToSendMessage(Setting settingOfSensor, const unsigned long timeLastMessageWasSend, const float minimumTimeToPass);
 
 /// @brief we send check if some minimum time have passed before sending a message
 /// @param timeLastMessageWasSend we initialize it at loop sensor
@@ -108,7 +116,11 @@ bool isTimeToSendMessage(Setting settingOfSensor,const unsigned long timeLastMes
 /// @brief Read the response of the python script when it has succesfully or not read the input
 void ReadFromSerial();
 
-ResponseMessageFromReceiver createResponseFromReceiver(const int sensorMessage,bool writtenIntoQueue,bool writtenIntoPython);
+void setFlag(Setting setting);
+
+void setTimer();
+
+ResponseMessageFromReceiver createResponseFromReceiver(const int sensorMessage, bool writtenIntoQueue, bool writtenIntoPython);
 
 /// @brief take a recognized_Sensor enum variable and makes it string
 /// @param sensor recognized_Sensor enum variable
@@ -146,6 +158,10 @@ bool isQueueFull(MessageQueue* queue);
 /// @param message the message we want to insert into the queue
 /// @return true if it the insertion was successful,false if not (probably because of full queue)
 bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message);
+
+bool checkIfSameIdAlreaExitstsIntoTheQueue(MessageQueue *receiverQueue, int id);
+
+bool insertMessageIntoSerial(MessageQueue *receiverQueue, bool *messageInSerialPending, int *idOfLastMessageInsertedIntoSerial, unsigned long *timeLastMessageWasSendInSerial);
 
 /// @brief Take the front message of the queue and send it into the serial calbe
 /// @param queue the queue that handles the messages

@@ -1,9 +1,8 @@
 #ifndef structures
 #define structures
-
+//#pragma pack(1)
 #include "enums.h"
 #include "constants.h"
-
 //It has a lot of variables the bme680
 typedef struct informationFromBME680 {
     /**
@@ -30,7 +29,7 @@ typedef struct informationFromBME680 {
       *   |                            |   2   | Medium accuracy: auto-trimming ongoing                                                                                                                        |
       *   |                            |   3   | High accuracy                                                                                                                                                 |
       */     
-   uint8_t iaqAccuracy;
+   int iaqAccuracy;
  
    // Unscaled Index for Air Quality estimate
    float staticIaq;
@@ -129,7 +128,7 @@ typedef struct informationFromBME680 {
  }informationFromBME680;
 
 
- typedef struct informationFromCSS811 {
+ typedef struct informationFromCCS811 {
     /**************************************************************************/
  /*!
      @brief  returns the stored estimated carbon dioxide measurement. This does
@@ -137,7 +136,7 @@ typedef struct informationFromBME680 {
      @returns eCO2 measurement as 16 bit integer
  */
  /**************************************************************************/
- uint16_t eCO2;
+ uint32_t eCO2;
  /**************************************************************************/
  /*!
      @brief  returns the stored total volatile organic compounds measurement.
@@ -145,13 +144,13 @@ typedef struct informationFromBME680 {
      @returns TVOC measurement as 16 bit integer
  */
  /**************************************************************************/
- uint16_t TVOC;
-}informationFromCSS811;
+ uint32_t TVOC;
+}informationFromCCS811;
 
 union informationFromSensorUnion {
       
   informationFromBME680 sensorBME680;
-  informationFromCSS811 sensorCSS811;
+  informationFromCCS811 sensorCCS811;
 };
 
 typedef struct sensorMessage {

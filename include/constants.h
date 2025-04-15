@@ -79,6 +79,9 @@ extern const  unsigned long maxWaitingTimeSerial;
 
 extern int  idOfLastMessageInsertedIntoSerial;
 
+//It is known only Locally.Time since we send the last message in order not to overflow the receiver.
+extern  unsigned long timeLastMessageWasSendInSerial;
+
 //Check if we have a message pending at Serial
 
 extern bool messageInSerialPending;

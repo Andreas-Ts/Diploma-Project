@@ -13,7 +13,7 @@ bool createMessageQueue(MessageQueue *receiverQueue,const int sizeOfQueue) {
   receiverQueue = (MessageQueue*) malloc(sizeof(MessageQueue));
   */
   if (receiverQueue == NULL) {
-      perror("Failed to allocate outer structure");
+      perror("Failed to allocate memory");
       errLeds();
   }
   /*
@@ -81,20 +81,39 @@ bool isQueueFull(MessageQueue* receiverQueue){
     return false;
   }
 }
+ //This function controls the oversaturation of the queue from one device
+ bool checkIfSameIdAlreaExitstsIntoTheQueue(MessageQueue* receiverQueue,int id){
+  bool idExists = false;
+  for (int i=0;i<receiverQueue->currentSize;i++){
+      if (receiverQueue->messages[i].id == id){
+        idExists = true;
+      }
+  }
 
+  return idExists;
+}
 
 
 bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message){
-   // printQueueElements(receiverQueue);
+    //printQueueElements(receiverQueue);
+    
     if (isQueueFull(receiverQueue)){
       // Serial.println("The Queue insertion was not succesful");
       return false;
     }
+    /*
+    if (checkIfSameIdAlreaExitstsIntoTheQueue( receiverQueue,message.id)){
+      return false;
+    }
+    */
+    //output = "The message is " + String(sizeof(message)) + " bytes";
+    //Serial.println(output);
+    //printMessageInformation(message);
     //Insert the message,increase the rear flag one value and increase the current size.
     //We consider that the zero element at the start is the front element
     //As we use mod operator, the two counters are going back and forth into a circle of the MAXSIZE - 1 but the follow an incremental way.
     receiverQueue->messages[receiverQueue->rear] = message;
-    // output = "Id of the new message is:" + String(receiverQueue->messages[receiverQueue->rear].id) +" and sensor type:" +String(receiverQueue->messages[receiverQueue->rear].sensor);
+    
 
     receiverQueue->rear = (receiverQueue->rear + 1) % receiverQueue->maxSize;
     receiverQueue->currentSize++;
@@ -104,8 +123,10 @@ bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message){
     return true;
 
   }
-bool insertMessageIntoSerial(MessageQueue* receiverQueue,bool *messageInSerialPending,int *idOfLastMessageInsertedIntoSerial){
- // printQueueElements(receiverQueue);
+ 
+  bool insertMessageIntoSerial(MessageQueue* receiverQueue,bool *messageInSerialPending,int *idOfLastMessageInsertedIntoSerial,
+  unsigned long *timeLastMessageWasSendInSerial){
+  //printQueueElements(receiverQueue);
 
     if (isQueueEmpty(receiverQueue)) {return false;}
 
@@ -118,17 +139,16 @@ bool insertMessageIntoSerial(MessageQueue* receiverQueue,bool *messageInSerialPe
     receiverQueue->currentSize--;
 
      //give the necessary variables for the receiver loop
-     *messageInSerialPending = true;
-     *idOfLastMessageInsertedIntoSerial = message.id; 
-
+    
     //debug message
     // output = "sensor:" + String(message.sensor )+ " id:" + String(message.id);
-    // Serial.println(output);
-
+      // Serial.println(output);
+    //printMessageInformation(message);
     sendDataToSerial(message);
 
-   
-    
+    *messageInSerialPending = true;
+    *idOfLastMessageInsertedIntoSerial = message.id; 
+     *timeLastMessageWasSendInSerial = millis(); 
    
     return true;
   }

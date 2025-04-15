@@ -25,7 +25,7 @@ void setup() {
  }
 
  if (setupCCS811()==true){ 
-    sensorLocatedIntoDevice = CSS811;
+    sensorLocatedIntoDevice = CCS811;
  }
    
  //If we still don't have a sensor we recognized,stop the loop
@@ -58,7 +58,7 @@ void setup() {
       setupSender();
   } 
   //wait 10 seconds to wait to open the python script
-  delay(10 *1000);
+  //delay(10 *1000);
 }
 
 void loop() {

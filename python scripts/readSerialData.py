@@ -3,10 +3,18 @@ import struct
 import os
 import csv
 import sys
+import time
 from zoneinfo  import ZoneInfo
 from datetime import datetime, timedelta
 
+#number of devices the network has
+NUMBER_OF_DEVICES = 3
 
+#different types of sensors the network has
+SENSOR_TYPES = 2
+
+#the size of the biggest message we are going to send
+MAX__MESSAGE_SIZE = 64
 
 # Replace 'Your/Timezone' with your actual timezone, e.g., 'America/New_York'
 local_timezone = ZoneInfo('Europe/Athens')
@@ -30,16 +38,9 @@ try:
     # Ensure the 'data' folder exists
     os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
     
-    #for bme680 
-    format_struct = "<iifBffffffffffff"
-    expected_size = struct.calcsize(format_struct)  # Compute expected size
-    print(f"Expected struct size for the BME680 are {expected_size} bytes")
-
-    format_struct = "<iiHH"
-    expected_size = struct.calcsize(format_struct)  # Compute expected size
-    print(f"Expected struct size for the CSS811 are {expected_size} bytes")
-
-    ser = serial.Serial(serial_port, baud_rate, timeout=1,write_timeout =1)
+  
+    
+    ser = serial.Serial(serial_port, baud_rate, timeout=2,write_timeout =3)
     print(f"Connected to {serial_port}")
     
 
@@ -48,6 +49,7 @@ try:
 
     file_exists = os.path.exists(csv_file_path)
     print(f"File exists: {file_exists}")
+    ser.reset_input_buffer()
     if not file_exists:
         with open(csv_file_path, mode='w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file)
@@ -59,58 +61,86 @@ try:
     with open(csv_file_path, mode='a', newline='') as csv_file:
         #create the writer based of the dictionary that has all the possible variables
         csv_writer = csv.DictWriter(csv_file,fieldnames=list_of_csv_variables)
-
+        #everytime we use continue we stop the loop, and rerun,we suposse it will be hard to fit all the structures by accident
+        read_something = False
         while True:
-            data_bytes = ser.read(8)
+           
+            #first we read all the message
+            data_bytes = ser.read(MAX__MESSAGE_SIZE)
+
             length_of_read_message = len(data_bytes)
-            if (length_of_read_message>0):
-                print(f"I received a message of { length_of_read_message} bytes.")
-            #if we received all the input
-            if length_of_read_message == 8:
-                #get current date and time
-                currentDateAndTime = datetime.now(local_timezone)
-                current_date = currentDateAndTime.date()
-                current_time = currentDateAndTime.time()
-                #create a dictionary for all potential variables
-                data_dictionary = {variable: None for variable in list_of_csv_variables}
-                
-                #Assign date,time,id and Sensor based of the interger value
-                data_dictionary["Date"] = current_date
-                data_dictionary["Time"] = current_time
-                #first we read the id and sensor type
-                format_struct = "<ii"
-                struct_unpacked_data =  struct.unpack(format_struct,data_bytes)
-                data_dictionary['Id'] = struct_unpacked_data[0]
-                #enum types in c are interger
-                sensor_used = "NO-KNOWN-SENSOR"
-                print(f"ID is {struct_unpacked_data[0]}")
-                print(f" Sensor is { struct_unpacked_data[1] }")
-                if (struct_unpacked_data[1]==1):
-                    sensor_used = "BME680"
-                    format_struct = "<fBffffffffffff"
-                if (struct_unpacked_data[1]==2):
-                    sensor_used = "CSS811"
-                    format_struct = "<HH"
-                data_dictionary['Sensor'] = sensor_used
-                data_bytes = ser.read(struct.calcsize(format_struct))
-                
-                struct_unpacked_data =struct.unpack_from(format_struct,data_bytes)
-                
-                corresponding_variables_that_will_insert_values = [key for key in data_dictionary if key.startswith(sensor_used)]
+            #if it isn't a full message
+            if length_of_read_message < MAX__MESSAGE_SIZE:
+                ser.reset_input_buffer()
 
-                for variable,value in zip(corresponding_variables_that_will_insert_values,struct_unpacked_data):
-                    data_dictionary[variable]=value
+                continue
+            #grab the id and sensor type first
+            format_struct = "<ii"
+            struct_unpacked_data =  struct.unpack(format_struct,data_bytes[:8]) 
+            id = struct_unpacked_data[0]  
+            sensor_type = struct_unpacked_data[1]  
+            #check if id is legal
 
-                # Write data row into CSV file
-                csv_writer.writerow(data_dictionary)
-                
-                csv_file.flush()
-                # Also print the data for debugging
-                print(data_dictionary)
-                #write a response back into the esp32 to confirm the transition
-                #ser.write(True)
-                
+            if (abs(id) >= NUMBER_OF_DEVICES):
+                #clear the buffer
+                ser.reset_input_buffer()
+                continue
+
+            #check if sensor type is legal
+            if (abs(sensor_type) > SENSOR_TYPES):
+                ser.reset_input_buffer()
+
+                continue
+           
+            #enum types in c are interger so we will match each interger value with its sensor
+            sensor_used = "NO-KNOWN-SENSOR"
             
+            #we use the limit_based_of_sensor as a way to get the actual useful information for sensors type less than the max size message
+            #We start for 8 bytes
+            if (sensor_type==1):
+                sensor_used = "BME680"
+                format_struct = "<fBffffffffffff"
+                limit_based_of_sensor = MAX__MESSAGE_SIZE
+            elif (sensor_type==2):
+                sensor_used = "CCS811:"
+                format_struct = "<II"
+                limit_based_of_sensor = 16 #WE only send 2 bytes
+            else :
+                print("Not correct sensor type")
+                ser.reset_input_buffer()
+                continue      
+
+            struct_unpacked_data =struct.unpack_from(format_struct,data_bytes[8:limit_based_of_sensor])
+
+             #create a dictionary for all potential variables as we have got the id,sensor type and the payload succesfully
+            data_dictionary = {variable: None for variable in list_of_csv_variables}
+
+            #get current date and time
+            currentDateAndTime = datetime.now(local_timezone)
+            current_date = currentDateAndTime.date()
+            current_time = currentDateAndTime.time()
+            #Assign date,time,id and Sensor based of the interger value
+            data_dictionary["Date"] = current_date
+            data_dictionary["Time"] = current_time
+            data_dictionary["Id"] = id
+            data_dictionary["Sensor"] = sensor_used
+            
+            corresponding_variables_that_will_insert_values = [key for key in data_dictionary if key.startswith(sensor_used)]
+
+            for variable,value in zip(corresponding_variables_that_will_insert_values,struct_unpacked_data):
+                data_dictionary[variable]=value
+            ser.reset_input_buffer()
+
+            # Write data row into CSV file
+            csv_writer.writerow(data_dictionary)
+            
+            csv_file.flush()
+            # Also print the data for debugging
+            print(data_dictionary)
+            #write a response back into the esp32 to confirm the transition
+          
+    
+
 except serial.SerialException as e:
     print(f"Error: {e}")
    
