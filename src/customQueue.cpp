@@ -120,11 +120,13 @@ bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message){
     //debug message
     // Serial.println(output);
     // Serial.println("The Queue insertion was succesful");
+   // printQueueElements(receiverQueue);
+
     return true;
 
   }
  
-  bool insertMessageIntoSerial(MessageQueue* receiverQueue,bool *messageInSerialPending,int *idOfLastMessageInsertedIntoSerial,
+bool insertMessageIntoSerial(MessageQueue* receiverQueue,bool *messageInSerialPending,int *idOfLastMessageInsertedIntoSerial,
   unsigned long *timeLastMessageWasSendInSerial){
   //printQueueElements(receiverQueue);
 

@@ -1,5 +1,6 @@
 
 #include "custom_headers.h"
+#include "customFunctions.h"
 
 bool readMacAddress(){
     esp_err_t ret = esp_wifi_get_mac(WIFI_IF_STA, my_MAC);
@@ -49,6 +50,15 @@ bool isTheReceiverESP32NOW(const uint8_t *MAC_ADDRESS){
   }  
   else {
     return false;
+  }
+}
+
+void sendMessagesToAllOtherDevices(const uint8_t *MAC_LIBRARY[],int id,const uint8_t* response){
+  for (int i =0;i < ESP32_TOTAL_DEVICES_NUMBER;i++){
+    //send messages to all devices except myself
+      if (i != id){
+        esp_now_send(MAC_LIBRARY[i],response, sizeof(*response)); 
+      }
   }
 }
 

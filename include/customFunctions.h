@@ -68,6 +68,7 @@ bool readMacAddress();
 /// @param library_position the position that the MAC address is located into the library
 void setReceiverMAC(const uint8_t *MAC_LIBRARY[],const int library_position);
 
+void sendMessagesToAllOtherDevices(const uint8_t *MAC_LIBRARY[], int id, const uint8_t *response);
 
 /// @brief print the MAC address into a more easily readable form
 /// @param MAC_ADDRESS the MAC address we want to print

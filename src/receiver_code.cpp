@@ -78,7 +78,7 @@ void loopReceiver(){
             else{ //send message into the corresponsing peer device that the insertion was happened
                
                 uint8_t response = 0;
-                esp_now_send(MAC_LIBRARY[idOfLastMessageInsertedIntoSerial],&response, 1); 
+                esp_now_send(MAC_LIBRARY[idOfLastMessageInsertedIntoSerial],&response, sizeof(response)); 
             }
 
         }
@@ -95,22 +95,19 @@ void loopReceiver(){
     // output = " Serial.availableForWrite is " +  String(Serial.availableForWrite());
     // Serial.println(output);
     //finally if queue is not empty,another message is not pending and we have enough space.send a message into serial
-    if (isQueueEmpty(&receiverQueue) == false
-    and Serial.availableForWrite() > MINIMUM_BYTE_TO_WRITE_AT_SERIAL
-   ){
-        insertMessageIntoSerial(&receiverQueue,&messageInSerialPending,&idOfLastMessageInsertedIntoSerial,&timeLastMessageWasSendInSerial);
-        if (idOfLastMessageInsertedIntoSerial == id){ //receiver send the last message
-            setFlag(NO_WAIT);
-       
-
+    if (isQueueFull(&receiverQueue) == true
+    ){  
+        while (!isQueueEmpty(&receiverQueue)){
+            insertMessageIntoSerial(&receiverQueue,&messageInSerialPending,&idOfLastMessageInsertedIntoSerial,&timeLastMessageWasSendInSerial);
         }
-        else{ //send message into the corresponsing peer device that the insertion was happened
+        setFlag(NO_WAIT); //set flag to not wait
+        uint8_t response = 1;
+        sendMessagesToAllOtherDevices(MAC_LIBRARY,id,&response); //set the response to all other devices
+                       
            
-            uint8_t response = 1;
-            esp_now_send(MAC_LIBRARY[idOfLastMessageInsertedIntoSerial],&response, 1); 
         }
     }
-}
+
 
 void OnDataSentAsReceiver(const uint8_t *mac_addr, esp_now_send_status_t status) {
     //We don't care what happen with the peer

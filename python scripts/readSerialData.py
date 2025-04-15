@@ -106,7 +106,7 @@ try:
                 format_struct = "<II"
                 limit_based_of_sensor = 16 #WE only send 2 bytes
             else :
-                print("Not correct sensor type")
+                print(f"Not correct sensor type the number is {sensor_type}")
                 ser.reset_input_buffer()
                 continue      
 
