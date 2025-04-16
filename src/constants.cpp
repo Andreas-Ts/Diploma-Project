@@ -41,8 +41,8 @@ Setting settingOfSensor = NO_WAIT;
 
 unsigned long timeLastMessageWasSend = 0;
 unsigned const long timeLastMessageWasSendSerial = 0;
-unsigned const long maxWaitingTimeSerial = 1000 * 120; //30 seconds
-unsigned const long maxWaitingTime = 60000 * 10; //60000 milliseconds is 1 minute, so 1 multiply them by 10
+unsigned const long maxWaitingTimeSerial = 60000 * 1; //30 seconds
+unsigned const long maxWaitingTime = 60000 * 1; //60000 milliseconds is 1 minute, so 1 multiply them by 10
 
 recognized_Sensor sensorLocatedIntoDevice = NO_KNOWN_SENSOR;
 

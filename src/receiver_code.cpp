@@ -28,6 +28,11 @@ void loopReceiver(){
     //the other will stop as well eventually of their own
     if (checkForInactivityOverThreshold(timeLastMessageWasSend,maxWaitingTimeSerial)){
         Serial.println("Inactivity occured");
+        output = "Time last Message was Send" + String(timeLastMessageWasSend);
+        Serial.println(output);
+        output = "Time now" + String(millis());
+        Serial.println(output);
+
         errLeds();
       }
     

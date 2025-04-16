@@ -175,7 +175,7 @@ bool setupBME680(){
     else if(message.sensor == CCS811){
       printCCS811messageInformation(message.informationFromSensor.sensorCCS811);
     }
-    
+    Serial.println();
 
     
   }

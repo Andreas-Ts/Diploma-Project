@@ -26,7 +26,7 @@ baud_rate = 115200
 # Path to save the CSV file
 csv_file_path = os.path.join('data', 'sensor_data.csv')  # This points to root_project_file/data/sensor_data.csv
 
-list_of_csv_variables = ('Date','Time','Id','Sensor',
+list_of_csv_variables = ('DateTime','Id','Sensor',
                          "BME680:IAQ","BME680:IAQ ACCURACY","BME680:IAQ STATIC","BME680:co2Equivalent",
                          "BME680:breathVocEquivalent","BME680:rawTemperature","BME680:pressure","BME680:rawHumidity",
                          "BME680:gasResistance","BME680:stabStatus","BME680:runInStatus","BME680:temperature",
@@ -120,8 +120,8 @@ try:
             current_date = currentDateAndTime.date()
             current_time = currentDateAndTime.time()
             #Assign date,time,id and Sensor based of the interger value
-            data_dictionary["Date"] = current_date
-            data_dictionary["Time"] = current_time
+            data_dictionary["DateTime"] = datetime.isoformat(currentDateAndTime)
+            
             data_dictionary["Id"] = id
             data_dictionary["Sensor"] = sensor_used
             
@@ -129,14 +129,13 @@ try:
 
             for variable,value in zip(corresponding_variables_that_will_insert_values,struct_unpacked_data):
                 data_dictionary[variable]=value
-            ser.reset_input_buffer()
 
             # Write data row into CSV file
             csv_writer.writerow(data_dictionary)
             
             csv_file.flush()
             # Also print the data for debugging
-            print(data_dictionary)
+            #print(data_dictionary)
             #write a response back into the esp32 to confirm the transition
           
     
