@@ -21,9 +21,13 @@ void loopSender(){
     Serial.println("Some error occured");
       errLeds();
   }
+  loopSensor(&message);
+
   if (settingOfSensor == NO_WAIT){
+    
       if (isTimeToSendMessage(settingOfSensor,timeLastMessageWasSend)){
-        loopSensor(&message);
+        setTimer();
+        setFlag(WAIT_FOR_RESPONSE);
         esp_now_send(ESP32_MAC_OF_RECEIVER,(uint8_t *) &message, sizeof(sensorMessage)); 
       }
      

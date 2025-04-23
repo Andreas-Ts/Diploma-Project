@@ -65,13 +65,16 @@ void loopReceiver(){
         messageInSerialPending = false;
     } 
     
-   
-  
+    loopSensor(&message);  
+
     //check if the receiver waits to send a message and check for the queue for better results
     if (settingOfSensor == NO_WAIT and isQueueFull(&receiverQueue) == false 
     and (isTimeToSendMessage(settingOfSensor,timeLastMessageWasSend)))
     {
-        loopSensor(&message);  
+        //printMessageInformation(message);
+
+        setTimer();
+        setFlag(WAIT_FOR_RESPONSE);
         //output = "Id of the new message is:" + String(message.id) +" and sensor type:" +String(message.sensor);
         //Serial.println(output);
         if (!insertMessageIntoQueue(&receiverQueue,message)){

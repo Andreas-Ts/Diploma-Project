@@ -46,7 +46,7 @@ bool setupBME680(){
       BSEC_OUTPUT_GAS_PERCENTAGE
     };
   
-    iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_CONT);
+    iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
     checkIaqSensorStatus(false);
   
     // Print the header
@@ -77,8 +77,7 @@ bool setupBME680(){
       if (message->sensor == CCS811){
          loopCCS811(message);
       }
-      setTimer();
-      setFlag(WAIT_FOR_RESPONSE);
+      
   }
   
   void loopBME680(sensorMessage *message){
@@ -175,9 +174,15 @@ bool setupBME680(){
     else if(message.sensor == CCS811){
       printCCS811messageInformation(message.informationFromSensor.sensorCCS811);
     }
-    Serial.println();
+    Serial.println();    
+  }
 
-    
+
+  void loadBME680state(){
+
+  }
+  void getBME680state(){
+
   }
 
   void printBME680messageInformation(const informationFromBME680 sensorBME680){

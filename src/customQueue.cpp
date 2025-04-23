@@ -108,7 +108,7 @@ bool insertMessageIntoQueue(MessageQueue* receiverQueue,sensorMessage message){
     */
     //output = "The message is " + String(sizeof(message)) + " bytes";
     //Serial.println(output);
-    //printMessageInformation(message);
+    printMessageInformation(message);
     //Insert the message,increase the rear flag one value and increase the current size.
     //We consider that the zero element at the start is the front element
     //As we use mod operator, the two counters are going back and forth into a circle of the MAXSIZE - 1 but the follow an incremental way.

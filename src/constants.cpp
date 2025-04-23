@@ -48,10 +48,10 @@ recognized_Sensor sensorLocatedIntoDevice = NO_KNOWN_SENSOR;
 
 sensorMessage message;
 //Frequency of messages we want to have as minimum for normal workflow
-const float frequencyMinimum = 2.0 *1000;
+const float frequencyMinimum = 4 *1000;
 
 //Frequency when a not normal behavior occurs,as a full queue.
-const float frequencyWhenFailureOccurs = 5.0 *1000;
+const float frequencyWhenFailureOccurs = 6.0 *1000;
 
 
 //at first is false as we don't have sent any message 
