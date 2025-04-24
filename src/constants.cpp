@@ -28,9 +28,7 @@ int MINIMUM_BYTE_TO_WRITE_AT_SERIAL = sizeof(sensorMessage);
 
 //const float SEALEVELPRESSURE_HPA = 1030;
 
-Bsec iaqSensor;
-String output;
-Adafruit_CCS811 ccs;
+
 
 esp_now_peer_info_t peerInfo;
 
@@ -44,11 +42,10 @@ unsigned const long timeLastMessageWasSendSerial = 0;
 unsigned const long maxWaitingTimeSerial = 60000 * 1; //30 seconds
 unsigned const long maxWaitingTime = 60000 * 1; //60000 milliseconds is 1 minute, so 1 multiply them by 10
 
-recognized_Sensor sensorLocatedIntoDevice = NO_KNOWN_SENSOR;
 
 sensorMessage message;
 //Frequency of messages we want to have as minimum for normal workflow
-const float frequencyMinimum = 4 *1000;
+const float frequencyMinimum = 1.1 *1000;
 
 //Frequency when a not normal behavior occurs,as a full queue.
 const float frequencyWhenFailureOccurs = 6.0 *1000;

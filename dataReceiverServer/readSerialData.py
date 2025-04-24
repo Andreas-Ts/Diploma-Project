@@ -2,10 +2,8 @@ import serial
 import struct
 import os
 import csv
-import sys
-import time
 from zoneinfo  import ZoneInfo
-from datetime import datetime, timedelta
+from datetime import datetime
 
 #number of devices the network has
 NUMBER_OF_DEVICES = 3

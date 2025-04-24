@@ -14,9 +14,11 @@ bool setupBME680();
 
 bool setupCCS811();
 
-void loopSensor(sensorMessage *message);
+bool loopSensor();
 
-void loopBME680(sensorMessage *message);
+bool loopBME680();
+
+bool loopCCS811();
 
 void printMessageInformation(const sensorMessage message);
 
@@ -24,7 +26,6 @@ void printBME680messageInformation(const informationFromBME680 sensorBME680);
 
 void printCCS811messageInformation(const informationFromCCS811 sensorCCS811);
 
-void loopCCS811(sensorMessage *message);
 
 // Helper functions declarations for the bme680 bsec
 bool checkIaqSensorStatus(bool atSetup);
@@ -80,8 +81,10 @@ void printMAC(const uint8_t MAC_ADDRESS[6]);
 /// @return true if it is the receiver, false if it is not. 
 bool isTheReceiverESP32NOW(const uint8_t MAC_ADDRESS[6]);
 
+void initializemessageJSON();
+
 /// @brief We sent data from the receiver to the personal computer that is connected through a type b cable
-/// @param dataToBeSentToSerial the data that is going to be sent from the esp32 device to the computer. 
+/// @param dataToBeSentToSerial the data that is going to be sent from the esp32 device to the computer.
 /// @param sensor Sensor we use in order to set the number of bytes we are going to send
 /// @return True if data was written into the serial cable,false otherwise.
 bool sendDataToSerial(const sensorMessage messageToBeInsertedToSerial);

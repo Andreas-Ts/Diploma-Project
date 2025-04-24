@@ -62,7 +62,7 @@ extern const float frequencyMinimum;
 extern const float frequencyWhenFailureOccurs;
 
 
-extern recognized_Sensor sensorLocatedIntoDevice;
+extern String sensorLocatedIntoDevice;
 
 //It is known only Locally.Time since we send the last message in order not to overflow the receiver.
 extern  unsigned long timeLastMessageWasSend;
@@ -86,5 +86,9 @@ extern  unsigned long timeLastMessageWasSendInSerial;
 
 extern bool messageInSerialPending;
 
+extern JsonDocument messageJSON;
 
+extern const char* ssid ;
+extern const char* password ;
+extern const char* serverUrl ;
 #endif

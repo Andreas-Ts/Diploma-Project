@@ -1,79 +1,103 @@
 #include "custom_headers.h"
 
+Bsec iaqSensor;
+String output;
+Adafruit_CCS811 ccs;
+String sensorLocatedIntoDevice = "NO_KNOWN_SENSOR";
+
+JsonDocument messageJSON;
+
+// Replace with your network credentials
+const char* ssid = "COSMOTE-609943";
+const char* password = "n9e6bmreeax2x7u3";
+
+// Server URL
+const char* serverUrl = "http://192.168.1.5:8080";  // Your computer's local IP
+
+
 void setup() {
-   Serial.begin(115200);
-  // Set device as a Wi-Fi Station
-  WiFi.mode(WIFI_STA);
-  delay(1000);
-  pinMode(LED_BUILTIN, OUTPUT);
-  readMacAddress();
-  setReceiverMAC(MAC_LIBRARY,idOfTheReceiver);
-  int potential_id = chooseIDBasedOfMAC(MAC_LIBRARY);
-  if (potential_id<0){
+  Serial.begin(115200);
+
+  // Connect to Wi-Fi
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to Wi-Fi");
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(1000);
+      Serial.print(".");
+  }
+  id = chooseIDBasedOfMAC(MAC_LIBRARY);
+  if (id<0){
     Serial.println("Problem with reading the MCA address.");
     errLeds();
   }
-  else{
-    id =  potential_id;
-    message.id = id;
-  }
-
  
-  // Setup Sensor with enum type based of the sensor we have.You can put multiple type
+  Serial.println("\nConnected to Wi-Fi");
+  //for error handling
+  pinMode(LED_BUILTIN, OUTPUT);
+ 
+
+ // Setup Sensor with enum type based of the sensor we have.You can put multiple type
  if (setupBME680()==true){
-    sensorLocatedIntoDevice = BME680;
+    sensorLocatedIntoDevice = "BME680";
  }
 
  if (setupCCS811()==true){ 
-    sensorLocatedIntoDevice = CCS811;
+    sensorLocatedIntoDevice = "CCS811";
  }
    
  //If we still don't have a sensor we recognized,stop the loop
- if (sensorLocatedIntoDevice == NO_KNOWN_SENSOR){
+ if (sensorLocatedIntoDevice=="NO_KNOWN_SENSOR"){
  
       Serial.println("No known sensor was found");
       errLeds();
  } 
- //output = "My sensor is the "+ enum_recognized_Sensor_to_Strings(sensorLocatedIntoDevice);
- //Serial.println(output);
- //Set the variables into the Sensor Message and what variable at union we will use
- message.id = id;
- message.sensor = sensorLocatedIntoDevice;
- 
-  // Init ESP-NOW
-  if (esp_now_init() != ESP_OK) {
-    Serial.println("Error initializing ESP-NOW");
-    errLeds();
-  }
-  peerInfo.channel = 0;  
-  peerInfo.encrypt = false;
- 
-  delay(10);
-
-
-  if (isTheReceiverESP32NOW(my_MAC)){
-      setupReceiver();
-  }
-  else{
-      setupSender();
-  } 
-  //wait 10 seconds to wait to open the python script
-  //delay(10 *1000);
+ Serial.println("I have the "+ sensorLocatedIntoDevice + " sensor");
+ //initialize the message json
+  initializemessageJSON();
 }
 
 void loop() {
-  if (is_Everything_Ok == false){
-    Serial.println("An error occurred into the program. Shutdown the device");
-  }
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
 
-  do {} while (is_Everything_Ok == false);
+    if (loopSensor())
+    { // Begin HTTP connection
+      Serial.println("Sending data to server...");
+      http.begin(serverUrl);
+      http.addHeader("Content-Type", "application/json");
+      http.setTimeout(5000); // Set timeout to 5 seconds
+      // Serialize the  JSON
+      String messageJSONString;
+      serializeJsonPretty(messageJSON, messageJSONString);
+     
+      Serial.println(messageJSONString);
+      // Send POST request
+      int httpResponseCode = http.POST(messageJSONString);
+
+      // Print response
+      if (httpResponseCode > 0) {
+          String response = http.getString();
+          Serial.println("Response:");
+          Serial.println(response);
+      } else {
+          Serial.print("POST failed. Error: ");
+          Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
+        
+          flashLeds();//flash to show fail at post
+      }
+
+      // End HTTP connection
+      http.end();
+      //clear the field message 
+      initializemessageJSON();
+    }
   
-  if (isTheReceiverESP32NOW(my_MAC)){
-   loopReceiver();
-  }
-  else{
-   loopSender();
-   }
+} else {
+    Serial.println("Wi-Fi not connected");
+    delay(10000); // Wait 10 seconds before checking agains
+
+}
+
 }
 
 

@@ -23,7 +23,7 @@ int getByteSizeOfTypeOfSensor(const recognized_Sensor sensor){
 bool setupBME680(){
   
     iaqSensor.begin(BME68X_I2C_ADDR_HIGH, Wire);
-    output = "\nBSEC library version " + String(iaqSensor.version.major) + "." + String(iaqSensor.version.minor) + "." + String(iaqSensor.version.major_bugfix) + "." + String(iaqSensor.version.minor_bugfix);
+    output = "\nBSEC library version " + String(iaqSensor.version.major) + "," + String(iaqSensor.version.minor) + "," + String(iaqSensor.version.major_bugfix) + "," + String(iaqSensor.version.minor_bugfix);
    // Serial.println(output);
     //Perhaps the bme680 doesn't exist so we return false
     if (checkIaqSensorStatus(true) == false){
@@ -46,7 +46,7 @@ bool setupBME680(){
       BSEC_OUTPUT_GAS_PERCENTAGE
     };
   
-    iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
+    iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_CONT);
     checkIaqSensorStatus(false);
   
     // Print the header
@@ -69,49 +69,65 @@ bool setupBME680(){
     while(!ccs.available());
     return true;
   }
-  
-  void loopSensor(sensorMessage *message){
-      if (message->sensor == BME680){
-         loopBME680(message);
+  ///This function is used to loop the sensor and get the data from it. It will be called in the main loop of the code.
+  ///It will check if the sensor is BME680 or CCS811 and call the appropriate function to get the data from it.
+  ///It will also check if the data is new and if it is, it will tell the loop to send message into the wifi
+  bool loopSensor(){
+    bool haveNewData = false;
+
+      if ( sensorLocatedIntoDevice== "BME680"){
+        haveNewData = loopBME680();
+
       }
-      if (message->sensor == CCS811){
-         loopCCS811(message);
+      if (sensorLocatedIntoDevice== "CCS811"){
+        haveNewData = loopCCS811();
       }
-      
+    Serial.println(String(haveNewData));
+    return haveNewData;
   }
   
-  void loopBME680(sensorMessage *message){
+  bool loopBME680(){
+    bool haveNewData = false; 
+
     if (iaqSensor.run()) { // If new data is available
-     message->informationFromSensor.sensorBME680.iaq  = iaqSensor.iaq;
-     message->informationFromSensor.sensorBME680.iaqAccuracy  = iaqSensor.iaqAccuracy;
-     message->informationFromSensor.sensorBME680.staticIaq  = (int) iaqSensor.staticIaq;
-     message->informationFromSensor.sensorBME680.co2Equivalent  = iaqSensor.co2Equivalent;
-     message->informationFromSensor.sensorBME680.breathVocEquivalent  = iaqSensor.breathVocEquivalent;
-     message->informationFromSensor.sensorBME680.rawTemperature  = iaqSensor.rawTemperature;
-     message->informationFromSensor.sensorBME680.pressure  = iaqSensor.pressure;
-     message->informationFromSensor.sensorBME680.rawHumidity  = iaqSensor.rawHumidity;
-     message->informationFromSensor.sensorBME680.gasResistance  = iaqSensor.gasResistance;
-     message->informationFromSensor.sensorBME680.stabStatus  = iaqSensor.stabStatus;
-     message->informationFromSensor.sensorBME680.runInStatus  = iaqSensor.runInStatus;
-     message->informationFromSensor.sensorBME680.temperature  = iaqSensor.temperature;
-     message->informationFromSensor.sensorBME680.humidity  = iaqSensor.humidity;
-     message->informationFromSensor.sensorBME680.gasPercentage  = iaqSensor.gasPercentage;
+      haveNewData = true; 
+
+
+      messageJSON["BME680:iaq"] = iaqSensor.iaq;
+      messageJSON["BME680:iaqAccuracy"] = iaqSensor.iaqAccuracy;
+      messageJSON["BME680:staticIaq"] = iaqSensor.staticIaq;
+      messageJSON["BME680:co2Equivalent"] = iaqSensor.co2Equivalent;
+      messageJSON["BME680:breathVocEquivalent"] = iaqSensor.breathVocEquivalent;
+      messageJSON["BME680:rawTemperature"] = iaqSensor.rawTemperature;
+      messageJSON["BME680:pressure"] = iaqSensor.pressure;
+      messageJSON["BME680:rawHumidity"] = iaqSensor.rawHumidity;
+      messageJSON["BME680:gasResistance"] = iaqSensor.gasResistance;
+      messageJSON["BME680:stabStatus"] = iaqSensor.stabStatus;
+      messageJSON["BME680:runInStatus"] = iaqSensor.runInStatus;
+      messageJSON["BME680:temperature"] = iaqSensor.temperature;
+      messageJSON["BME680:humidity"] = iaqSensor.humidity;
+      messageJSON["BME680:gasPercentage"] = iaqSensor.gasPercentage;
+
     } 
     checkIaqSensorStatus(false);
+    return haveNewData;
   }
 
 
-  void loopCCS811(sensorMessage *message){
+  bool loopCCS811(){
+    bool haveNewData = false; 
     if(ccs.available()){
       if(!ccs.readData()){
-        message->informationFromSensor.sensorCCS811.eCO2 =(uint32_t)  ccs.geteCO2();
-        message->informationFromSensor.sensorCCS811.TVOC =(uint32_t)  ccs.getTVOC();
-      }
+        messageJSON["CCS811eCO2"] = ccs.geteCO2();
+        messageJSON["CCS811TVOC"] = ccs.getTVOC();
+        haveNewData = true;
+        }
       else{
         Serial.println("Error at CSS811");
         errLeds();
       }
     }
+    return haveNewData;
   }
 
    
@@ -166,7 +182,7 @@ bool setupBME680(){
   void printMessageInformation(const sensorMessage message){
 
     Serial.println("The information of the sensor message are:");
-    output = "id:"+ String(message.id)+ "and sensor type:" + enum_recognized_Sensor_to_Strings( message.sensor)+ "Saved as" +String( message.sensor);
+    output = "id:"+ String(message.id)+ ","+ "sensor:" +"\"" +enum_recognized_Sensor_to_Strings( message.sensor)+ "\"" +",";
     Serial.print(output);
     if (message.sensor == BME680) {
       printBME680messageInformation(message.informationFromSensor.sensorBME680);
@@ -186,42 +202,41 @@ bool setupBME680(){
   }
 
   void printBME680messageInformation(const informationFromBME680 sensorBME680){
-    Serial.println("The information of the BME680 sensor message are:");
-    output = "iaq:"+ String(sensorBME680.iaq)+ ".";
+    output = "iaq:"+ String(sensorBME680.iaq)+ ",";
     Serial.print(output);
-    output = "iaqAccuracy:"+ String(sensorBME680.iaqAccuracy)+ ".";
+    output = "iaqAccuracy:"+ String(sensorBME680.iaqAccuracy)+ ",";
     Serial.print(output);
-    output = "staticIaq:"+ String(sensorBME680.staticIaq)+ ".";
+    output = "staticIaq:"+ String(sensorBME680.staticIaq)+ ",";
     Serial.print(output);
-    output = "co2Equivalent:"+ String(sensorBME680.co2Equivalent)+ ".";
+    output = "co2Equivalent:"+ String(sensorBME680.co2Equivalent)+ ",";
     Serial.print(output);
-    output = "breathVocEquivalent:"+ String(sensorBME680.breathVocEquivalent)+ ".";
+    output = "breathVocEquivalent:"+ String(sensorBME680.breathVocEquivalent)+ ",";
     Serial.print(output);
-    output = "rawTemperature:"+ String(sensorBME680.rawTemperature)+ ".";
+    output = "rawTemperature:"+ String(sensorBME680.rawTemperature)+ ",";
     Serial.print(output);
-    output = "pressure:"+ String(sensorBME680.pressure)+ ".";
+    output = "pressure:"+ String(sensorBME680.pressure)+ ",";
     Serial.print(output);
-    output = "rawHumidity:"+ String(sensorBME680.rawHumidity)+ ".";
+    output = "rawHumidity:"+ String(sensorBME680.rawHumidity)+ ",";
     Serial.print(output);
-    output = "gasResistance:"+ String(sensorBME680.gasResistance)+ ".";
+    output = "gasResistance:"+ String(sensorBME680.gasResistance)+ ",";
     Serial.print(output);
-    output = "stabStatus:"+ String(sensorBME680.stabStatus)+ ".";
+    output = "stabStatus:"+ String(sensorBME680.stabStatus)+ ",";
     Serial.print(output);
-    output = "runInStatus:"+ String(sensorBME680.runInStatus)+ ".";
+    output = "runInStatus:"+ String(sensorBME680.runInStatus)+ ",";
     Serial.print(output);
-    output = "temperature:"+ String(sensorBME680.temperature)+ ".";
+    output = "temperature:"+ String(sensorBME680.temperature)+ ",";
     Serial.print(output);
-    output = "humidity:"+ String(sensorBME680.humidity)+ ".";
+    output = "humidity:"+ String(sensorBME680.humidity)+ ",";
     Serial.print(output);
-    output = "gasPercentage:"+ String(sensorBME680.gasPercentage)+ ".";
+    output = "gasPercentage:"+ String(sensorBME680.gasPercentage)+ ",";
     Serial.print(output);
 
 }
 void printCCS811messageInformation(const informationFromCCS811 sensorCCS811){
 
-    output = "humidity:"+ String(sensorCCS811.eCO2)+ ".";
+    output = "humidity:"+ String(sensorCCS811.eCO2)+ ",";
     Serial.print(output);
-    output = "gasPercentage:"+ String(sensorCCS811.TVOC)+ ".";
+    output = "gasPercentage:"+ String(sensorCCS811.TVOC)+ ",";
     Serial.print(output);
 
 }

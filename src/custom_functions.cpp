@@ -2,7 +2,28 @@
 #include "custom_headers.h"
 #include "customFunctions.h"
 
+void initializemessageJSON(){
+  messageJSON["DateTime"] = nullptr;
+  messageJSON["Id"] = id;
+  messageJSON["Sensor"] = sensorLocatedIntoDevice;
+  messageJSON["BME680:iaq"] = nullptr;
+  messageJSON["BME680:iaqAccuracy"] = nullptr;
+  messageJSON["BME680:staticIaq"] = nullptr;
+  messageJSON["BME680:co2Equivalent"] = nullptr;
+  messageJSON["BME680:breathVocEquivalent"] = nullptr;
+  messageJSON["BME680:rawTemperature"] = nullptr;
+  messageJSON["BME680:pressure"] = nullptr;
+  messageJSON["BME680:rawHumidity"] = nullptr;
+  messageJSON["BME680:gasResistance"] = nullptr;
+  messageJSON["BME680:stabStatus"] = nullptr;
+  messageJSON["BME680:runInStatus"] = nullptr;
+  messageJSON["BME680:temperature"] = nullptr;
+  messageJSON["BME680:humidity"] = nullptr;
+  messageJSON["BME680:gasPercentage"] = nullptr;
+  messageJSON["CCS811:eCO2"] = nullptr;
+  messageJSON["CCS811:TVOC"] = nullptr;
 
+}
 
 
 bool sendDataToSerial(const sensorMessage messageToBeInsertedToSerial){
