@@ -91,4 +91,12 @@ extern JsonDocument messageJSON;
 extern const char* ssid ;
 extern const char* password ;
 extern const char* serverUrl ;
+
+extern const uint8_t bsec_config_iaq[];
+extern uint8_t bsecState[BSEC_MAX_STATE_BLOB_SIZE] ;
+extern  const unsigned long  STATE_SAVE_PERIOD	;
+extern uint16_t stateUpdateCounter ;
+
+extern unsigned long CSS811_TIMER;
+extern uint8_t minutes30HavePassed;
 #endif

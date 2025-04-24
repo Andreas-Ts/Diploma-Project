@@ -124,6 +124,12 @@ void setFlag(Setting setting);
 
 void setTimer();
 
+void loadBME680State(void);
+
+void updateBME680State(void);
+
+void checkIf30MinutesHavePassedCSS811();
+
 ResponseMessageFromReceiver createResponseFromReceiver(const int sensorMessage, bool writtenIntoQueue, bool writtenIntoPython);
 
 /// @brief take a recognized_Sensor enum variable and makes it string

@@ -8,9 +8,14 @@ void initializemessageJSON(){
   messageJSON["Sensor"] = sensorLocatedIntoDevice;
   messageJSON["BME680:iaq"] = nullptr;
   messageJSON["BME680:iaqAccuracy"] = nullptr;
+  
   messageJSON["BME680:staticIaq"] = nullptr;
   messageJSON["BME680:co2Equivalent"] = nullptr;
+  messageJSON["BME680:co2EquivalentAccuracy"] = nullptr;
+
   messageJSON["BME680:breathVocEquivalent"] = nullptr;
+  messageJSON["BME680:breathVocEquivalentAccuracy"] = nullptr;
+
   messageJSON["BME680:rawTemperature"] = nullptr;
   messageJSON["BME680:pressure"] = nullptr;
   messageJSON["BME680:rawHumidity"] = nullptr;
@@ -20,8 +25,12 @@ void initializemessageJSON(){
   messageJSON["BME680:temperature"] = nullptr;
   messageJSON["BME680:humidity"] = nullptr;
   messageJSON["BME680:gasPercentage"] = nullptr;
+  messageJSON["BME680:gasPercentageAccuracy"] = nullptr;
+
   messageJSON["CCS811:eCO2"] = nullptr;
   messageJSON["CCS811:TVOC"] = nullptr;
+  messageJSON["CCS811:RawResistance"]=nullptr;
+  messageJSON["CCS811:30minutesPassed"] = minutes30HavePassed;
 
 }
 

@@ -8,11 +8,12 @@ from datetime import datetime
 
 
 list_of_csv_variables = ('DateTime','Id','Sensor',
-                         "BME680:iaq","BME680:iaqAccuracy","BME680:staticIaq","BME680:co2Equivalent",
-                         "BME680:breathVocEquivalent","BME680:rawTemperature","BME680:pressure","BME680:rawHumidity",
+                         "BME680:iaq","BME680:iaqAccuracy","BME680:staticIaq","BME680:co2Equivalent","BME680:co2EquivalentAccuracy"
+                         "BME680:breathVocEquivalent","BME680:breathVocEquivalentAccuracy",
+                         "BME680:rawTemperature","BME680:pressure","BME680:rawHumidity",
                          "BME680:gasResistance","BME680:stabStatus","BME680:runInStatus","BME680:temperature",
-                         "BME680:humidity","BME680:gasPercentage",
-                         "CCS811:eCO2","CCS811:TVOC"
+                         "BME680:humidity","BME680:gasPercentage","BME680:gasPercentageAccuracy",
+                         "CCS811:eCO2","CCS811:TVOC","CCS811:RawResistance","CCS811:30minutesPassed"
                          )  
 
 # Path to save the CSV file

@@ -21,7 +21,7 @@ int getByteSizeOfTypeOfSensor(const recognized_Sensor sensor){
 
 
 bool setupBME680(){
-  
+
     iaqSensor.begin(BME68X_I2C_ADDR_HIGH, Wire);
     output = "\nBSEC library version " + String(iaqSensor.version.major) + "," + String(iaqSensor.version.minor) + "," + String(iaqSensor.version.major_bugfix) + "," + String(iaqSensor.version.minor_bugfix);
    // Serial.println(output);
@@ -29,7 +29,15 @@ bool setupBME680(){
     if (checkIaqSensorStatus(true) == false){
       return false;
     }
-  
+   // EEPROM.begin(BSEC_MAX_STATE_BLOB_SIZE + 1);
+    
+    //iaqSensor.setConfig(bsec_config_iaq);
+    //check everything is ok with the sensor
+    checkIaqSensorStatus(false);
+
+
+
+    //loadBME680State();
     bsec_virtual_sensor_t sensorList[13] = {
       BSEC_OUTPUT_IAQ,
       BSEC_OUTPUT_STATIC_IAQ,
@@ -46,7 +54,7 @@ bool setupBME680(){
       BSEC_OUTPUT_GAS_PERCENTAGE
     };
   
-    iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_CONT);
+    iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
     checkIaqSensorStatus(false);
   
     // Print the header
@@ -61,7 +69,7 @@ bool setupBME680(){
     //Serial.println("CCS811 test");
   
     if(!ccs.begin()){
-      //Serial.println("Failed to start sensor! Please check your wiring.");
+      Serial.println("Failed to start sensor! Please check your wiring.");
       return false;
     }
   
@@ -82,7 +90,6 @@ bool setupBME680(){
       if (sensorLocatedIntoDevice== "CCS811"){
         haveNewData = loopCCS811();
       }
-    Serial.println(String(haveNewData));
     return haveNewData;
   }
   
@@ -97,7 +104,9 @@ bool setupBME680(){
       messageJSON["BME680:iaqAccuracy"] = iaqSensor.iaqAccuracy;
       messageJSON["BME680:staticIaq"] = iaqSensor.staticIaq;
       messageJSON["BME680:co2Equivalent"] = iaqSensor.co2Equivalent;
+      messageJSON["BME680:co2EquivalentAccuracy"] = iaqSensor.co2Accuracy;
       messageJSON["BME680:breathVocEquivalent"] = iaqSensor.breathVocEquivalent;
+      messageJSON["BME680:breathVocEquivalentAccuracy"] = iaqSensor.breathVocAccuracy;
       messageJSON["BME680:rawTemperature"] = iaqSensor.rawTemperature;
       messageJSON["BME680:pressure"] = iaqSensor.pressure;
       messageJSON["BME680:rawHumidity"] = iaqSensor.rawHumidity;
@@ -107,6 +116,8 @@ bool setupBME680(){
       messageJSON["BME680:temperature"] = iaqSensor.temperature;
       messageJSON["BME680:humidity"] = iaqSensor.humidity;
       messageJSON["BME680:gasPercentage"] = iaqSensor.gasPercentage;
+      messageJSON["BME680:gasPercentageAccuracy"] = iaqSensor.gasPercentageAccuracy;
+      //updateBME680State();
 
     } 
     checkIaqSensorStatus(false);
@@ -116,11 +127,16 @@ bool setupBME680(){
 
   bool loopCCS811(){
     bool haveNewData = false; 
-    if(ccs.available()){
+    //read data after one second
+    if(ccs.available() and (abs((int)(millis()-CSS811_TIMER))>1000)){
       if(!ccs.readData()){
-        messageJSON["CCS811eCO2"] = ccs.geteCO2();
-        messageJSON["CCS811TVOC"] = ccs.getTVOC();
+        messageJSON["CCS811:eCO2"] = ccs.geteCO2();
+        messageJSON["CCS811:TVOC"] = ccs.getTVOC();
+        messageJSON["CCS811:RawResistance"]=ccs.getRawADCreading();
         haveNewData = true;
+        CSS811_TIMER = millis(); //set timer 
+        checkIf30MinutesHavePassedCSS811(); //we calculate if the 30 minutes after activation have passed
+
         }
       else{
         Serial.println("Error at CSS811");
@@ -142,7 +158,7 @@ bool setupBME680(){
       if (iaqSensor.bsecStatus < BSEC_OK) {
         output = "BSEC error code : " + String(iaqSensor.bsecStatus);
         Serial.println(output);
-        bool errorAppeared = true;
+        errorAppeared = true;
         }
        else {
         output = "BSEC warning code : " + String(iaqSensor.bsecStatus);
@@ -154,7 +170,7 @@ bool setupBME680(){
       if (iaqSensor.bme68xStatus < BME68X_OK) {
         output = "BME68X error code : " + String(iaqSensor.bme68xStatus);
         Serial.println(output);
-        bool errorAppeared = true;
+        errorAppeared = true;
       } else {
         output = "BME68X warning code : " + String(iaqSensor.bme68xStatus);
         Serial.println(output);
@@ -194,12 +210,6 @@ bool setupBME680(){
   }
 
 
-  void loadBME680state(){
-
-  }
-  void getBME680state(){
-
-  }
 
   void printBME680messageInformation(const informationFromBME680 sensorBME680){
     output = "iaq:"+ String(sensorBME680.iaq)+ ",";
@@ -260,3 +270,80 @@ String enum_recognized_Sensor_to_Strings(recognized_Sensor sensor){
   return response;
 }
 
+
+void loadBME680State(void)
+{
+  if (EEPROM.read(0) == BSEC_MAX_STATE_BLOB_SIZE) {
+    // Existing state in EEPROM
+    Serial.println("Reading state from EEPROM");
+
+    for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE; i++) {
+      bsecState[i] = EEPROM.read(i + 1);
+      Serial.println(bsecState[i], HEX);
+    }
+
+    iaqSensor.setState(bsecState);
+    checkIaqSensorStatus(false);
+  } else {
+    // Erase the EEPROM with zeroes
+    Serial.println("Erasing EEPROM");
+
+    for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE + 1; i++)
+      EEPROM.write(i, 0);
+
+    EEPROM.commit();
+  }
+}
+
+void updateBME680State(void)
+{
+  bool update = false;
+  if (stateUpdateCounter == 0) {
+    /* First state update when IAQ accuracy is >= 3 */
+    if (iaqSensor.iaqAccuracy >= 3) {
+      update = true;
+      stateUpdateCounter++;
+    }
+  } else {
+    /* Update every STATE_SAVE_PERIOD minutes */
+    if ((stateUpdateCounter * STATE_SAVE_PERIOD) < millis()) {
+      update = true;
+      stateUpdateCounter++;
+    }
+  }
+
+  if (update) {
+    iaqSensor.getState(bsecState);
+    checkIaqSensorStatus(false);
+
+    Serial.println("Writing state to EEPROM");
+
+    for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE ; i++) {
+      EEPROM.write(i + 1, bsecState[i]);
+      Serial.println(bsecState[i], HEX);
+    }
+
+    EEPROM.write(0, BSEC_MAX_STATE_BLOB_SIZE);
+    EEPROM.commit();
+  }
+}
+ //check if 30 minutes have passed since the activation of the device in order to activate the flag for later data analysis
+  //we check if it was previous activated or not to take care of overflows
+void checkIf30MinutesHavePassedCSS811(){
+ 
+  if (minutes30HavePassed == 0 and millis()> 1000 * 60 * 30){
+    minutes30HavePassed = 1;
+}
+}
+
+//if 30 minutes have passed since the activation of the device get the baseline resistance
+void loadCSS811Baseline(){
+
+}
+void updateCSS811Baseline(){
+
+}
+
+void getEnvironmentalData(){
+
+}

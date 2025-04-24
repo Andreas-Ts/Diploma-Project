@@ -1,22 +1,12 @@
 #include "custom_headers.h"
 
-Bsec iaqSensor;
-String output;
-Adafruit_CCS811 ccs;
-String sensorLocatedIntoDevice = "NO_KNOWN_SENSOR";
 
-JsonDocument messageJSON;
-
-// Replace with your network credentials
-const char* ssid = "COSMOTE-609943";
-const char* password = "n9e6bmreeax2x7u3";
-
-// Server URL
-const char* serverUrl = "http://192.168.1.5:8080";  // Your computer's local IP
 
 
 void setup() {
+
   Serial.begin(115200);
+  delay(1000);
 
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
@@ -38,6 +28,7 @@ void setup() {
 
  // Setup Sensor with enum type based of the sensor we have.You can put multiple type
  if (setupBME680()==true){
+    Serial.println("BME680 sensor found");
     sensorLocatedIntoDevice = "BME680";
  }
 
