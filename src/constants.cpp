@@ -30,7 +30,7 @@ const char* ssid = "COSMOTE-609943";
 const char* password = "n9e6bmreeax2x7u3";
 
 // Server URL
-const char* serverUrl = "http://192.168.1.5:8080";  // Your computer's local IP
+const char* serverUrl = "http://192.168.1.13:8080";  // Your computer's local IP
 // configuration for the bsec operation
 const uint8_t bsec_config_iaq[] = {
   #include "config/generic_33v_3s_4d/bsec_iaq.txt"
@@ -40,6 +40,8 @@ const uint8_t bsec_config_iaq[] = {
 
 //30minutes of css811 operation have passed to know it has been calibrated
 uint8_t minutes30HavePassed = 0;
+
+
 
 const int idOfTheReceiver = 2;
 
@@ -53,6 +55,8 @@ int MINIMUM_BYTE_TO_WRITE_AT_SERIAL = sizeof(sensorMessage);
 uint16_t stateUpdateCounter = 0;
 
 unsigned long CSS811_TIMER=0;
+
+unsigned long CSS811_FREQUENCY = 2 * 1000 ;//get a value every 2 seconds
 
 esp_now_peer_info_t peerInfo;
 

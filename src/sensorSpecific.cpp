@@ -128,7 +128,7 @@ bool setupBME680(){
   bool loopCCS811(){
     bool haveNewData = false; 
     //read data after one second
-    if(ccs.available() and (abs((int)(millis()-CSS811_TIMER))>1000)){
+    if(ccs.available() and (abs((int)(millis()-CSS811_TIMER))>2000)){
       if(!ccs.readData()){
         messageJSON["CCS811:eCO2"] = ccs.geteCO2();
         messageJSON["CCS811:TVOC"] = ccs.getTVOC();
