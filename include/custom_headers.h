@@ -6,9 +6,7 @@
 
 #include "constants.h"
 #include "customFunctions.h"
-#include "enums.h"
 #include "library_dependencies.h"
-#include "structures.h"
 
 #endif
 

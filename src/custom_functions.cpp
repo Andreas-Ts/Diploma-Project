@@ -2,6 +2,7 @@
 #include "custom_headers.h"
 #include "customFunctions.h"
 
+//Initialize the values of the json object to zero
 void initializemessageJSON(){
   messageJSON["DateTime"] = nullptr;
   messageJSON["Id"] = id;
@@ -34,88 +35,29 @@ void initializemessageJSON(){
 
 }
 
-
-bool sendDataToSerial(const sensorMessage messageToBeInsertedToSerial){
- 
-  unsigned int bytesSend = 0;
-  int sensorMessageSize = sizeof(sensorMessage);
-  // Serial.println(messageToBeInsertedToSerial.id);
-   uint8_t *dataToBeSentToSerial = (uint8_t*) malloc(sensorMessageSize);
-    if (dataToBeSentToSerial == NULL){
-      Serial.println("Error: malloc failed");
-      errLeds();
-      return false;
-    }
-    memcpy(dataToBeSentToSerial,&messageToBeInsertedToSerial,sensorMessageSize);
-    bytesSend += Serial.write(dataToBeSentToSerial, sensorMessageSize);  // Send id 
-    Serial.flush();
-
-    free(dataToBeSentToSerial);
-    if (bytesSend>8) { //metadata and payload send
-        return true;
-    }else{
-        return false; //either no data was sent or only metadata
-    } 
+//choose id based on the MAC address of the device
+//and return the id of the device
+int chooseIDBasedOfMAC(const uint8_t *MAC_LIBRARY[]){
+  int id;
+  esp_err_t  res= esp_wifi_get_mac(WIFI_IF_STA,my_MAC);
+  if (res != ESP_OK){
+     Serial.println("Failed to read MAC address");
+     return -1;
   }
   
-
-bool checkForInactivityOverThreshold(const unsigned long timeLastMessageWasSend,unsigned long threshold){
-    unsigned long current_time = millis();
-    unsigned long remaining_time = current_time - timeLastMessageWasSend ;
-    if (remaining_time > threshold){
-        return true;
+  int position=0;
+  for ( ;  position < ESP32_TOTAL_DEVICES_NUMBER; position++ ){
+    if (! memcmp(MAC_LIBRARY[position],my_MAC,sizeof(my_MAC))){
+        return position;
     }
-    else {
-        return false;
-    }
-}
-
-//keep a minimum time in order to send a new message
-bool isTimeToSendMessage(Setting settingOfSensor,const unsigned long timeLastMessageWasSend){
-  unsigned long currentTime = millis();
-  unsigned long minimumTimeToPass;
-  switch (settingOfSensor){
-      case(NO_WAIT):
-        minimumTimeToPass = frequencyMinimum;
-        break;
-      case(WAIT_A_BIT):
-        minimumTimeToPass = frequencyWhenFailureOccurs;
-        break;
-      default:   
-        Serial.println("Some error occured");
-        errLeds();
   }
-  
-  if (abs((double)(currentTime - timeLastMessageWasSend)) > minimumTimeToPass){
-        //time to send the message
-        
-        return true;
+
+  if (position >= ESP32_TOTAL_DEVICES_NUMBER){
+       Serial.println("Failed to find a saved MAC address");
+        return -1;
   }
-  else{
-        return false;
- }
-}
-
-
-
-//Set the flag enum that the sensor has. It could change in some flags the time of the last message that was sent
-
-void setFlag(Setting setting){
-  settingOfSensor = setting;
-
-}
-
-void setTimer(){
-  timeLastMessageWasSend = millis();
-
-
-}
-ResponseMessageFromReceiver createResponseFromReceiver(const int sensorMessage,bool writtenIntoQueue,bool writtenIntoPython){
-
-  ResponseMessageFromReceiver response;
-  response.id = id;
-  response.writtenIntoQueue = writtenIntoQueue;
-  return response;
+  //just a safe check
+  return -1;
 }
 
 

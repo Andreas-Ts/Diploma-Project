@@ -2,23 +2,6 @@
 #include "customFunctions.h"
 
 
-//Get the size of the structs we have inside the union that repressents the payload of each sensor
-int getByteSizeOfTypeOfSensor(const recognized_Sensor sensor){
-  int byteSize=0;
-  switch (sensor){
-    case BME680:
-      byteSize = sizeof(informationFromBME680);
-      break;
-    case CCS811: 
-    byteSize = sizeof(informationFromCCS811);
-      break; 
-    default:
-      Serial.println("Sensor aren't being recognized");
-      errLeds();
-  }
-  return byteSize;
-}
-
 
 bool setupBME680(){
 
@@ -29,15 +12,18 @@ bool setupBME680(){
     if (checkIaqSensorStatus(true) == false){
       return false;
     }
-   // EEPROM.begin(BSEC_MAX_STATE_BLOB_SIZE + 1);
+    EEPROM.begin(BSEC_MAX_STATE_BLOB_SIZE + 1);
     
-    //iaqSensor.setConfig(bsec_config_iaq);
+    iaqSensor.setConfig(bsec_config_iaq);
     //check everything is ok with the sensor
     checkIaqSensorStatus(false);
 
 
+   
+    // Load the state from EEPROM
+    // This is needed for the BSEC library to save the state even at the power-off
+    loadBME680State();
 
-    //loadBME680State();
     bsec_virtual_sensor_t sensorList[13] = {
       BSEC_OUTPUT_IAQ,
       BSEC_OUTPUT_STATIC_IAQ,
@@ -56,7 +42,7 @@ bool setupBME680(){
   
     iaqSensor.updateSubscription(sensorList, 13, BSEC_SAMPLE_RATE_LP);
     checkIaqSensorStatus(false);
-  
+   
     // Print the header
     output = "Timestamp [ms], IAQ, IAQ accuracy, Static IAQ, CO2 equivalent, breath VOC equivalent, raw temp[°C], pressure [hPa], raw relative humidity [%], gas [Ohm], Stab Status, run in status, comp temp[°C], comp humidity [%], gas percentage";
     //Serial.println(output);
@@ -67,7 +53,7 @@ bool setupBME680(){
   
   bool setupCCS811(){
     //Serial.println("CCS811 test");
-  
+   
     if(!ccs.begin()){
       Serial.println("Failed to start sensor! Please check your wiring.");
       return false;
@@ -75,6 +61,9 @@ bool setupBME680(){
   
     // Wait for the sensor to be ready
     while(!ccs.available());
+    // Set the memory to be used for the baseline resistance
+    EEPROM.begin(CCS811_EEPROM_SIZE + 1);
+    loadCCS811Baseline();
     return true;
   }
   ///This function is used to loop the sensor and get the data from it. It will be called in the main loop of the code.
@@ -117,7 +106,7 @@ bool setupBME680(){
       messageJSON["BME680:humidity"] = iaqSensor.humidity;
       messageJSON["BME680:gasPercentage"] = iaqSensor.gasPercentage;
       messageJSON["BME680:gasPercentageAccuracy"] = iaqSensor.gasPercentageAccuracy;
-      //updateBME680State();
+      updateBME680State();
 
     } 
     checkIaqSensorStatus(false);
@@ -128,20 +117,29 @@ bool setupBME680(){
   bool loopCCS811(){
     bool haveNewData = false; 
     //read data after one second
-    if(ccs.available() and (abs((int)(millis()-CSS811_TIMER))>2000)){
+    if(ccs.available() and (abs((int)(millis()-CCS811_TIMER))>CCS811_FREQUENCY)){
       if(!ccs.readData()){
         messageJSON["CCS811:eCO2"] = ccs.geteCO2();
         messageJSON["CCS811:TVOC"] = ccs.getTVOC();
         messageJSON["CCS811:RawResistance"]=ccs.getRawADCreading();
         haveNewData = true;
-        CSS811_TIMER = millis(); //set timer 
+        CCS811_TIMER = millis(); //set timer 
         checkIf30MinutesHavePassedCSS811(); //we calculate if the 30 minutes after activation have passed
-
+        if (minutes30HavePassed == 1){
+          updateCCS811Baseline();
         }
       else{
         Serial.println("Error at CSS811");
         errLeds();
       }
+    }
+    //ask for url every hour
+    if (abs((int)(millis()-ENVIRONMENTAL_DATA_CCS811_TIMER))>ENVIRONMENTAL_DATA_CCS811_FREQUENCY){
+      if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("Asking for environmental data");
+        getEnvironmentalData();
+      }
+      ENVIRONMENTAL_DATA_CCS811_TIMER = millis(); //set timer 
     }
     return haveNewData;
   }
@@ -195,81 +193,6 @@ bool setupBME680(){
   }
   
 
-  void printMessageInformation(const sensorMessage message){
-
-    Serial.println("The information of the sensor message are:");
-    output = "id:"+ String(message.id)+ ","+ "sensor:" +"\"" +enum_recognized_Sensor_to_Strings( message.sensor)+ "\"" +",";
-    Serial.print(output);
-    if (message.sensor == BME680) {
-      printBME680messageInformation(message.informationFromSensor.sensorBME680);
-    }
-    else if(message.sensor == CCS811){
-      printCCS811messageInformation(message.informationFromSensor.sensorCCS811);
-    }
-    Serial.println();    
-  }
-
-
-
-  void printBME680messageInformation(const informationFromBME680 sensorBME680){
-    output = "iaq:"+ String(sensorBME680.iaq)+ ",";
-    Serial.print(output);
-    output = "iaqAccuracy:"+ String(sensorBME680.iaqAccuracy)+ ",";
-    Serial.print(output);
-    output = "staticIaq:"+ String(sensorBME680.staticIaq)+ ",";
-    Serial.print(output);
-    output = "co2Equivalent:"+ String(sensorBME680.co2Equivalent)+ ",";
-    Serial.print(output);
-    output = "breathVocEquivalent:"+ String(sensorBME680.breathVocEquivalent)+ ",";
-    Serial.print(output);
-    output = "rawTemperature:"+ String(sensorBME680.rawTemperature)+ ",";
-    Serial.print(output);
-    output = "pressure:"+ String(sensorBME680.pressure)+ ",";
-    Serial.print(output);
-    output = "rawHumidity:"+ String(sensorBME680.rawHumidity)+ ",";
-    Serial.print(output);
-    output = "gasResistance:"+ String(sensorBME680.gasResistance)+ ",";
-    Serial.print(output);
-    output = "stabStatus:"+ String(sensorBME680.stabStatus)+ ",";
-    Serial.print(output);
-    output = "runInStatus:"+ String(sensorBME680.runInStatus)+ ",";
-    Serial.print(output);
-    output = "temperature:"+ String(sensorBME680.temperature)+ ",";
-    Serial.print(output);
-    output = "humidity:"+ String(sensorBME680.humidity)+ ",";
-    Serial.print(output);
-    output = "gasPercentage:"+ String(sensorBME680.gasPercentage)+ ",";
-    Serial.print(output);
-
-}
-void printCCS811messageInformation(const informationFromCCS811 sensorCCS811){
-
-    output = "humidity:"+ String(sensorCCS811.eCO2)+ ",";
-    Serial.print(output);
-    output = "gasPercentage:"+ String(sensorCCS811.TVOC)+ ",";
-    Serial.print(output);
-
-}
-
-String enum_recognized_Sensor_to_Strings(recognized_Sensor sensor){
-  String response;
-  switch (sensor){
-    case NO_KNOWN_SENSOR:
-        response = "NO_KNOWN_SENSOR";
-        break;
-    case BME680:
-        response = "BME680";
-        break;
-
-    case CCS811:
-       response = "CSS811";
-       break;
-    default:
-      response = "INVALID POSITION";
-  }
-  return response;
-}
-
 
 void loadBME680State(void)
 {
@@ -282,14 +205,12 @@ void loadBME680State(void)
       Serial.println(bsecState[i], HEX);
     }
 
-    iaqSensor.setState(bsecState);
-    checkIaqSensorStatus(false);
   } else {
     // Erase the EEPROM with zeroes
     Serial.println("Erasing EEPROM");
 
     for (uint8_t i = 0; i < BSEC_MAX_STATE_BLOB_SIZE + 1; i++)
-      EEPROM.write(i, 0);
+    EEPROM.write(i, 0);
 
     EEPROM.commit();
   }
@@ -337,13 +258,84 @@ void checkIf30MinutesHavePassedCSS811(){
 }
 
 //if 30 minutes have passed since the activation of the device get the baseline resistance
-void loadCSS811Baseline(){
+void loadCCS811Baseline(){
+if (EEPROM.read(0) == CCS811_EEPROM_SIZE) {
+    // Existing state in EEPROM
+    Serial.println("Reading baseline Resistance from EEPROM");
 
+   // Read two bytes from EEPROM
+  byte lowByte = EEPROM.read(1);   // address 1
+  byte highByte = EEPROM.read(2);  // address 2
+ 
+  // Combine them into a 16-bit integer that is the baseline resistance
+  uint16_t number = ((uint16_t)highByte << 8) | lowByte;
+  Serial.println(String(number));
+  ccs.setBaseline(number);
+  } else {
+    // Erase the EEPROM with zeroes
+    Serial.println("Erasing EEPROM");
+
+    for (uint8_t i = 0; i < CCS811_EEPROM_SIZE + 1; i++)
+    EEPROM.write(i, 0);
+
+    EEPROM.commit();
+  }
 }
-void updateCSS811Baseline(){
+void updateCCS811Baseline(){
+  bool update = false;
+  if (stateUpdateCounter == 0) {
+    /* First state update when IAQ accuracy is >= 3 */
+    if (minutes30HavePassed==1) {
+      update = true;
+      stateUpdateCounter++;
+    }
+  } else {
+    /* Update every STATE_SAVE_PERIOD minutes */
+    if ((stateUpdateCounter * STATE_SAVE_PERIOD) < millis()) {
+      update = true;
+      stateUpdateCounter++;
+    }
+  }
 
+  if (update) {
+    uint16_t baseline = ccs.getBaseline();
+    Serial.println("Writing baseline Resistance to EEPROM");
+
+
+    for (uint8_t i = 0; i < CCS811_EEPROM_SIZE ; i++) {
+      EEPROM.write(i + 1, bsecState[i]);
+      Serial.println(bsecState[i], HEX);
+    }
+
+    EEPROM.write(0, BSEC_MAX_STATE_BLOB_SIZE);
+    EEPROM.commit();
+  }
 }
-
+//Make a http get request to the server to get the environmental data of the room
 void getEnvironmentalData(){
+    HTTPClient http;
+    Serial.println("Asking data from the server...");
+    //default url + the specified endpoint
+    http.begin(serverUrl +"getEnvironmentalData/");
+    http.setTimeout(2000); // Set timeout to 2 seconds
+    int httpResponseCode  = http.GET();
+     if (httpResponseCode == HTTP_CODE_OK) {
 
+        String stringResponse = http.getString();
+        Serial.println(stringResponse);
+        JsonDocument response;
+        deserializeJson(response,stringResponse);
+        Serial.println("Response:");
+        roomTemperature = response["roomTemperature"];
+        roomHumidity = response["roomHumidity"];
+        ccs.setEnvironmentalData(roomHumidity, roomTemperature);
+    } else {
+        Serial.print("POST failed. Error: ");
+        Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
+        
+        
+    }
+
+   // End HTTP connection
+    http.end();
 }

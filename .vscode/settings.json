@@ -20,6 +20,7 @@
         "random": "cpp",
         "library_dependencies.h": "c",
         "structures.h": "c",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "*.txt": "cpp"
     }
 }

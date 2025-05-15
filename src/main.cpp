@@ -2,9 +2,8 @@
 
 
 
-
 void setup() {
-
+  
   Serial.begin(115200);
   delay(1000);
 
@@ -48,46 +47,47 @@ void setup() {
 }
 
 void loop() {
-  if (WiFi.status() == WL_CONNECTED) {
+  if (WiFi.status() != WL_CONNECTED) {
+     Serial.println("Wi-Fi not connected");
+    errLeds();
+    delay(3000); // Wait 3 seconds before checking agains
+    return ; //stop the rest of the loop from executing
+}
     HTTPClient http;
 
-    if (loopSensor())
-    { // Begin HTTP connection
-      Serial.println("Sending data to server...");
-      http.begin(serverUrl);
-      http.addHeader("Content-Type", "application/json");
-      http.setTimeout(5000); // Set timeout to 5 seconds
-      // Serialize the  JSON
-      String messageJSONString;
-      serializeJsonPretty(messageJSON, messageJSONString);
-     
-      Serial.println(messageJSONString);
-      // Send POST request
-      int httpResponseCode = http.POST(messageJSONString);
+if (loopSensor()){ //a new value has been read from the sensor 
+    // Begin HTTP connection
+    Serial.println("Sending data to server...");
+    http.begin(serverUrl);//in case of adding more url sections into the url we send the post request
+    http.addHeader("Content-Type", "application/json");
+    http.setTimeout(5000); // Set timeout to 5 seconds
+    // Serialize the  JSON
+    String messageJSONString;
+    serializeJsonPretty(messageJSON, messageJSONString);
 
-      // Print response
-      if (httpResponseCode > 0) {
-          String response = http.getString();
-          Serial.println("Response:");
-          Serial.println(response);
-      } else {
-          Serial.print("POST failed. Error: ");
-          Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
+    Serial.println(messageJSONString);
+    // Send POST request
+    int httpResponseCode = http.POST(messageJSONString);
+
+    // Print response
+    if (httpResponseCode > 0) {
+        String response = http.getString();
+        Serial.println("Response:");
+        Serial.println(response);
+    } else {
+        Serial.print("POST failed. Error: ");
+        Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
         
-          flashLeds();//flash to show fail at post
-      }
-
-      // End HTTP connection
-      http.end();
-      //clear the field message 
-      initializemessageJSON();
+        flashLeds();//flash to show fail at post
     }
-  
-} else {
-    Serial.println("Wi-Fi not connected");
-    delay(10000); // Wait 10 seconds before checking agains
 
+    // End HTTP connection
+    http.end();
+    //clear the field message 
+    initializemessageJSON();
 }
+
+
 
 }
 
