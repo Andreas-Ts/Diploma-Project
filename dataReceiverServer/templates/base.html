@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Main Title -->
+        <h1 class="main-title">{{ page_title }}</h1>
+
+        <!-- Description Text -->
+        <p class="description">{{ description }}</p>
+
+        <!-- Experiment State -->
+        <h2 class="sub-title">Κατάσταση του πειράματος</h2>
+        <div class="state-box">{{ experiment_state }}</div>
+
+        <!-- Content Block for child templates -->
+        <div class="content-block">
+            {% block content %}{% endblock %}
+        </div>
+
+        <!-- Submission Button -->
+        <button onclick="location.href='{{ submit_url }}'">
+            Υπόβαλε Θερμοκρασία και Υγρασία Δωματίου
+        </button>
+
+        <!-- Last Reading -->
+        <div class="last-reading">
+            {% if last_reading.temperature is not none and last_reading.humidity is not none %}
+
+                Τελευταία θερμοκρασία: {{ last_reading.temperature }}°C<br>
+                Τελευταία υγρασία: {{ last_reading.humidity }}%   
+            {% else %}
+                Δεν υπάρχουν προηγούμενες μετρήσεις.
+            {% endif %}
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

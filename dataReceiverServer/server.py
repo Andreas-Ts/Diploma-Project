@@ -1,36 +1,30 @@
 
-from flask import Flask, request, jsonify
-from serverFunctions import ServerFunctions
-
+from flask import Flask, request, jsonify, render_template
+import serverRouters
 app = Flask(__name__)
-handler = ServerFunctions()
+# Load description text from file once
 
 
 # Function to run the server
-def run_server():
-    @app.route("/", methods=["GET,POST"])
+def server_routers():
+    # Initialize the server routers
+    indexRouter = serverRouters.indexRouter()
+    @app.route("/", methods=["GET","POST"])
     def index():
         if request.method == "GET":
-            pass #leave empty for now
+           return indexRouter.get()
 
         
         elif request.method == "POST":
-            print("Received POST request")
-            print(f"Request from: {request.remote_addr}")  # Log client IP
-
-            try:
-                data = request.get_json(force=True)
-                print(f"Received JSON message: {data}")
-                handler.saveData(data)
-            except Exception as e:
-                print(f"Error: {e}")
-                return  "Invalid JSON", 400
-
-            return "Message received", 200
-    
+          return  indexRouter.post()
+    @app.route("/submit", methods=["GET"])
+    def submit():
+        # Placeholder for GET request handling
+        return jsonify({"message": "GET request received"}), 200
 
 # Run the server if this file is executed directly
 if __name__ == "__main__":
-    ServerFunctions = ServerFunctions()  # Initialize the server functions
+    # Initialize the server functions
     
+    server_routers()
     app.run(host="0.0.0.0", port=8080, debug=True)
