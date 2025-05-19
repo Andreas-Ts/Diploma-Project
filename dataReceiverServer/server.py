@@ -8,19 +8,22 @@ app = Flask(__name__)
 # Function to run the server
 def server_routers():
     # Initialize the server routers
-    indexRouter = serverRouters.indexRouter()
+    
     @app.route("/", methods=["GET","POST"])
     def index():
+        router = serverRouters.indexRouter()
         if request.method == "GET":
-           return indexRouter.get()
-
-        
+           return router.get()   
         elif request.method == "POST":
-          return  indexRouter.post()
-    @app.route("/submit", methods=["GET"])
-    def submit():
-        # Placeholder for GET request handling
-        return jsonify({"message": "GET request received"}), 200
+           return  router.post()
+        
+    @app.route("/submitEnvRoomData", methods=["GET", "POST"])
+    def submitEnvRoomData():
+        router = serverRouters.submitenvRoomDataRouter()
+        if request.method == "GET":
+            return router.get()
+        if request.method == "POST":
+            return router.post()
 
 # Run the server if this file is executed directly
 if __name__ == "__main__":

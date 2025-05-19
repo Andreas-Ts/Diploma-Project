@@ -1,6 +1,6 @@
 
 
-from pymongo import MongoClient
+from pymongo import MongoClient,errors
 import os
 import csv
 from zoneinfo  import ZoneInfo

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Environment Data Input</title>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1 class="main-title">Room Environment Input</h1>
+    <!-- Show last env room reading -->
+        <div class="content-block">
+            {% include 'showLastEnvReading.html' %}
+        </div>
+
+  
+     <div class="description">
+        Please fill in the temperature and humidity of the room.
+    </div>
+    <form class="submit-Env-Room-Data" method="POST" action="{{ url_for('submitEnvRoomData') }}">
+        <label class="sub-title" for="temperature">Temperature (°C):</label>
+        <input type="number" name="temperature" id="temperature" min="-40" max="65" required>
+
+        <label class="sub-title" for="humidity">Relative Humidity (%):</label>
+        <input type="number" name="humidity" id="humidity" min="0" max="100" step="1" required>
+
+        
+        {# ——— Error message block ——— #}
+        {% if temp_error %}
+            <div class="error-message">
+                {{ temp_error }}
+            </div>
+        {% endif %}
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <form action="{{ url_for('index') }}">
+        <button type="submit" style="background: #007bff;">Return to Main Page</button>
+    </form>
+</div>
+</body>
+</html>
