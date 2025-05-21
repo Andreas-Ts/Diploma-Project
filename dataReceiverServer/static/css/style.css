@@ -11,6 +11,16 @@ body {
     background: #f9f9f9;
     color: #333;
 }
+.note {
+    margin-bottom: 1.5rem;         /* same spacing as .description */
+    white-space: normal;           /* keep line wrapping */
+    background-color: #eef6ff;     /* light blue background to differentiate */
+    border-left: 4px solid #3399ff;/* visual indicator like a "note" bar */
+    padding: 0.75rem 1rem;         /* inner spacing */
+    color: #2a3f5f;                /* slightly darker text for readability */
+    font-style: italic;            /* optional: to give it a more “note-like” tone */
+    border-radius: 4px;            /* soften the edges */
+}
 .container {
     max-width: 800px;
     margin: auto;
@@ -25,7 +35,7 @@ body {
 }
 .description {
     margin-bottom: 1.5rem;
-    white-space: pre-wrap;
+    white-space: normal;
 }
 .sub-title {
     font-size: 1.2rem;
@@ -75,6 +85,42 @@ button:hover {
     margin: 1rem 0;
     text-align: center;
     font-weight: bold;
+}
+
+/* Enhance sub-title appearance */
+.sub-title {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: #2c3e50;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 0.25rem;
+}
+
+/* Top-level ordered list styling */
+ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+ol > li {
+    margin-bottom: 0.75rem;
+}
+
+/* Nested ordered list styling */
+ol ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    list-style-type: lower-alpha; /* Change to a, b, c,... */
+    background: #f1f1f1;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+}
+
+ol ol > li {
+    margin-bottom: 0.5rem;
 }
 /* Responsive */
 @media (max-width: 600px) {

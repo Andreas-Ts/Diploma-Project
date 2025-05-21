@@ -143,7 +143,7 @@ bool setupBME680(){
     }
     return haveNewData;
   }
-
+  }
    
   
   // if bool atSetup=false, then we will terminate the loop of the device

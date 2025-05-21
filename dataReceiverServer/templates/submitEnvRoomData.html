@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Environment Data Input</title>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 <div class="container">
     <h1 class="main-title">Room Environment Input</h1>
     <!-- Show last env room reading -->
         <div class="content-block">
-            {% include 'showLastEnvReading.html' %}
+            {% include 'RoomTempAndHumidity.html' %}
         </div>
 
   

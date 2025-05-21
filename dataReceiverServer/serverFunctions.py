@@ -29,7 +29,7 @@ class ServerFunctions:
         # access or create the collections if they don't exist
         self.timeSeries = self.db['timeSeries']  #for storing the time series data of the sensors
         self.UserInput = self.db['UserInput'] # for storing the front end data that shows the timestamps of the experiment 
-
+        self.zoneInfo = ZoneInfo('Europe/Athens')  # Set the timezone to Europe/Athens
         #create the cvs file
         # Path to save the CSV file
         os.makedirs(os.path.dirname(csv_file_path), exist_ok=True)
@@ -41,6 +41,26 @@ class ServerFunctions:
                 csv_writer.writerow(list_of_csv_variables)
                 print("Header written to new CSV file.")
    
+    #get the last user input from a particular category from the database
+    def getLastUserInput(self,userInputCategory):
+            return self.UserInput.find({'userInputType': userInputCategory}
+                ).sort('timestamp', -1).limit(1)
+
+    def getCurrentDateTime(self):
+        # Get the current date and time in the local timezone
+        currentDateAndTime = datetime.now(self.zoneInfo)
+        return currentDateAndTime 
+    #get current date and time in ISO format at the local timezone
+    def getCurrentDateTimeISOformat(self):
+        timeStamp =datetime.isoformat(self.getCurrentDateTime)
+        return timeStamp
+
+    #check if the last time user has put an input was less than 1 hour ago.
+    # If it more than 1 hour, return False in order to start a new experiment
+
+
+
+
     #save the data to the csv file and the database
     def saveData(self, message):
         local_timezone = ZoneInfo('Europe/Athens')

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request,Response, jsonify, render_template
 from serverFunctions import ServerFunctions 
 from markupsafe import escape
 from datetime import datetime
@@ -16,36 +16,34 @@ class serverRouters:
     def post(self):
         # Placeholder for POST request handling
         pass    
-    #get current date and time in ISO format at the local timezone
-    def getCurrentDateTimeISOformat(self):
-        timeStamp =datetime.isoformat(datetime.now(ZoneInfo("Europe/Athens")))
-        return timeStamp
-    
+  
+    def getReadableDateTimeFromISOformat(self,isoDateTime):
+        # Convert ISO format to datetime object
+        dt = datetime.fromisoformat(isoDateTime)
+        # Format the datetime object to a readable string
+        formatted_date = dt.strftime("%d %B %Y, %H:%M")
+        return formatted_date
     def getCurrentEnvData(self):
         try:    
-            doc = self.srvFunc.UserInput.find(
-                    {'userInputType': 'submitEnvRoomData'}
-                ).sort('timestamp', -1).limit(1)
-            
+            doc = self.srvFunc.getLastUserInput("EnvRoomData")
             lastEnvRoomData = list(doc)
             if lastEnvRoomData:
                     # Normalize the document into a simple object for the template
                     lr = lastEnvRoomData[0]
-                    timestamp = datetime.fromisoformat(lr.get('timestamp'))
-                    formatted_timestamp = timestamp.strftime("%d %B %Y, %H:%M") 
-                    last_reading = {
+                
+                    env_last_reading = {
                         'temperature': lr.get('temperature'),
                         'humidity': lr.get('humidity'),
-                        'timestamp': formatted_timestamp
+                        'timestamp': self.getReadableDateTimeFromISOformat(lr.get('timestamp'))
                     }
             else:
-                last_reading = None
+                env_last_reading = None
 
         except errors.PyMongoError as e:
                 print(f"PyMongoError occurred: {e}")
                 request.code = 500
                 last_reading = None
-        return last_reading
+        return env_last_reading
     
 class indexRouter(serverRouters):  
     def __init__(self):
@@ -58,20 +56,19 @@ class indexRouter(serverRouters):
             description_path = os.path.join(base_dir, 'content', 'description.txt')
             with open( description_path, encoding='utf-8') as f:
                 page_description = f.read().strip()   
-            # Placeholder: the current experiment state
-            experiment_state = "In Progress"  # this would normally come from your backend logic
+            #  the current experiment state
+            experiment_state = "Ανεναιργό"  # this would normally come from your backend logic
 
             # Get the last environment data
-            last_reading = self.getCurrentEnvData()
+            env_last_reading = self.getCurrentEnvData()
             # In real use, fetch from your data source; here we simulate no history
-            print(last_reading)
             
             return render_template(
                 'base.html',
                 page_title="Ο τίτλος μου",
                 description=page_description,
                 experiment_state=experiment_state,
-                last_reading=last_reading
+                env_last_reading=env_last_reading
             )
 
 
@@ -113,7 +110,6 @@ class submitenvRoomDataRouter(serverRouters):
 
     def post(self):
         try:
-            temp_error = None
             temperature = int(request.form['temperature'])
             humidity = int(request.form['humidity'])
 
@@ -127,16 +123,29 @@ class submitenvRoomDataRouter(serverRouters):
             # Sanitize inputs
             temperature = escape(temperature)
             humidity = escape(humidity)
+            timestamp = self.getCurrentDateTimeISOformat()
+           
 
             # Save to MongoDB
             self.srvFunc.UserInput.insert_one({
-                'timestamp': self.getCurrentDateTimeISOformat(),
-                'userInputType': "submitEnvRoomData",
+                'timestamp': timestamp,
+                'userInputCategory': "EnvRoomData",
                 'temperature': temperature,
                 'humidity': humidity
             })
-
-            return render_template('submitEnvRoomData.html', temperature=temperature, humidity=humidity,temp_error=temp_error)
+            #create a last reading object 
+            last_reading = {
+                'temperature': temperature,
+                'humidity': humidity,
+                'timestamp': self.getReadableDateTimeFromISOformat(timestamp)
+            }
+            Response.code = 200
+            return render_template('submitEnvRoomData.html',last_reading =last_reading)
     
         except ValueError:
+            Response.code = 400
             return render_template('submitEnvRoomData.html', temp_error="Invalid input values.")
+        except errors.PyMongoError as e:
+            print(f"PyMongoError occurred: {e}")
+            Response.code = 500
+            return render_template('submitEnvRoomData.html', temp_error="Database error.")

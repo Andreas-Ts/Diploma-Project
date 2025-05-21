@@ -1,12 +1,13 @@
-{% if last_reading %}
+{% if env_last_reading %}
     <h2 class="sub-title">Πιο πρόσφατη εισαγωγή τιμών</h2>
     <div class="state-box last-reading">
-        Temperature: {{ last_reading.temperature }} °C<br>
-        Humidity: {{ last_reading.humidity }} %<br>
-        Timestamp: {{ last_reading.timestamp }}
+        Temperature: {{ env_last_reading.temperature }} °C<br>
+        Humidity: {{ env_last_reading.humidity }} %<br>
+        Timestamp: {{ env_last_reading.timestamp }}
     </div>
 {% else %}
     <div class="state-box last-reading" style="background: #ffe;">
         Δεν υπάρχουν προηγούμενες μετρήσεις.
     </div>
 {% endif %}
+
