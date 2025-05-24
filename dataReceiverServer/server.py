@@ -24,7 +24,9 @@ def server_routers():
             return router.get()
         if request.method == "POST":
             return router.post()
-
+    @app.route("/description")
+    def description():
+        return render_template("description.html")
 # Run the server if this file is executed directly
 if __name__ == "__main__":
     # Initialize the server functions

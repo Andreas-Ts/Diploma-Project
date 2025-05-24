@@ -122,6 +122,34 @@ ol ol {
 ol ol > li {
     margin-bottom: 0.5rem;
 }
+
+
+    /* timer-specific styles */
+    #timer {
+      font-size: 2rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    #timer span {
+      min-width: 2ch;
+      text-align: center;
+    }
+
+    #timer .label {
+      font-size: 1rem;
+      font-weight: normal;
+      margin-top: 0.2rem;
+      display: block;
+      text-align: center;
+      font-variant: small-caps;
+      color: #666;
+    }
+
+
 /* Responsive */
 @media (max-width: 600px) {
     .container {
