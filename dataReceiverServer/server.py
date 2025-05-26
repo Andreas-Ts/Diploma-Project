@@ -16,7 +16,19 @@ def server_routers():
            return router.get()   
         elif request.method == "POST":
            return  router.post()
+    @app.route("/description")
+    def description():
+        return render_template("description.html")    
+    @app.route("/lastUserInputExperimentState/<ExperimentState>", methods=["GET", "POST"])
+    def lastUserInputExperiment(ExperimentState):
+        router = serverRouters.lastUserInputExperimentState()
+        if request.method == "GET":
+            return router.get(ExperimentState)
+        if request.method == "POST":
+            return router.post(ExperimentState)
         
+    
+      
     @app.route("/submitEnvRoomData", methods=["GET", "POST"])
     def submitEnvRoomData():
         router = serverRouters.submitenvRoomDataRouter()
@@ -24,9 +36,7 @@ def server_routers():
             return router.get()
         if request.method == "POST":
             return router.post()
-    @app.route("/description")
-    def description():
-        return render_template("description.html")
+ 
 # Run the server if this file is executed directly
 if __name__ == "__main__":
     # Initialize the server functions

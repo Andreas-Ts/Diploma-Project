@@ -1,7 +1,8 @@
- document.addEventListener('DOMContentLoaded', () => {
-      // 1) fetch the ISO datetime from your server endpoint
-      //    it should return JSON like: { "datetime": "2025-05-23T08:30:00Z" }
-      fetch('/')
+
+    
+// 2) start the interval timer
+function startTimer(startTime) {
+    fetch('/lastUserInput')
         .then(res => {
           if (!res.ok) throw new Error('Network response was not ok');
           return res.json();
@@ -18,12 +19,10 @@
           // optionally show an error message in the UI
         });
 
-      // 2) start the interval timer
-      function startTimer(startTime) {
-        const $h = document.getElementById('hours');
-        const $m = document.getElementById('minutes');
-        const $s = document.getElementById('seconds');
-
+  const $h = document.getElementById('hours');
+  const $m = document.getElementById('minutes');
+  const $s = document.getElementById('seconds');
+}
         function update() {
           const now = new Date();
           let diff = Math.floor((now - startTime) / 1000); // total seconds elapsed
@@ -44,4 +43,4 @@
         // then update every second
         setInterval(update, 1000);
       }
-    });
+    
