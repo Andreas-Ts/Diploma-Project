@@ -11,11 +11,11 @@ def server_routers():
     
     @app.route("/", methods=["GET","POST"])
     def index():
-        router = serverRouters.indexRouter()
+        router = serverRouters.serverRouters()
         if request.method == "GET":
-           return router.get()   
+           return router.getIndex()   
         elif request.method == "POST":
-           return  router.post()
+           return  router.postIndex()
     @app.route("/description")
     def description():
         return render_template("description.html")    

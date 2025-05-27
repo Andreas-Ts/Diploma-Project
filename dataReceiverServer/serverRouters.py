@@ -17,48 +17,14 @@ class serverRouters:
     def post(self):
         # Placeholder for POST request handling
         pass    
-  
-    def getReadableDateTimeFromISOformat(self,isoDateTime):
-        # Convert ISO format to datetime object
-        dt = datetime.fromisoformat(isoDateTime)
-        # Format the datetime object to a readable string
-        formatted_date = dt.strftime("%d %B %Y, %H:%M")
-        return formatted_date
-   
-
-    def getLastUserInputHandler(self,userInputCategory,userInputType:Optional[str]=None):
-        try:
-            return self.srvFunc.getLastUserInput(userInputCategory, userInputType)
-        except ValueError as e:
-            print(f"ValueError occurred: {e}")
-            Response.code = 400
-            return render_template('base.html', temp_error=str(e))
-        except errors.PyMongoError as e:
-            print(f"PyMongoError occurred: {e}")
-            Response.code = 500
-            return render_template('base.html', temp_error=str(e))    
-        
-class indexRouter(serverRouters):  
-    def __init__(self):
-        super().__init__()
-    def get(self):
-          
-           
-
-            # Get the last environment data
-            env_last_reading = self.getCurrentEnvData()
-            # In real use, fetch from your data source; here we simulate no history
-            
-            return render_template(
-                'base.html',
-                page_title="Ο τίτλος μου",
-                
-                env_last_reading=env_last_reading
-            )
-
-
     
-    def post(self):
+    def getIndex(self):
+        last_env_reading = self.getEnvRoomLastReading()  
+        return render_template(
+            last_reading = last_env_reading
+
+        )
+    def postIndex(self):
         print("Received POST request")
         print(f"Request from: {request.remote_addr}")  # Log client IP
 
@@ -71,6 +37,33 @@ class indexRouter(serverRouters):
             return  "Invalid JSON", 400
 
         return "Message received", 200
+    
+    def getReadableDateTimeFromISOformat(self,isoDateTime):
+        # Convert ISO format to datetime object
+        dt = datetime.fromisoformat(isoDateTime)
+        # Format the datetime object to a readable string
+        formatted_date = dt.strftime("%D %M %Y, %H:%M:%S")
+        return formatted_date
+   
+    def getEnvRoomLastReading(self):
+        last_reading = self.getLastUserInputHandler("EnvRoomData")
+        last_reading.timestamp = self.getReadableDateTimeFromISOformat(last_reading['timestamp'])  
+        return  last_reading
+    
+    def getLastUserInputHandler(self,userInputCategory,userInputType:Optional[str]=None):
+        try:
+            return self.srvFunc.getLastUserInput(userInputCategory, userInputType)
+        except ValueError as e:
+            print(f"ValueError occurred: {e}")
+            Response.code = 400
+            return render_template('base.html', temp_error=str(e))
+        except errors.PyMongoError as e:
+            print(f"PyMongoError occurred: {e}")
+            Response.code = 500
+            return render_template('base.html', temp_error=str(e))    
+        
+
+    
 class lastUserInputExperimentState(serverRouters):
     def __init__(self):
         super().__init__()
@@ -80,7 +73,7 @@ class lastUserInputExperimentState(serverRouters):
 
     def post(self,ExperimentState):
         try:
-            if ExperimentState not in self.srvFunc.list_of_User_Input_Type_In_Category_Experiment_State or ExperimentState is 'Any':
+            if ExperimentState not in self.srvFunc.list_of_User_Input_Type_In_Category_Experiment_State or ExperimentState == 'Any':
                 return render_template('base.html', temp_error="Invalid Experiment State for an input.") 
             timestamp = self.srvFunc.getCurrentDateTimeISOformat() 
             if ExperimentState == "InsertingSource":
@@ -92,25 +85,23 @@ class lastUserInputExperimentState(serverRouters):
                     'experimentState': ExperimentState
                 }
             self.srvFunc.UserInput.insert_one(last_insertion)
-            
+            return render_template()
         except errors.PyMongoError as e:
             print(f"PyMongoError occurred: {e}")
             Response.code = 500
             return render_template('base.html', temp_error=str(e))    
 
     def insertingSourceHandler(self,timestamp):
-
+        pass
        
 
 class submitenvRoomDataRouter(serverRouters):
     def __init__(self):
         super().__init__()
-    def get(self):
-        last_reading = self.getLastUserInputHandler("EnvRoomData")
-        last_reading.timestamp = self.getReadableDateTimeFromISOformat(last_reading['timestamp'])
+    def get(self):        
         return render_template(
             'submitEnvRoomData.html',
-            last_reading = last_reading           
+            last_reading = self.getEnvRoomLastReading()         
         )
 
     def post(self):
