@@ -13,7 +13,7 @@
 
      
         </p>
-        <p class="note">Για μία παρακολούθηση των τιμών των αισθητήρων σε συνεχές χρόνο,ο χρήστης μπορεί να μπει στα <a href="http://localhost:3000">Dashboards της Grafana</a>.</p>
+        <p class="note">Για μία παρακολούθηση των τιμών των αισθητήρων σε συνεχές χρόνο,ο χρήστης μπορεί να μπει στα <a href="http://localhost:3000" target="_blank">Dashboards της Grafana</a>.</p>
          <!-- See Description   -->
         
   
@@ -25,20 +25,24 @@
         <!-- Experiment State -->
         <h2 class="sub-title">Κατάσταση του πειράματος</h2>
         <div id="experiment_state" class="state-box"></div>
-
       
-
-        <!-- Submission Tempratrue and Humidity Button -->
-        <button onclick="location.href='{{ url_for('submitEnvRoomData')}}'" class="submit-button">
-            Υπόβαλε Θερμοκρασία και Υγρασία Δωματίου
+        <button id="submitExperimentState" class="submit-button"></buttonid>>
+            
         </button>
+        
  <!-- Show last env room reading -->
+        
         <div class="content-block">
             {% include 'RoomTempAndHumidity.html' %}
+                    <!-- Submission Tempratrue and Humidity Button -->
+
+            <button onclick="location.href='{{ url_for('submitEnvRoomData')}}'" id="submitEnvRoomData" class="submit-button">
+            Υπόβαλε Θερμοκρασία και Υγρασία Δωματίου
+        </button>
         </div>
         
     </div>
-  <!--   <script src="{{ url_for('static', filename='js/script.js') }}"></script> -->
-     <script src="{{url_for('static',filename='javascript/timer.js')}}"></script>
+    <script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
+    <script src="{{url_for('static',filename='javascript/timer.js')}}"></script>
 </body>
 </html>

@@ -17,13 +17,26 @@ class serverRouters:
     def post(self):
         # Placeholder for POST request handling
         pass    
-    
     def getIndex(self):
-        last_env_reading = self.getEnvRoomLastReading()  
-        return render_template(
-            last_reading = last_env_reading
+          
+           
 
-        )
+            # Get the last environment data
+            env_last_reading = self.getLastUserInputHandler("EnvRoomData")
+            # In real use, fetch from your data source; here we simulate no history
+            print(env_last_reading)
+            if env_last_reading is not None:
+                print("reading found for EnvRoomData.")
+
+                return render_template(
+                    'base.html',                  
+                    env_last_reading=env_last_reading 
+                )
+            else:
+                return render_template(
+                    'base.html'
+                )
+     
     def postIndex(self):
         print("Received POST request")
         print(f"Request from: {request.remote_addr}")  # Log client IP
@@ -37,19 +50,14 @@ class serverRouters:
             return  "Invalid JSON", 400
 
         return "Message received", 200
-    
     def getReadableDateTimeFromISOformat(self,isoDateTime):
         # Convert ISO format to datetime object
         dt = datetime.fromisoformat(isoDateTime)
         # Format the datetime object to a readable string
-        formatted_date = dt.strftime("%D %M %Y, %H:%M:%S")
+        formatted_date = dt.strftime("%d %B %Y, %H:%M")
         return formatted_date
    
-    def getEnvRoomLastReading(self):
-        last_reading = self.getLastUserInputHandler("EnvRoomData")
-        last_reading.timestamp = self.getReadableDateTimeFromISOformat(last_reading['timestamp'])  
-        return  last_reading
-    
+
     def getLastUserInputHandler(self,userInputCategory,userInputType:Optional[str]=None):
         try:
             return self.srvFunc.getLastUserInput(userInputCategory, userInputType)
@@ -62,21 +70,34 @@ class serverRouters:
             Response.code = 500
             return render_template('base.html', temp_error=str(e))    
         
-
+class indexRouter(serverRouters):  
+    def __init__(self):
+        super().__init__()
     
-class lastUserInputExperimentState(serverRouters):
+
+   
+class getlastUserInputExperimentState(serverRouters):
     def __init__(self):
         super().__init__()
     def get(self,ExperimentState):
-        return self.srvFunc.getLastUserInput("ExperimentState",ExperimentState)
-        
+        returnState = self.srvFunc.getLastUserInput("ExperimentState",ExperimentState)
+        returnState.pop('_id', None)
+        print(f"Last user input for ExperimentState '{ExperimentState}': {returnState}") 
+        return  jsonify(returnState) if returnState else jsonify({"noPreviousInput": True}), 200
 
+    
+       
+class postUserInput(serverRouters):
+    def __init__(self):
+        super().__init__()
+    def get(self):
+        return render_template('insertPollutantSource.html')
     def post(self,ExperimentState):
         try:
-            if ExperimentState not in self.srvFunc.list_of_User_Input_Type_In_Category_Experiment_State or ExperimentState == 'Any':
+            if ExperimentState not in self.srvFunc.list_of_User_Input_Type_In_Category_Experiment_State or ExperimentState is 'Any':
                 return render_template('base.html', temp_error="Invalid Experiment State for an input.") 
             timestamp = self.srvFunc.getCurrentDateTimeISOformat() 
-            if ExperimentState == "InsertingSource":
+            if ExperimentState == "InsertingSourcePollutant":
                 last_insertion = self.insertingSourceHandler(timestamp)  
             else:
                 last_insertion = {
@@ -85,23 +106,24 @@ class lastUserInputExperimentState(serverRouters):
                     'experimentState': ExperimentState
                 }
             self.srvFunc.UserInput.insert_one(last_insertion)
-            return render_template()
+            return  jsonify({"status": "OK"})
         except errors.PyMongoError as e:
             print(f"PyMongoError occurred: {e}")
             Response.code = 500
             return render_template('base.html', temp_error=str(e))    
 
     def insertingSourceHandler(self,timestamp):
-        pass
-       
+        pass 
 
 class submitenvRoomDataRouter(serverRouters):
     def __init__(self):
         super().__init__()
-    def get(self):        
+    def get(self):
+        last_reading = self.getLastUserInputHandler("EnvRoomData")
+        last_reading.timestamp = self.getReadableDateTimeFromISOformat(last_reading['timestamp'])
         return render_template(
             'submitEnvRoomData.html',
-            last_reading = self.getEnvRoomLastReading()         
+            last_reading = last_reading           
         )
 
     def post(self):

@@ -19,15 +19,21 @@ def server_routers():
     @app.route("/description")
     def description():
         return render_template("description.html")    
-    @app.route("/lastUserInputExperimentState/<ExperimentState>", methods=["GET", "POST"])
+    @app.route("/lastUserInputExperimentState/<ExperimentState>", methods=["GET"])
     def lastUserInputExperiment(ExperimentState):
-        router = serverRouters.lastUserInputExperimentState()
+        router = serverRouters.getlastUserInputExperimentState()
         if request.method == "GET":
+            print(f"Received GET request for last user input of type: {ExperimentState}")
             return router.get(ExperimentState)
-        if request.method == "POST":
+     
+
+    @app.route("/postUserInput/<ExperimentState>", methods=["GET","POST"])  
+    def postUserInput(ExperimentState):  
+        router = serverRouters.postUserInput()
+        if request.method == "GET":
+            return router.get()
+        elif request.method == "POST":
             return router.post(ExperimentState)
-        
-    
       
     @app.route("/submitEnvRoomData", methods=["GET", "POST"])
     def submitEnvRoomData():

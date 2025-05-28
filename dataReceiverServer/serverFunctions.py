@@ -21,7 +21,7 @@ class ServerFunctions:
 
     list_of_User_Input_Categories= ('EnvRoomData',"ExperimentState")
 
-    list_of_User_Input_Type_In_Category_Experiment_State = ('Any','StartingExperiment','InsertingSource','RemovingSource')
+    list_of_User_Input_Type_In_Category_Experiment_State = ('Any','StartingExperiment','InsertingSourcePollutant','RemovingSourcePollutant')
 
     csv_file_path = os.path.join('data', 'sensor_data.csv')  # This points to root_project_file/data/sensor_data.csv
 
@@ -48,29 +48,36 @@ class ServerFunctions:
 
 
     #get the last user input from a particular category from the database
-    def getLastUserInput(self,userInputCategory: Literal['EnvRoomData',"ExperimentState"],
-                         userInputType: Optional[Literal['Any','StartingExperiment','InsertingSource','RemovingSource']] = None ):
+    def getLastUserInput(self,userInputCategory: Literal['EnvRoomData',"ExperimentState"] ,
+                         userInputType: Optional[Literal['Any','StartingExperiment','InsertingSourcePollutant','RemovingSourcePollutant']] = 'Any' ):
         if userInputCategory not in self.list_of_User_Input_Categories:
             raise ValueError(f"Invalid user input category: {userInputCategory}. Must be one of {self.list_of_User_Input_Categories}.")
         
         if userInputCategory == 'ExperimentState' and userInputType not in self.list_of_User_Input_Type_In_Category_Experiment_State:    
             raise ValueError(f"Invalid user input type for category ExperimentState." 
                              f"Must be one of {self.list_of_User_Input_Type_In_Category_Experiment_State}.")
-        if userInputType is None or userInputType == 'Any':
-            return list(self.UserInput.find({'userInputType': userInputCategory}
-                ).sort('timestamp', -1).limit(1))[0]
-        else:
-            return list(self.UserInput.find({'userInputType': userInputCategory,
-                                        'experimentState': userInputType}
-                ).sort('timestamp', -1).limit(1))[0]
+        if userInputCategory == 'EnvRoomData':
+            
+            lastUserInputElement = self.UserInput.find_one({'userInputCategory': 'EnvRoomData'})
+               
+        
+        elif userInputCategory == 'ExperimentState' and userInputType == 'Any':
+            lastUserInputElement= self.UserInput.find_one({'userInputCategory': "ExperimentState"})
+                                        
+           
+        elif userInputCategory == 'ExperimentState' and userInputType != 'Any':
+            lastUserInputElement= self.UserInput.find_one({'userInputCategory': "ExperimentState",
+                                        'userInputType': userInputType})  
+        return lastUserInputElement
         
     def getCurrentDateTime(self):
         # Get the current date and time in the local timezone
         currentDateAndTime = datetime.now(self.zoneInfo)
+        print (f"Current date and time: {currentDateAndTime}")
         return currentDateAndTime 
     #get current date and time in ISO format at the local timezone
     def getCurrentDateTimeISOformat(self):
-        timeStamp =datetime.isoformat(self.getCurrentDateTime)
+        timeStamp =datetime.isoformat(self.getCurrentDateTime())
         return timeStamp
 
 
