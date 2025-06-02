@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Εισαγωγή πηγής ρύπου</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="main-title">Εισαγωγή πηγής ρύπου</h1>
+
+        <form action="{{url_for("submitSourcePollutantDetails")}}" method="post">
+        
+            <label for="pollutant-type">Τύπος ρύπου:</label>
+            <input type="text"  name="pollutant-type" list="pollutant-type" 
+             {%if details %}
+                value="{{details.pollutant-type-latest_value}}"       
+            {%endif%}
+ 
+
+            required/>
+            
+            <datalist id="pollutant-type">
+            {%if details %}    
+                {% for item in details.pollutant-type-distinct-list %}
+                    <option value="{{item}}">
+                {%endfor%}
+             {%endif%}    
+            </datalist>
+            <label for="item-used">Αντικείμενο προέλευσης</label>
+
+            <input type="text" name="item-used" list="item-used" 
+            {%if details %}  
+                value = "{{details.item-used-latest_value}}"  
+            {%endif%}      
+            required/>
+            <datalist id="item-used">
+             {%if details %}        
+                 {% for item in details.item-used-distinct-list %}
+                    <option value="{{item}}">
+                {%endfor%}
+            {%endif%}    
+   
+            </datalist>
+
+            <label for="quantity-used">Ποσότητα που χρησιμοποιείται:</label>
+            <input type="text" name="quantity-used" list="quantity-used" 
+            {%if details %} 
+                value = "{{details.quantity-used-latest_value}}"
+            {%endif%}    
+     
+                required/>
+            <datalist id="quantity-used">
+            {%if details %}
+                {% for item in details.quantity-used-distinct-list %}
+                    <option value="{{item}}">
+                {%endfor%}
+            {%endif%}  
+            </datalist>
+
+            <div class="container">
+                <label for="front-wall">Απόσταση από μπροστινό τοίχο:</label>
+                <input type="number" name="front-wall" id="front-wall" min="0" step="0.1" 
+                    {%if details %}
+                        value = "{{front-wall-distance-latest_value}}" 
+                    {%endif%}    
+                    required>
+                <label for="side-right-wall">Απόσταση από δεξίο τοίχο¨</label>
+                <input type="number" name="side-right-wall" id="side-right-wall" min="0" step="0.1" 
+                    {%if details %}
+                        value ="{{side-right-wall-distance-latest_value}}" 
+                    {%endif%}   
+                required>
+            </div>
+            <div>
+            <input type="checkbox" id="are-windows-opened" name="are-windows-opened">
+            <label for="are-windows-opened">Θα είναι τα παράθυρα ανοιχτά?</label>
+            </div>
+            <div>
+            <input type="checkbox" id="are-doors-opened" name="are-doors-opened">
+            <label for="are-doors-opened">Θα είναι οι πόρτες ανοιχτές?</label>
+            </div>
+            <div>
+            <input type="checkbox" id="are-people-opened" name="are-people-opened">
+            <label for="are-people-opened">Θα είναι άνθρωποι μες στον χώρο?</label>
+            </div>
+
+                        
+
+            <button type="submit">Υπόβολη πληροφοριών</button>
+
+        </form>
+        {%include 'temp_message.html'%}
+            {%include 'mainPageButton.html' %}
+
+    </div>
+        <script src="{{url_for('static',filename='javascript/requestHandler.js')}}"></script>
+
+    <script src="{{ url_for('static', filename='javascript/insertingSourcePollutant.js') }}"></script>
+ </body>
+</html>       

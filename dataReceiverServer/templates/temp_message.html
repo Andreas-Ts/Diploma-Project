@@ -1,0 +1,11 @@
+{% if temp_error or temp_success %}
+<div class="status-container">
+    {% if temp_error %}
+        <div class="error-message ">{{ temp_error }}</div>
+    {% endif %}
+
+    {% if temp_success%}
+        <div class="success-message">{{ temp_success }}</div>
+    {% endif %}
+</div>  
+{% endif %}

@@ -58,16 +58,19 @@ class ServerFunctions:
                              f"Must be one of {self.list_of_User_Input_Type_In_Category_Experiment_State}.")
         if userInputCategory == 'EnvRoomData':
             
-            lastUserInputElement = self.UserInput.find_one({'userInputCategory': 'EnvRoomData'})
+            lastUserInputElement = self.UserInput.find_one({'userInputCategory': 'EnvRoomData'},sort=[("timestamp",-1)])
                
         
         elif userInputCategory == 'ExperimentState' and userInputType == 'Any':
-            lastUserInputElement= self.UserInput.find_one({'userInputCategory': "ExperimentState"})
+            lastUserInputElement= self.UserInput.find_one({'userInputCategory': "ExperimentState"},sort=[("timestamp",-1)])
                                         
            
         elif userInputCategory == 'ExperimentState' and userInputType != 'Any':
+            print("hiii")
+            print(userInputCategory)
+            print(userInputType)
             lastUserInputElement= self.UserInput.find_one({'userInputCategory': "ExperimentState",
-                                        'userInputType': userInputType})  
+                                        'experimentState': userInputType},sort=[("timestamp",-1)])  
         return lastUserInputElement
         
     def getCurrentDateTime(self):
@@ -80,7 +83,12 @@ class ServerFunctions:
         timeStamp =datetime.isoformat(self.getCurrentDateTime())
         return timeStamp
 
-
+    def getReadableDateTimeFromISOformat(self,isoDateTime):
+        # Convert ISO format to datetime object
+        dt = datetime.fromisoformat(isoDateTime)
+        # Format the datetime object to a readable string
+        formatted_date = dt.strftime("%d %B %Y, %H:%M")
+        return formatted_date 
            
 
 

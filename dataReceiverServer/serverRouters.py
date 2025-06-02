@@ -30,7 +30,7 @@ class serverRouters:
 
                 return render_template(
                     'base.html',                  
-                    env_last_reading=env_last_reading 
+                    env_last_reading=self.beautifyTimestamp(env_last_reading)   
                 )
             else:
                 return render_template(
@@ -50,12 +50,7 @@ class serverRouters:
             return  "Invalid JSON", 400
 
         return "Message received", 200
-    def getReadableDateTimeFromISOformat(self,isoDateTime):
-        # Convert ISO format to datetime object
-        dt = datetime.fromisoformat(isoDateTime)
-        # Format the datetime object to a readable string
-        formatted_date = dt.strftime("%d %B %Y, %H:%M")
-        return formatted_date
+   
    
 
     def getLastUserInputHandler(self,userInputCategory,userInputType:Optional[str]=None):
@@ -69,7 +64,12 @@ class serverRouters:
             print(f"PyMongoError occurred: {e}")
             Response.code = 500
             return render_template('base.html', temp_error=str(e))    
-        
+
+    def beautifyTimestamp(self,env_last_reading):
+        if env_last_reading is not None:
+            env_last_reading["timestamp"] = self.srvFunc.getReadableDateTimeFromISOformat(env_last_reading['timestamp'])
+        return env_last_reading
+
 class indexRouter(serverRouters):  
     def __init__(self):
         super().__init__()
@@ -81,17 +81,30 @@ class getlastUserInputExperimentState(serverRouters):
         super().__init__()
     def get(self,ExperimentState):
         returnState = self.srvFunc.getLastUserInput("ExperimentState",ExperimentState)
-        returnState.pop('_id', None)
+        
         print(f"Last user input for ExperimentState '{ExperimentState}': {returnState}") 
+        if returnState is not None:
+            returnState.pop('_id', None)
         return  jsonify(returnState) if returnState else jsonify({"noPreviousInput": True}), 200
+
+    def delete(self,ExperimentState):
+        try:
+         inputToBeDeleted = self.srvFunc.getLastUserInput("ExperimentState",ExperimentState)
+        
+         print(f"Last user input to be deleted for experimentState:'{ExperimentState}': {inputToBeDeleted}") 
+         self.srvFunc.UserInput.delete_one({"_id": inputToBeDeleted["_id"]})   
+         return render_template('base.html',temp_success = "Διαγράφτηκε με επιτυχία η τελευταία εισαγωγή του χρήστη.")
+        except errors.PyMongoError as e:
+            print(f"PyMongoError occurred: {e}")
+            Response.code = 500
+            return render_template('base.html', temp_error=str(e))  
 
     
        
 class postUserInput(serverRouters):
     def __init__(self):
         super().__init__()
-    def get(self):
-        return render_template('insertPollutantSource.html')
+   
     def post(self,ExperimentState):
         try:
             if ExperimentState not in self.srvFunc.list_of_User_Input_Type_In_Category_Experiment_State or ExperimentState is 'Any':
@@ -112,18 +125,63 @@ class postUserInput(serverRouters):
             Response.code = 500
             return render_template('base.html', temp_error=str(e))    
 
-    def insertingSourceHandler(self,timestamp):
-        pass 
+  
+
+  
+
+class submitSourcePollutantDetails(serverRouters):
+    def __init__(self):
+        super().__init__()
+    def get(self):
+        try:
+            pipeline = [
+                { "$sort" : {"timestamp" : -1} },
+                {"$group":{
+                    "_id": None,
+                    "pollutant-type-distinct-list": {"$addToSet":"details.pollutant-type"},
+                    "item-used-distinct-list": {"$addToSet": "item-used"},
+                    "quantity-used-distinct-list" : {"$addToSet": "quantity-used"},
+                    "pollutant-type-latest_value":{"$first":"details.pollutant-type"},
+                    "item-used-latest_value": {"$first": "item-used"},
+                    "quantity-used-latest_value" : {"$first": "quantity-used"},
+                    "front-wall-distance-latest_value": {"$first":"front-wall"},
+                    "side-right-wall-distance-latest_value": {"$first":"side-right-wall"}
+                    
+                }}
+            ]
+            if self.srvFunc.getLastUserInput("ExperimentState","InsertingSourcePollutant") is None:
+                return render_template('insertingSourcePollutant.html')
+            else:   
+                details = list(self.srvFunc.timeSeries.aggregate(pipeline))
+                return render_template('insertingSourcePollutant.html',details = details)
+        except errors.PyMongoError as e:
+            print(f"PyMongoError occurred: {e}")
+            Response.code = 500
+            return render_template('base.html',temp_error="Υπήρξε πρόβλημα με την βάση δεδομένων"+str(e))    
+    
+       
+    def post(self):
+        try:
+            insertion = { 'timestamp': self.srvFunc.getCurrentDateTimeISOformat(),
+                    'userInputCategory': "ExperimentState",
+                    'experimentState': "InsertingSourcePollutant",
+                    "details": request.form }
+            self.srvFunc.UserInput.insert_one(insertion)
+            return self.getIndex()
+        except errors.PyMongoError as e:
+            print(f"PyMongoError occurred: {e}")
+            Response.code = 500
+            return self.getIndex()        
 
 class submitenvRoomDataRouter(serverRouters):
     def __init__(self):
         super().__init__()
     def get(self):
-        last_reading = self.getLastUserInputHandler("EnvRoomData")
-        last_reading.timestamp = self.getReadableDateTimeFromISOformat(last_reading['timestamp'])
+        env_last_reading = self.getLastUserInputHandler("EnvRoomData")
+        
         return render_template(
             'submitEnvRoomData.html',
-            last_reading = last_reading           
+            env_last_reading = self.beautifyTimestamp(env_last_reading)          
         )
 
     def post(self):
@@ -141,7 +199,7 @@ class submitenvRoomDataRouter(serverRouters):
             # Sanitize inputs
             temperature = escape(temperature)
             humidity = escape(humidity)
-            timestamp = self.getCurrentDateTimeISOformat()
+            timestamp = self.srvFunc.getCurrentDateTimeISOformat()
            
 
             # Save to MongoDB
@@ -152,14 +210,14 @@ class submitenvRoomDataRouter(serverRouters):
                 'humidity': humidity
             })
             #create a last reading object 
-            last_reading = {
+            env_last_reading = {
                 'timestamp': self.getReadableDateTimeFromISOformat(timestamp),
                 'userInputCategory': "EnvRoomData",
                 'temperature': temperature,
                 'humidity': humidity,
             }
             Response.code = 200
-            return render_template('submitEnvRoomData.html',last_reading =last_reading)
+            return render_template('submitEnvRoomData.html',env_last_reading= env_last_reading )
     
         except ValueError:
             Response.code = 400

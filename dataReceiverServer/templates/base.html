@@ -25,11 +25,27 @@
         <!-- Experiment State -->
         <h2 class="sub-title">Κατάσταση του πειράματος</h2>
         <div id="experiment_state" class="state-box"></div>
-      
-        <button id="submitExperimentState" class="submit-button"></buttonid>>
-            
-        </button>
-        
+        <div id="timer-container" class="container" hidden>
+            <h1></h1>
+            <p></p>
+            <div id="timer">
+            <div>
+                <span id="hours">00</span>
+                <span class="label">hrs</span>
+            </div>
+            <div>
+                <span id="minutes">00</span>
+                <span class="label">min</span>
+            </div>
+            <div>
+                <span id="seconds">00</span>
+                <span class="label">sec</span>
+            </div>
+            </div>
+        </div> 
+
+        <button id="submitExperimentState"  class="submit-button"></button>
+  {% include 'temp_message.html' %}    
  <!-- Show last env room reading -->
         
         <div class="content-block">
@@ -40,9 +56,13 @@
             Υπόβαλε Θερμοκρασία και Υγρασία Δωματίου
         </button>
         </div>
-        
+   
+    
+
     </div>
-    <script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
+    <script src="{{url_for('static',filename='javascript/requestHandler.js')}}"></script>
     <script src="{{url_for('static',filename='javascript/timer.js')}}"></script>
+     
+    <script src="{{ url_for('static', filename='javascript/script.js') }}"></script>
 </body>
 </html>

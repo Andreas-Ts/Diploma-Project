@@ -19,13 +19,15 @@ def server_routers():
     @app.route("/description")
     def description():
         return render_template("description.html")    
-    @app.route("/lastUserInputExperimentState/<ExperimentState>", methods=["GET"])
+    @app.route("/lastUserInputExperimentState/<ExperimentState>", methods=["GET","DELETE"])
     def lastUserInputExperiment(ExperimentState):
         router = serverRouters.getlastUserInputExperimentState()
         if request.method == "GET":
             print(f"Received GET request for last user input of type: {ExperimentState}")
             return router.get(ExperimentState)
-     
+        if request.method == "DELETE": 
+            return router.delete(ExperimentState)
+
 
     @app.route("/postUserInput/<ExperimentState>", methods=["GET","POST"])  
     def postUserInput(ExperimentState):  
@@ -34,7 +36,18 @@ def server_routers():
             return router.get()
         elif request.method == "POST":
             return router.post(ExperimentState)
-      
+
+    @app.route("/submitSourcePollutantDetails",methods=["GET","POST"]) 
+    def submitSourcePollutantDetails():
+        router = serverRouters.submitSourcePollutantDetails()
+        if request.method == "GET":
+            return router.get()
+        elif request.method == "POST":
+            return router.post()
+
+
+
+
     @app.route("/submitEnvRoomData", methods=["GET", "POST"])
     def submitEnvRoomData():
         router = serverRouters.submitenvRoomDataRouter()
