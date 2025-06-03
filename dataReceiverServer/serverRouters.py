@@ -70,9 +70,7 @@ class serverRouters:
             env_last_reading["timestamp"] = self.srvFunc.getReadableDateTimeFromISOformat(env_last_reading['timestamp'])
         return env_last_reading
 
-class indexRouter(serverRouters):  
-    def __init__(self):
-        super().__init__()
+
     
 
    
@@ -211,18 +209,41 @@ class submitenvRoomDataRouter(serverRouters):
             })
             #create a last reading object 
             env_last_reading = {
-                'timestamp': self.getReadableDateTimeFromISOformat(timestamp),
+                'timestamp': self.srvFunc.getReadableDateTimeFromISOformat(timestamp),
                 'userInputCategory': "EnvRoomData",
                 'temperature': temperature,
                 'humidity': humidity,
             }
             Response.code = 200
-            return render_template('submitEnvRoomData.html',env_last_reading= env_last_reading )
+            return render_template('base.html',env_last_reading= env_last_reading,temp_success="Η θερμοκρασία αποθηκεύτηκε σωστά" )
     
         except ValueError:
             Response.code = 400
-            return render_template('submitEnvRoomData.html', temp_error="Invalid input values.")
+            return render_template('base.html',env_last_reading= env_last_reading,temp_error = "error"+ str(e) + "with the value")
         except errors.PyMongoError as e:
             print(f"PyMongoError occurred: {e}")
             Response.code = 500
-            return render_template('submitEnvRoomData.html', temp_error="Database error.")
+            return render_template('base.html',env_last_reading= env_last_reading,temp_error =  "error"+ str(e) + "with the database")
+        
+class getEnvRoomDataRaw(serverRouters):
+    def __init__(self):
+        super().__init__()
+    def get(self):
+        try:
+            last_env_room_reading = self.getLastUserInputHandler("EnvRoomData")
+            if last_env_room_reading is None:
+                env_data_response = None
+            else:
+                env_data_response = {"temperature":last_env_room_reading["temperature"] , "humidity":last_env_room_reading["humidity"]}    
+            return env_data_response
+        except ValueError as e:
+            print(f"ValueError occurred: {e}")
+            Response.code = 400
+            env_data_response = {"error":e}
+            return jsonify(env_data_response)
+        except errors.PyMongoError as e:
+            print(f"PyMongoError occurred: {e}")
+            Response.code = 500
+            env_data_response = {"error":e}
+            return jsonify(env_data_response)
+        

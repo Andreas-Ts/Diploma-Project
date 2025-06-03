@@ -1,5 +1,5 @@
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template,Response
 import serverRouters
 app = Flask(__name__)
 # Load description text from file once
@@ -55,6 +55,14 @@ def server_routers():
             return router.get()
         if request.method == "POST":
             return router.post()
+
+    @app.route("/getEnvRoomDataRaw")
+    def getEnvRoomDataRaw():
+        router = serverRouters.getEnvRoomDataRaw()
+        return router.get()       
+
+
+    
  
 # Run the server if this file is executed directly
 if __name__ == "__main__":

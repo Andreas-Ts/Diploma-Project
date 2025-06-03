@@ -60,13 +60,13 @@
             </datalist>
 
             <div class="container">
-                <label for="front-wall">Απόσταση από μπροστινό τοίχο:</label>
+                <label for="front-wall">Απόσταση από μπροστινό τοίχο σε μέτρα:</label>
                 <input type="number" name="front-wall" id="front-wall" min="0" step="0.1" 
                     {%if details %}
                         value = "{{front-wall-distance-latest_value}}" 
                     {%endif%}    
                     required>
-                <label for="side-right-wall">Απόσταση από δεξίο τοίχο¨</label>
+                <label for="side-right-wall">Απόσταση από δεξίο τοίχο σε μέτρα:</label>
                 <input type="number" name="side-right-wall" id="side-right-wall" min="0" step="0.1" 
                     {%if details %}
                         value ="{{side-right-wall-distance-latest_value}}" 
@@ -82,8 +82,8 @@
             <label for="are-doors-opened">Θα είναι οι πόρτες ανοιχτές?</label>
             </div>
             <div>
-            <input type="checkbox" id="are-people-opened" name="are-people-opened">
-            <label for="are-people-opened">Θα είναι άνθρωποι μες στον χώρο?</label>
+            <input type="checkbox" id="are-people-inside" name="are-people-inside">
+            <label for="are-people-inside">Θα είναι άνθρωποι μες στον χώρο?</label>
             </div>
 
                         
