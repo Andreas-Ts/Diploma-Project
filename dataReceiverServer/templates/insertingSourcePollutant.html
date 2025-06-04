@@ -13,7 +13,7 @@
         <form action="{{url_for("submitSourcePollutantDetails")}}" method="post">
         
             <label for="pollutant-type">Τύπος ρύπου:</label>
-            <input type="text"  name="pollutant-type" list="pollutant-type" 
+            <input type="text"  name="pollutant-type" autocomplete="off" list="pollutant-type" 
              {%if details %}
                 value="{{details.pollutant-type-latest_value}}"       
             {%endif%}
@@ -30,7 +30,7 @@
             </datalist>
             <label for="item-used">Αντικείμενο προέλευσης</label>
 
-            <input type="text" name="item-used" list="item-used" 
+            <input type="text" name="item-used" autocomplete="off" list="item-used" 
             {%if details %}  
                 value = "{{details.item-used-latest_value}}"  
             {%endif%}      
@@ -45,7 +45,7 @@
             </datalist>
 
             <label for="quantity-used">Ποσότητα που χρησιμοποιείται:</label>
-            <input type="text" name="quantity-used" list="quantity-used" 
+            <input type="text" name="quantity-used" autocomplete="off" list="quantity-used" 
             {%if details %} 
                 value = "{{details.quantity-used-latest_value}}"
             {%endif%}    
@@ -58,6 +58,19 @@
                 {%endfor%}
             {%endif%}  
             </datalist>
+
+            <label for="room"></label>
+            <input type="text" name="room"autocomplete="off" list="room" 
+            {%if details %}  
+                value = "{{details.room-latest_value}}"  
+            {%endif%}      
+            required/>
+            <datalist id="room">
+             {%if details %}        
+                 {% for item in details.room-distinct-list %}
+                    <option value="{{item}}">
+                {%endfor%}
+            {%endif%}    
 
             <div class="container">
                 <label for="front-wall">Απόσταση από μπροστινό τοίχο σε μέτρα:</label>

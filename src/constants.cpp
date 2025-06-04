@@ -30,7 +30,7 @@ const char* ssid = "COSMOTE-609943";
 const char* password = "n9e6bmreeax2x7u3";
 
 // Server URL
-String serverUrl = "http://192.168.1.6:8080/timeSeriesEndpoints/postTimeSeriesData";  // Your computer's local IP
+String serverUrl = "http://192.168.1.6:8080/timeSeriesEndpoints/";  // Your computer's local IP
 // configuration for the bsec operation
 const uint8_t bsec_config_iaq[] = {
   #include "config/generic_33v_3s_4d/bsec_iaq.txt"
@@ -55,3 +55,5 @@ unsigned long ENVIRONMENTAL_DATA_CCS811_FREQUENCY = 60 * 60 * 1000; //1 hour
 unsigned long ENVIRONMENTAL_DATA_CCS811_TIMER = 0; //timer for the environmental data
 
 uint16_t stateUpdateCounter = 0 ; //counter for the state update of the CCS811 sensor and the BME680 sensor
+
+bool firstTimeAskingEnvironmentalData = true; //to know if we have asked the environmental data for the first time

@@ -58,7 +58,7 @@ void loop() {
 if (loopSensor()){ //a new value has been read from the sensor 
     // Begin HTTP connection
     Serial.println("Sending data to server...");
-    http.begin(serverUrl);//in case of adding more url sections into the url we send the post request
+    http.begin((serverUrl+"postTimeSeriesData"));//in case of adding more url sections into the url we send the post request
     Serial.println("URL: " + serverUrl);
     http.addHeader("Content-Type", "application/json");
     http.setTimeout(5000); // Set timeout to 5 seconds

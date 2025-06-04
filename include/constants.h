@@ -58,4 +58,6 @@ extern float roomHumidity;
 
 extern String sensorLocatedIntoDevice;
 
+extern bool firstTimeAskingEnvironmentalData; //to know if we have asked the environmental data for the first time
+
 #endif

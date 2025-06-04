@@ -24,7 +24,7 @@
 
     //just in case of no previous experiment state
     if (response.noPreviousInput == true) {
-        submitExperimentStateClickListener("http://localhost:8080/postUserInput/StartingExperiment","POST")
+        submitExperimentStateClickListener("http://localhost:8080/postUserInput/StartingExperiment","POST","StartingExperiment")
         experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
         
         return ;

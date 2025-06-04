@@ -35,14 +35,7 @@ class ServerFunctions:
         self.zoneInfo = ZoneInfo('Europe/Athens')  # Set the timezone to Europe/Athens
         #create the cvs file
         # Path to save the CSV file
-        os.makedirs(os.path.dirname(self.csv_file_path), exist_ok=True)
-        file_exists = os.path.exists(self.csv_file_path)
-        print(f"File exists: {file_exists}")
-        if not file_exists:
-            with open(self.csv_file_path, mode='w', newline='') as csv_file:
-                csv_writer = csv.writer(csv_file)
-                csv_writer.writerow(self.list_of_csv_variables)
-                print("Header written to new CSV file.")
+     
     
      
 
@@ -68,7 +61,8 @@ class ServerFunctions:
         elif userInputCategory == 'ExperimentState' and userInputType != 'Any':
             lastUserInputElement= self.UserInput.find_one({'userInputCategory': "ExperimentState",
                                         'experimentState': userInputType},sort=[("timestamp",-1)])  
-        lastUserInputElement["timestamp"] =lastUserInputElement["timestamp"].isoformat()   
+        if lastUserInputElement is not None:
+            lastUserInputElement["timestamp"] =lastUserInputElement["timestamp"].isoformat()   
         return lastUserInputElement
         
     def getCurrentDateTime(self):
