@@ -56,10 +56,13 @@ def server_routers():
         if request.method == "POST":
             return router.post()
 
-    @app.route("/getEnvRoomDataRaw")
-    def getEnvRoomDataRaw():
-        router = serverRouters.getEnvRoomDataRaw()
-        return router.get()       
+    @app.route("/timeSeriesEndpoints/<endpoint>", methods=["GET", "POST"])
+    def timeSeriesEndpoints(endpoint):
+        router = serverRouters.timeSeriesEndpoints()
+        if request.method == "GET":
+            return router.get(endpoint)
+        if request.method == "POST":
+            return router.post(endpoint)
 
 
     

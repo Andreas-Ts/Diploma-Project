@@ -141,8 +141,9 @@ bool setupBME680(){
       }
       ENVIRONMENTAL_DATA_CCS811_TIMER = millis(); //set timer 
     }
-    return haveNewData;
+   
   }
+   return haveNewData;
   }
    
   

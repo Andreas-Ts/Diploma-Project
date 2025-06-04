@@ -58,5 +58,4 @@ extern float roomHumidity;
 
 extern String sensorLocatedIntoDevice;
 
-
 #endif

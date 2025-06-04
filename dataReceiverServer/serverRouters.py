@@ -5,6 +5,8 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from pymongo import errors
 import os
+from bson import json_util
+import json
 from typing import Optional
 
 class serverRouters:
@@ -24,7 +26,6 @@ class serverRouters:
             # Get the last environment data
             env_last_reading = self.getLastUserInputHandler("EnvRoomData")
             # In real use, fetch from your data source; here we simulate no history
-            print(env_last_reading)
             if env_last_reading is not None:
                 print("reading found for EnvRoomData.")
 
@@ -38,18 +39,7 @@ class serverRouters:
                 )
      
     def postIndex(self):
-        print("Received POST request")
-        print(f"Request from: {request.remote_addr}")  # Log client IP
-
-        try:
-            data = request.get_json(force=True)
-            print(f"Received JSON message: {data}")
-            self.srvFunc.saveData(data)
-        except Exception as e:
-            print(f"Error: {e}")
-            return  "Invalid JSON", 400
-
-        return "Message received", 200
+        pass
    
    
 
@@ -80,7 +70,7 @@ class getlastUserInputExperimentState(serverRouters):
     def get(self,ExperimentState):
         returnState = self.srvFunc.getLastUserInput("ExperimentState",ExperimentState)
         
-        print(f"Last user input for ExperimentState '{ExperimentState}': {returnState}") 
+        #print(f"Last user input for ExperimentState '{ExperimentState}': {returnState}") 
         if returnState is not None:
             returnState.pop('_id', None)
         return  jsonify(returnState) if returnState else jsonify({"noPreviousInput": True}), 200
@@ -89,7 +79,7 @@ class getlastUserInputExperimentState(serverRouters):
         try:
          inputToBeDeleted = self.srvFunc.getLastUserInput("ExperimentState",ExperimentState)
         
-         print(f"Last user input to be deleted for experimentState:'{ExperimentState}': {inputToBeDeleted}") 
+        # print(f"Last user input to be deleted for experimentState:'{ExperimentState}': {inputToBeDeleted}") 
          self.srvFunc.UserInput.delete_one({"_id": inputToBeDeleted["_id"]})   
          return render_template('base.html',temp_success = "Διαγράφτηκε με επιτυχία η τελευταία εισαγωγή του χρήστη.")
         except errors.PyMongoError as e:
@@ -105,14 +95,13 @@ class postUserInput(serverRouters):
    
     def post(self,ExperimentState):
         try:
-            if ExperimentState not in self.srvFunc.list_of_User_Input_Type_In_Category_Experiment_State or ExperimentState is 'Any':
+            if ExperimentState not in self.srvFunc.list_of_User_Input_Type_In_Category_Experiment_State or ExperimentState == 'Any':
                 return render_template('base.html', temp_error="Invalid Experiment State for an input.") 
             timestamp = self.srvFunc.getCurrentDateTimeISOformat() 
-            if ExperimentState == "InsertingSourcePollutant":
-                last_insertion = self.insertingSourceHandler(timestamp)  
-            else:
+            if ExperimentState != "InsertingSourcePollutant":
+        
                 last_insertion = {
-                    'timestamp': timestamp,
+                    'timestamp': datetime.fromisoformat(timestamp),
                     'userInputCategory': "ExperimentState",
                     'experimentState': ExperimentState
                 }
@@ -160,7 +149,7 @@ class submitSourcePollutantDetails(serverRouters):
        
     def post(self):
         try:
-            insertion = { 'timestamp': self.srvFunc.getCurrentDateTimeISOformat(),
+            insertion = { 'timestamp': self.srvFunc.getCurrentDateTime(),
                     'userInputCategory': "ExperimentState",
                     'experimentState': "InsertingSourcePollutant",
                     "details": request.form }
@@ -197,7 +186,7 @@ class submitenvRoomDataRouter(serverRouters):
             # Sanitize inputs
             temperature = escape(temperature)
             humidity = escape(humidity)
-            timestamp = self.srvFunc.getCurrentDateTimeISOformat()
+            timestamp = self.srvFunc.getCurrentDate()
            
 
             # Save to MongoDB
@@ -209,7 +198,7 @@ class submitenvRoomDataRouter(serverRouters):
             })
             #create a last reading object 
             env_last_reading = {
-                'timestamp': self.srvFunc.getReadableDateTimeFromISOformat(timestamp),
+                'timestamp': self.srvFunc.getReadableDateTimeFromISOformat(datetime.isoformat(timestamp)),
                 'userInputCategory': "EnvRoomData",
                 'temperature': temperature,
                 'humidity': humidity,
@@ -225,25 +214,101 @@ class submitenvRoomDataRouter(serverRouters):
             Response.code = 500
             return render_template('base.html',env_last_reading= env_last_reading,temp_error =  "error"+ str(e) + "with the database")
         
-class getEnvRoomDataRaw(serverRouters):
+class timeSeriesEndpoints(serverRouters):
     def __init__(self):
         super().__init__()
-    def get(self):
+    def get(self,endpoint):
+        if endpoint == "getEnvRoomData":
+            return self.getEnvRoomDataRaw()
+        elif endpoint == "getTimeSeriesData":
+            return self.getTimeSeriesData()
+        
+    def post(self,endpoint):
+
+        if endpoint == "postTimeSeriesData":
+            return self.postTimeSeriesData()
+        
+    def getTimeSeriesData(self):
+        start_timestamp_epoch = request.args.get("start")
+        end_timestamp_epoch =   request.args.get("end")
+        if start_timestamp_epoch is None or end_timestamp_epoch is None:
+            return jsonify({"error": "Start and end timestamps are required"}), 400
+        try:
+            print(start_timestamp_epoch, end_timestamp_epoch)
+            start_timestamp = datetime.fromtimestamp((int(start_timestamp_epoch)/1000),  self.srvFunc.zoneInfo)
+            end_timestamp= datetime.fromtimestamp((int(end_timestamp_epoch)/1000), self.srvFunc.zoneInfo)
+       
+            pipeline = [
+                {"$match": {
+                    "Id" : int(request.args.get("Id")),
+                    "timestamp": {
+                        "$gte": start_timestamp,
+                        "$lte": end_timestamp
+                    }
+                }},
+                {"$sort": {"timestamp": 1}},  # Sort by timestamp in ascending order
+                {"$addFields": {
+                    "timestamp": {
+                        "$dateToString": {
+                            
+                            "date": "$timestamp",
+                            
+                        }
+                    }
+                }},
+            ]
+            response_docs = list(self.srvFunc.timeSeries.aggregate(pipeline))
+
+            print(response_docs)
+            return jsonify(json.loads(json_util.dumps(response_docs))), 200 
+        except ValueError:
+            return jsonify({"error": "Invalid timestamp format"}), 400       
+        except errors.PyMongoError as e:
+            print(f"PyMongoError occurred: {e}")
+            return jsonify({"error": str(e)}), 500  
+            
+    def getEnvRoomDataRaw(self):
         try:
             last_env_room_reading = self.getLastUserInputHandler("EnvRoomData")
             if last_env_room_reading is None:
                 env_data_response = None
             else:
                 env_data_response = {"temperature":last_env_room_reading["temperature"] , "humidity":last_env_room_reading["humidity"]}    
-            return env_data_response
+            return jsonify(env_data_response)
         except ValueError as e:
             print(f"ValueError occurred: {e}")
             Response.code = 400
-            env_data_response = {"error":e}
+            env_data_response = {"error":str(e)}
             return jsonify(env_data_response)
         except errors.PyMongoError as e:
             print(f"PyMongoError occurred: {e}")
             Response.code = 500
-            env_data_response = {"error":e}
-            return jsonify(env_data_response)
+            env_data_response = {"error":str(e)}
+            return jsonify(env_data_response)  
+
+    def postTimeSeriesData(self):
+        try: 
+            data = request.get_json()
+
+            data['timestamp'] = self.srvFunc.getCurrentDateTime()
+
+            #Insert the data into the database,deleting the irrelevant fields
+            #keep the Timestamp,Id and Sensor fields
+            keep_fields = ['timestamp', 'Id', 'Sensor']
+            # Create a new dictionary with only the fields we want to keep
+            data = {key: value 
+                    for key, value in data.items() 
+                    if  key.startswith(data["Sensor"]) or key in keep_fields}
+           
+            self.srvFunc.timeSeries.insert_one(data)
+            return jsonify({"status": "OK"}), 200
+        except errors.PyMongoError as e:
+            print(f"An error occurred while inserting data into MongoDB: {e}")
+            return jsonify({"error": "Failed to insert data into MongoDB"}), 500    
         
+        except ValueError as e:
+            print(f"ValueError occurred: {e}")
+            Response.code = 400
+            return jsonify({"error": str(e)}), 400
+        
+            

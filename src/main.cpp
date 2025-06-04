@@ -50,7 +50,7 @@ void loop() {
   if (WiFi.status() != WL_CONNECTED) {
      Serial.println("Wi-Fi not connected");
     errLeds();
-    delay(3000); // Wait 3 seconds before checking agains
+    delay(5000); // Wait 3 seconds before checking agains
     return ; //stop the rest of the loop from executing
 }
     HTTPClient http;
@@ -59,6 +59,7 @@ if (loopSensor()){ //a new value has been read from the sensor
     // Begin HTTP connection
     Serial.println("Sending data to server...");
     http.begin(serverUrl);//in case of adding more url sections into the url we send the post request
+    Serial.println("URL: " + serverUrl);
     http.addHeader("Content-Type", "application/json");
     http.setTimeout(5000); // Set timeout to 5 seconds
     // Serialize the  JSON

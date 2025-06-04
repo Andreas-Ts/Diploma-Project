@@ -66,17 +66,15 @@ class ServerFunctions:
                                         
            
         elif userInputCategory == 'ExperimentState' and userInputType != 'Any':
-            print("hiii")
-            print(userInputCategory)
-            print(userInputType)
             lastUserInputElement= self.UserInput.find_one({'userInputCategory': "ExperimentState",
                                         'experimentState': userInputType},sort=[("timestamp",-1)])  
+        lastUserInputElement["timestamp"] =lastUserInputElement["timestamp"].isoformat()   
         return lastUserInputElement
         
     def getCurrentDateTime(self):
         # Get the current date and time in the local timezone
         currentDateAndTime = datetime.now(self.zoneInfo)
-        print (f"Current date and time: {currentDateAndTime}")
+       # print (f"Current date and time: {currentDateAndTime}")
         return currentDateAndTime 
     #get current date and time in ISO format at the local timezone
     def getCurrentDateTimeISOformat(self):
@@ -90,34 +88,3 @@ class ServerFunctions:
         formatted_date = dt.strftime("%d %B %Y, %H:%M")
         return formatted_date 
            
-
-
-    #save the data to the csv file and the database
-    def saveData(self, message):
-        local_timezone = ZoneInfo('Europe/Athens')
-
-        # Write data row into CSV file
-
-        with open(self.csv_file_path, mode='a', newline='') as csv_file:
-            csv_writer = csv.DictWriter(csv_file, fieldnames=self.list_of_csv_variables, extrasaction='ignore')
-
-            currentDateAndTime = datetime.now(local_timezone)
-
-            message['DateTime'] = datetime.isoformat(currentDateAndTime)
-
-            print(message)
-            csv_writer.writerow(message)
-
-            csv_file.flush()
-
-        #Insert the data into the database,deleting the irrelevant fields
-        #keep the Timestamp,Id and Sensor fields
-        keep_fields = ['Timestamp', 'Id', 'Sensor']
-        # Create a new dictionary with only the fields we want to keep
-        message = {key: value 
-                   for key, value in message.items() 
-                   if  key.startswith(message["Sensor"]) or key in keep_fields}
-        insertion_result = self.timeSeries.insert_one(message)
-        print(f"Data inserted into MongoDB with id: {insertion_result.inserted_id}")
-
-        
