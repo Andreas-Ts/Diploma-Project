@@ -36,6 +36,9 @@ function createConfirmText(formData){
         case "quantity-used":
            name = "Ποσότητα που χρησιμοποιείται";
            break;
+        case "room":
+           name = "Δωμάτιο";
+           break;  
         case "front-wall":
            name = "Απόσταση από μπροστινό τοίχο σε μέτρα";
            break;

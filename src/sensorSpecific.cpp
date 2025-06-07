@@ -106,9 +106,10 @@ bool setupBME680(){
       messageJSON["BME680:humidity"] = iaqSensor.humidity;
       messageJSON["BME680:gasPercentage"] = iaqSensor.gasPercentage;
       messageJSON["BME680:gasPercentageAccuracy"] = iaqSensor.gasPercentageAccuracy;
-      updateBME680State();
 
     } 
+    updateBME680State();
+
     checkIaqSensorStatus(false);
     return haveNewData;
   }
@@ -126,17 +127,14 @@ bool setupBME680(){
         haveNewData = true;
         CCS811_TIMER = millis(); //set timer 
         checkIf30MinutesHavePassedCSS811(); //we calculate if the 30 minutes after activation have passed
-        if (minutes30HavePassed == 1){
-          updateCCS811Baseline();
-        }
-      }
-      else{
-        Serial.println("Error at CSS811:" + String(readDataResult));
-        errLeds();
+        
       }
     
+    
   }
-  
+    if (minutes30HavePassed == 1){
+          updateCCS811Baseline();
+        }
     //ask for url every hour
     if ((firstTimeAskingEnvironmentalData == true and minutes30HavePassed == 1) or (abs((int)(millis()-ENVIRONMENTAL_DATA_CCS811_TIMER))>ENVIRONMENTAL_DATA_CCS811_FREQUENCY)){
       if (WiFi.status() == WL_CONNECTED) {

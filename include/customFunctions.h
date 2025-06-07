@@ -2,8 +2,8 @@
 
 
 
-#ifndef customFunctions
-#define customFunctions
+#ifndef CUSTOM_FUNCTIONS_H
+#define CUSTOM_FUNCTIONS_H
 
 #include "library_dependencies.h"
 #include "constants.h"
@@ -28,7 +28,7 @@ void errLeds(void);
 //flash leds.It is used as the python script cannot be accessed at the same time
 void flashLeds();
 
-
+void connectToWifiAndServer();
 
 /// @brief We assign an ID to the device for identifying messages with particular devices without hardwriting a MAC address
 ///        into the code.
@@ -53,5 +53,11 @@ void loadCCS811Baseline();
 void updateCCS811Baseline();
 
 void getEnvironmentalData();
+
+
+
+void setupConnectionInformation();
+void connectToWifiAndServer();
+void createTheUrl(String IP);
 
 #endif

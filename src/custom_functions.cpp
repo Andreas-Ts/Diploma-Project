@@ -1,6 +1,6 @@
 
 #include "custom_headers.h"
-#include "customFunctions.h"
+
 
 //Initialize the values of the json object to zero
 void initializemessageJSON(){
@@ -76,4 +76,55 @@ void flashLeds(){
   delay(500);
   digitalWrite(LED_BUILTIN, LOW);
   delay(500);
+}
+
+
+void connectToWifiAndServer(){
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+  Serial.println("Connecting to Wi-Fi");
+  bool wifi_found = false;
+  bool server_found =false;
+  //continue until you find a connection
+  while (wifi_found != true and server_found != true){
+
+    for (int i = 0 ; i < numberOfWifiRouters and (wifi_found != true and server_found != true);i++){
+        server_found =false;
+        wifi_found = false;
+        Serial.println("Trying to connect to Wi-Fi: " + connectionInformation[i].ssid);
+        WiFi.begin(connectionInformation[i].ssid.c_str(), connectionInformation[i].password.c_str()); 
+        delay(1000);
+        if (WiFi.status() == WL_CONNECTED){
+          selectedWIFI = connectionInformation[i];
+          bool wifi_found = true;
+          Serial.println("Wifi choosen:"+selectedWIFI.ssid);
+
+          for (int j=0 ; j <numberOfPotentialServers and server_found != true;j++){
+              
+              createTheUrl(selectedWIFI.serverIp[i]);
+              Serial.println("Trying to connect to server: " + selectedWIFI.serverIp[i]);
+              http.begin(serverUrl);
+              http.setTimeout(3000); // Set timeout to 5 seconds
+              Serial.println("URL: " + serverUrl);
+              int httpCode = http.GET(); 
+              //code received
+              if (httpCode > 0){
+                  selectedIP = selectedWIFI.serverIp[i];
+                  Serial.println("Connected to server at IP: " + selectedIP);
+                  server_found =true;
+              }
+
+          }
+        }
+
+    }  
+}
+  digitalWrite(LED_BUILTIN, LOW);
+
+}
+
+void createTheUrl(String IP){
+
+   serverUrl = "http://"+IP + port + endpoint;
+
 }

@@ -59,7 +59,7 @@
             {%endif%}  
             </datalist>
 
-            <label for="room"></label>
+            <label for="room">Δωμάτιο:</label>
             <input type="text" name="room"autocomplete="off" list="room" 
             {%if details %}  
                 value = "{{details.room-latest_value}}"  
@@ -98,8 +98,10 @@
             <input type="checkbox" id="are-people-inside" name="are-people-inside">
             <label for="are-people-inside">Θα είναι άνθρωποι μες στον χώρο?</label>
             </div>
-
-                        
+            <div>
+            <label> for="notes">Σημειώσεις:</label>
+            <input type="text" id="notes" name="notes" autocomplete="off">
+            </div>            
 
             <button type="submit">Υπόβολη πληροφοριών</button>
 

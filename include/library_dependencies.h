@@ -1,5 +1,5 @@
-#ifndef library_dependencies
-#define library_dependencies
+#ifndef LIBRARY_DEPENDENCIES_H
+#define LIBRARY_DEPENDENCIES_H
 
 #include <stdint.h>
 #include <Wire.h>
@@ -12,6 +12,8 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 #include <EEPROM.h>
+#include <Arduino.h>
+#include <WiFiMulti.h>
 
 
 #endif

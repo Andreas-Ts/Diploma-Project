@@ -21,6 +21,7 @@
         "library_dependencies.h": "c",
         "structures.h": "c",
         "ostream": "cpp",
-        "*.txt": "cpp"
+        "*.txt": "cpp",
+        "stdint.h": "c"
     }
 }

@@ -128,9 +128,12 @@ class submitSourcePollutantDetails(serverRouters):
                     "pollutant-type-distinct-list": {"$addToSet":"details.pollutant-type"},
                     "item-used-distinct-list": {"$addToSet": "item-used"},
                     "quantity-used-distinct-list" : {"$addToSet": "quantity-used"},
+                    "room-list" : {"$addToSet": "room-list"},
+
                     "pollutant-type-latest_value":{"$first":"details.pollutant-type"},
                     "item-used-latest_value": {"$first": "item-used"},
                     "quantity-used-latest_value" : {"$first": "quantity-used"},
+                    "room-latest_value" :{"$first" :"room"},
                     "front-wall-distance-latest_value": {"$first":"front-wall"},
                     "side-right-wall-distance-latest_value": {"$first":"side-right-wall"}
                     

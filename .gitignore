@@ -6,3 +6,4 @@
 .sensor_data.csv
 data/sensor_data.csv
 dataReceiverServer/logs/server_requests.log
+secrets.cpp

@@ -25,12 +25,15 @@ String sensorLocatedIntoDevice = "NO_KNOWN_SENSOR";
 
 JsonDocument messageJSON;
 
-// Replace with your network credentials
-const char* ssid = "COSMOTE-609943";
-const char* password = "n9e6bmreeax2x7u3";
 
 // Server URL
-String serverUrl = "http://192.168.1.6:8080/timeSeriesEndpoints/";  // Your computer's local IP
+
+
+String port =":8080"; // Port number for the server
+String endpoint = "/timeSeriesEndpoints/";
+String serverUrl  ;  // Your computer's local IP
+
+
 // configuration for the bsec operation
 const uint8_t bsec_config_iaq[] = {
   #include "config/generic_33v_3s_4d/bsec_iaq.txt"
@@ -57,3 +60,10 @@ unsigned long ENVIRONMENTAL_DATA_CCS811_TIMER = 0; //timer for the environmental
 uint16_t stateUpdateCounter = 0 ; //counter for the state update of the CCS811 sensor and the BME680 sensor
 
 bool firstTimeAskingEnvironmentalData = true; //to know if we have asked the environmental data for the first time
+
+WiFiMulti wifiMulti;
+
+wifi_Information    selectedWIFI;
+String    selectedIP;
+HTTPClient http;
+ wifi_Information* connectionInformation = nullptr;

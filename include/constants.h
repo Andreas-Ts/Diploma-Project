@@ -1,9 +1,9 @@
 
-#ifndef constants
-#define constants
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 #include "library_dependencies.h"
-
+#include "secrets.h"
 
 
 // Create an object of the class Bsec
@@ -59,5 +59,16 @@ extern float roomHumidity;
 extern String sensorLocatedIntoDevice;
 
 extern bool firstTimeAskingEnvironmentalData; //to know if we have asked the environmental data for the first time
+
+extern WiFiMulti wifiMulti;
+
+extern String endpoint ;
+
+extern String port;
+
+extern  wifi_Information    selectedWIFI;
+extern  String    selectedIP;
+extern    HTTPClient http;
+
 
 #endif
