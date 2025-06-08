@@ -6,14 +6,17 @@ void setup() {
   
   Serial.begin(115200);
   delay(1000);
-  setupConnectionInformation();  
+  Serial.println("hi");
+  setupConnectionInformation(); 
+  listAvailableWiFiNetworks();
+    connectToWifiAndServer();
+ 
   // Connect to Wi-Fi
 
 
   id = chooseIDBasedOfMAC(MAC_LIBRARY);
 
-
-  connectToWifiAndServer();
+  Serial.println(String(id));
 
   if (id<0){
     Serial.println("Problem with reading the MCA address.");
@@ -57,17 +60,24 @@ void loop() {
 
 if (loopSensor()){ //a new value has been read from the sensor 
     // Begin HTTP connection
+    HTTPClient http;
+
     Serial.println("Sending data to server...");
-    http.begin((serverUrl+"postTimeSeriesData"));//in case of adding more url sections into the url we send the post request
+    createTheUrl(endpoint +"postTimeSeriesData");
+
+    Serial.println("The url is:"+(serverUrl));
+    http.begin((serverUrl));//in case of adding more url sections into the url we send the post request
+
     http.addHeader("Content-Type", "application/json");
+        http.setTimeout(4000);
+
     // Serialize the  JSON
     String messageJSONString;
     serializeJsonPretty(messageJSON, messageJSONString);
-
     Serial.println(messageJSONString);
     // Send POST request
     int httpResponseCode = http.POST(messageJSONString);
-
+    Serial.println("The wifi is being:"+ String(WL_CONNECTED));
     // Print response
     if (httpResponseCode > 0) {
         String response = http.getString();

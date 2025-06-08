@@ -28,7 +28,6 @@ class serverRouters:
             env_last_reading = self.getLastUserInputHandler("EnvRoomData",is_front_end_account_for_local_timezone = 'Yes')
             # In real use, fetch from your data source; here we simulate no history
             if env_last_reading is not None:
-                print("reading found for EnvRoomData.")
 
                 return render_template(
                     'base.html',                  
@@ -73,7 +72,7 @@ class getlastUserInputExperimentState(serverRouters):
     def __init__(self):
         super().__init__()
     def get(self,ExperimentState):
-        returnState = self.getLastUserInputHandler("ExperimentState",ExperimentState,is_front_end_account_for_local_timezone = "Yes")
+        returnState = self.getLastUserInputHandler("ExperimentState",ExperimentState,is_front_end_account_for_local_timezone = "No")
         
         #print(f"Last user input for ExperimentState '{ExperimentState}': {returnState}") 
         if returnState is not None:
@@ -320,7 +319,8 @@ class timeSeriesEndpoints(serverRouters):
     def postTimeSeriesData(self):
         try: 
             data = request.get_json()
-
+            if not data:
+              return jsonify({"error": "Missing or invalid JSON data"}), 400
             data['timestamp'] = self.srvFunc.getCurrentDateTime()
 
             #Insert the data into the database,deleting the irrelevant fields
@@ -341,5 +341,10 @@ class timeSeriesEndpoints(serverRouters):
             print(f"ValueError occurred: {e}")
             Response.code = 400
             return jsonify({"error": str(e)}), 400
+        
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            return jsonify({"error": "Internal server error"}), 500
+    
         
             

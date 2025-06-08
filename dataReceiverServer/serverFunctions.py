@@ -81,11 +81,16 @@ class ServerFunctions:
             lastUserInputElement= self.UserInput.find_one({'userInputCategory': "ExperimentState",
                                         'experimentState': userInputType},sort=[("timestamp",-1)])  
 
-        if lastUserInputElement is not None and  is_front_end_account_for_local_timezone == "No":
-            lastUserInputElement["timestamp"] = lastUserInputElement["timestamp"].astimezone(self.zoneInfo)
-                               
-        if lastUserInputElement is not None:
+        
+        if lastUserInputElement is not None and  is_front_end_account_for_local_timezone == "Yes":
             lastUserInputElement["timestamp"] =lastUserInputElement["timestamp"].isoformat()   
+            print (lastUserInputElement["timestamp"] )
+
+
+        if lastUserInputElement is not None and  is_front_end_account_for_local_timezone == "No":
+            lastUserInputElement["timestamp"] = self.makeDateCorrectForJavascript(lastUserInputElement["timestamp"])
+            print (lastUserInputElement["timestamp"] )
+
         return lastUserInputElement
         
     def getCurrentDateTime(self):
@@ -104,4 +109,12 @@ class ServerFunctions:
         # Format the datetime object to a readable string
         formatted_date = dt.strftime("%d %B %Y, %H:%M")
         return formatted_date 
-           
+
+    def makeDateCorrectForJavascript(self,DateTimeWithoutTimezone):
+        
+
+        datetime_naive_with_timezone = DateTimeWithoutTimezone.replace(tzinfo=ZoneInfo("UTC"))
+
+        converted_datetime = datetime_naive_with_timezone.astimezone(ZoneInfo("Europe/Athens"))
+        iso_format_correct = converted_datetime.isoformat()
+        return iso_format_correct

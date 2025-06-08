@@ -1,5 +1,6 @@
 
 #include "custom_headers.h"
+#include "customFunctions.h"
 
 
 //Initialize the values of the json object to zero
@@ -39,7 +40,9 @@ void initializemessageJSON(){
 //and return the id of the device
 int chooseIDBasedOfMAC(const uint8_t *MAC_LIBRARY[]){
   int id;
+  
   esp_err_t  res= esp_wifi_get_mac(WIFI_IF_STA,my_MAC);
+  Serial.println("so:"+String(res));
   if (res != ESP_OK){
      Serial.println("Failed to read MAC address");
      return -1;
@@ -80,28 +83,41 @@ void flashLeds(){
 
 
 void connectToWifiAndServer(){
+
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.println("Connecting to Wi-Fi");
   bool wifi_found = false;
   bool server_found =false;
   //continue until you find a connection
-  while (wifi_found != true and server_found != true){
-
-    for (int i = 0 ; i < numberOfWifiRouters and (wifi_found != true and server_found != true);i++){
+  while (wifi_found != true && server_found != true){
+    
+    for (int i = 0 ; ((i < numberOfWifiRouters) && (wifi_found != true && server_found != true));i++){
+       
         server_found =false;
         wifi_found = false;
-        Serial.println("Trying to connect to Wi-Fi: " + connectionInformation[i].ssid);
+        Serial.println("Trying to connect to Wi-Fi: " + String(connectionInformation[i].ssid) + " .With password: "+connectionInformation[i].password);
         WiFi.begin(connectionInformation[i].ssid.c_str(), connectionInformation[i].password.c_str()); 
-        delay(1000);
+        Serial.println(connectionInformation[i].ssid.c_str());
+          Serial.println(connectionInformation[i].password.c_str());
+        Serial.println("Before delay" + String(WiFi.status()));
+        unsigned long startAttemptTime = millis();
+        const unsigned long wifiTimeout = 10000; // 10 seconds
+          while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < wifiTimeout) {
+            delay(500);
+            Serial.print(".");
+          }
+        Serial.println();
+        Serial.println("After delay"+String(WiFi.status()));
         if (WiFi.status() == WL_CONNECTED){
           selectedWIFI = connectionInformation[i];
-          bool wifi_found = true;
+          wifi_found = true;
           Serial.println("Wifi choosen:"+selectedWIFI.ssid);
 
           for (int j=0 ; j <numberOfPotentialServers and server_found != true;j++){
               
-              createTheUrl(selectedWIFI.serverIp[i]);
+              selectedIP = selectedWIFI.serverIp[j];
+              createTheUrl("/");
               Serial.println("Trying to connect to server: " + selectedWIFI.serverIp[i]);
               http.begin(serverUrl);
               http.setTimeout(3000); // Set timeout to 5 seconds
@@ -112,9 +128,16 @@ void connectToWifiAndServer(){
                   selectedIP = selectedWIFI.serverIp[i];
                   Serial.println("Connected to server at IP: " + selectedIP);
                   server_found =true;
+              }else{
+                Serial.println("Server not found");
               }
+                  http.end();
 
           }
+        }
+        else{
+          WiFi.disconnect(true);  // Disconnect and erase old config
+          delay(1000);
         }
 
     }  
@@ -123,8 +146,9 @@ void connectToWifiAndServer(){
 
 }
 
-void createTheUrl(String IP){
+void createTheUrl(String endpoint){
 
-   serverUrl = "http://"+IP + port + endpoint;
+   serverUrl = "http://"+ selectedIP + port + endpoint;
 
 }
+

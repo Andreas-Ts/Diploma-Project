@@ -38,7 +38,6 @@ def server_routers():
     def lastUserInputExperiment(ExperimentState):
         router = serverRouters.getlastUserInputExperimentState()
         if request.method == "GET":
-            print(f"Received GET request for last user input of type: {ExperimentState}")
             return router.get(ExperimentState)
         if request.method == "DELETE": 
             return router.delete(ExperimentState)

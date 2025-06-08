@@ -22,6 +22,7 @@
         "structures.h": "c",
         "ostream": "cpp",
         "*.txt": "cpp",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "new": "cpp"
     }
 }

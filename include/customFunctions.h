@@ -60,4 +60,6 @@ void setupConnectionInformation();
 void connectToWifiAndServer();
 void createTheUrl(String IP);
 
+void listAvailableWiFiNetworks();
+
 #endif
