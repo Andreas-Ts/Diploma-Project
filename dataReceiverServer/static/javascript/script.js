@@ -17,20 +17,33 @@
  
 
  });
+function checkSensorsState(){
 
+
+
+
+}
  function checkExperimentState(response){
     const experimentStateText = document.getElementById("experiment_state");
 
 
     //just in case of no previous experiment state
+
     if (response.noPreviousInput == true) {
         submitExperimentStateClickListener("http://localhost:8080/postUserInput/StartingExperiment","POST","StartingExperiment")
         experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
         
         return ;
     }
-    
+    if (response.noStableSensors == true){
+
+
+       experimentStateText.textContent = "Οι αισθητήρες δεν είναι ακόμα σταθεροί.Δες περιγραφή για την σταθεροποίηση τους";
+       document.getElementById("submitExperimentState").disabled = true;
+    }
+    console.log(response.timestamp);
     const startTime = new Date(response.timestamp);     // parsed into Date object the ISO Object
+    console.log(startTime);
     if (isNaN(startTime)) {
             throw new Error('Invalid datetime from server');
           }

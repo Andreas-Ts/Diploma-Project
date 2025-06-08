@@ -3,16 +3,17 @@ from serverFunctions import ServerFunctions
 from markupsafe import escape
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
 from pymongo import errors
 import os
 from bson import json_util
 import json
 from typing import Optional
 
+
 class serverRouters:
     def __init__(self):
         self.srvFunc = ServerFunctions()
-      
     def get(self):
         # Placeholder for GET request handling
         pass    
@@ -24,7 +25,7 @@ class serverRouters:
            
 
             # Get the last environment data
-            env_last_reading = self.getLastUserInputHandler("EnvRoomData")
+            env_last_reading = self.getLastUserInputHandler("EnvRoomData",is_front_end_account_for_local_timezone = 'Yes')
             # In real use, fetch from your data source; here we simulate no history
             if env_last_reading is not None:
                 print("reading found for EnvRoomData.")
@@ -43,9 +44,12 @@ class serverRouters:
    
    
 
-    def getLastUserInputHandler(self,userInputCategory,userInputType:Optional[str]=None):
+    def getLastUserInputHandler(self,userInputCategory,userInputType:Optional[str]=None,
+    is_front_end_account_for_local_timezone= 'Yes' ):
         try:
-            return self.srvFunc.getLastUserInput(userInputCategory, userInputType)
+            last_user_input = self.srvFunc.getLastUserInput(userInputCategory, userInputType,is_front_end_account_for_local_timezone)
+            self.srvFunc.logging.info(last_user_input)
+            return last_user_input
         except ValueError as e:
             print(f"ValueError occurred: {e}")
             Response.code = 400
@@ -55,11 +59,12 @@ class serverRouters:
             Response.code = 500
             return render_template('base.html', temp_error=str(e))    
 
+  
+
     def beautifyTimestamp(self,env_last_reading):
         if env_last_reading is not None:
             env_last_reading["timestamp"] = self.srvFunc.getReadableDateTimeFromISOformat(env_last_reading['timestamp'])
         return env_last_reading
-
 
     
 
@@ -68,16 +73,18 @@ class getlastUserInputExperimentState(serverRouters):
     def __init__(self):
         super().__init__()
     def get(self,ExperimentState):
-        returnState = self.srvFunc.getLastUserInput("ExperimentState",ExperimentState)
+        returnState = self.getLastUserInputHandler("ExperimentState",ExperimentState,is_front_end_account_for_local_timezone = "Yes")
         
         #print(f"Last user input for ExperimentState '{ExperimentState}': {returnState}") 
         if returnState is not None:
             returnState.pop('_id', None)
+        #check if sensor have stabilized:
+        
         return  jsonify(returnState) if returnState else jsonify({"noPreviousInput": True}), 200
 
     def delete(self,ExperimentState):
         try:
-         inputToBeDeleted = self.srvFunc.getLastUserInput("ExperimentState",ExperimentState)
+         inputToBeDeleted = self.getLastUserInputHandler("ExperimentState",ExperimentState)
         
         # print(f"Last user input to be deleted for experimentState:'{ExperimentState}': {inputToBeDeleted}") 
          self.srvFunc.UserInput.delete_one({"_id": inputToBeDeleted["_id"]})   
@@ -105,8 +112,13 @@ class postUserInput(serverRouters):
                     'userInputCategory': "ExperimentState",
                     'experimentState': ExperimentState
                 }
-            self.srvFunc.UserInput.insert_one(last_insertion)
-            return  jsonify({"status": "OK"})
+                self.srvFunc.UserInput.insert_one(last_insertion)
+
+                return  jsonify({"status": "OK"}),200
+
+            else:   
+                return  jsonify({"status": "Doesn't insert source pollutant that way"}),400
+
         except errors.PyMongoError as e:
             print(f"PyMongoError occurred: {e}")
             Response.code = 500
@@ -139,7 +151,7 @@ class submitSourcePollutantDetails(serverRouters):
                     
                 }}
             ]
-            if self.srvFunc.getLastUserInput("ExperimentState","InsertingSourcePollutant") is None:
+            if self.getLastUserInputHandler("ExperimentState","InsertingSourcePollutant") is None:
                 return render_template('insertingSourcePollutant.html')
             else:   
                 details = list(self.srvFunc.timeSeries.aggregate(pipeline))
@@ -167,7 +179,7 @@ class submitenvRoomDataRouter(serverRouters):
     def __init__(self):
         super().__init__()
     def get(self):
-        env_last_reading = self.getLastUserInputHandler("EnvRoomData")
+        env_last_reading = self.getLastUserInputHandler("EnvRoomData",is_front_end_account_for_local_timezone = 'Yes')
         
         return render_template(
             'submitEnvRoomData.html',
@@ -175,6 +187,7 @@ class submitenvRoomDataRouter(serverRouters):
         )
 
     def post(self):
+        env_last_reading = None
         try:
             temperature = int(request.form['temperature'])
             humidity = int(request.form['humidity'])
@@ -234,6 +247,7 @@ class timeSeriesEndpoints(serverRouters):
     def getTimeSeriesData(self):
         start_timestamp_epoch = request.args.get("start")
         end_timestamp_epoch =   request.args.get("end")
+        is_the_front_end_timezone_naive= request.args.get("timezone_naive")
         if start_timestamp_epoch is None or end_timestamp_epoch is None:
             return jsonify({"error": "Start and end timestamps are required"}), 400
         try:
@@ -250,16 +264,30 @@ class timeSeriesEndpoints(serverRouters):
                     }
                 }},
                 {"$sort": {"timestamp": 1}},  # Sort by timestamp in ascending order
-                {"$addFields": {
-                    "timestamp": {
-                        "$dateToString": {
-                            
-                            "date": "$timestamp",
-                            
-                        }
-                    }
-                }},
+                
             ]
+            if (is_the_front_end_timezone_naive == True):
+                pipeline.append(  {"$addFields": {
+                                    "timestamp": {
+                                        "$dateToString": {
+                                            
+                                            "date": "$timestamp",
+                                            "timezone" : "Europe/Athens"
+
+                                        }
+                                    }
+                                }})   
+            else:
+                pipeline.append({"$addFields": {
+                                    "timestamp": {
+                                        "$dateToString": {
+                                          
+                                            "date": "$timestamp",
+
+                                        }
+                                    }
+                                }})    
+              
             response_docs = list(self.srvFunc.timeSeries.aggregate(pipeline))
 
             print(response_docs)
@@ -272,6 +300,8 @@ class timeSeriesEndpoints(serverRouters):
             
     def getEnvRoomDataRaw(self):
         try:
+            insert_local_timezone = request.args.get("timezone_aware")
+            
             last_env_room_reading = self.getLastUserInputHandler("EnvRoomData")
             if last_env_room_reading is None:
                 env_data_response = None
@@ -280,14 +310,12 @@ class timeSeriesEndpoints(serverRouters):
             return jsonify(env_data_response)
         except ValueError as e:
             print(f"ValueError occurred: {e}")
-            Response.code = 400
             env_data_response = {"error":str(e)}
-            return jsonify(env_data_response)
+            return jsonify(env_data_response),400
         except errors.PyMongoError as e:
             print(f"PyMongoError occurred: {e}")
-            Response.code = 500
             env_data_response = {"error":str(e)}
-            return jsonify(env_data_response)  
+            return jsonify(env_data_response),500  
 
     def postTimeSeriesData(self):
         try: 
