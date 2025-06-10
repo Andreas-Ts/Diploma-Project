@@ -272,76 +272,49 @@ class timeSeriesEndpoints(serverRouters):
     def __init__(self):
         super().__init__()
     def get(self,endpoint):
+        start_timestamp_epoch = request.args.get("start")
+        end_timestamp_epoch =   request.args.get("end")
+        if start_timestamp_epoch is not None and end_timestamp_epoch is not None:
+            start_timestamp_datetime = self.srvFunc.getDateTimeFromEpoch(start_timestamp_epoch)
+            end_timestamp_datetime = self.srvFunc.getDateTimeFromEpoch(end_timestamp_epoch)
+
         if endpoint == "checkConnection":
             return jsonify({"response": "ok"}), 200  
 
         if endpoint == "getEnvRoomData":
-            return self.getEnvRoomDataRaw()
+           
+            if start_timestamp_epoch is None or end_timestamp_epoch is None:
+                return self.getEnvRoomDataRaw()
+            else:
+                return self.getEnvRoomDataMultipeEntries(start_timestamp_datetime,end_timestamp_datetime)
         elif endpoint == "getTimeSeriesData":
-            return self.getTimeSeriesData()
+            if start_timestamp_epoch is None or end_timestamp_epoch is None:
+                return jsonify({"error": "Start and end timestamps are required"}), 400
+            else:
+                return self.getTimeSeriesData(start_timestamp_datetime,end_timestamp_datetime)
         
     def post(self,endpoint):
 
         if endpoint == "postTimeSeriesData":
             return self.postTimeSeriesData()
         
-    def getTimeSeriesData(self):
-        start_timestamp_epoch = request.args.get("start")
-        end_timestamp_epoch =   request.args.get("end")
-        is_the_front_end_timezone_naive= request.args.get("timezone_naive")
-        if start_timestamp_epoch is None or end_timestamp_epoch is None:
-            return jsonify({"error": "Start and end timestamps are required"}), 400
+    def getTimeSeriesData(self,start_timestamp_datetime,end_timestamp_datetime):
+        
         try:
-            print(start_timestamp_epoch, end_timestamp_epoch)
-            start_timestamp = datetime.fromtimestamp((int(start_timestamp_epoch)/1000),  self.srvFunc.zoneInfo)
-            end_timestamp= datetime.fromtimestamp((int(end_timestamp_epoch)/1000), self.srvFunc.zoneInfo)
-       
-            pipeline = [
-                {"$match": {
-                    "Id" : int(request.args.get("Id")),
-                    "timestamp": {
-                        "$gte": start_timestamp,
-                        "$lte": end_timestamp
-                    }
-                }},
-                {"$sort": {"timestamp": 1}},  # Sort by timestamp in ascending order
-                
-            ]
-            if (is_the_front_end_timezone_naive == True):
-                pipeline.append(  {"$addFields": {
-                                    "timestamp": {
-                                        "$dateToString": {
-                                            
-                                            "date": "$timestamp",
-                                            "timezone" : "Europe/Athens"
 
-                                        }
-                                    }
-                                }})   
-            else:
-                pipeline.append({"$addFields": {
-                                    "timestamp": {
-                                        "$dateToString": {
-                                          
-                                            "date": "$timestamp",
-
-                                        }
-                                    }
-                                }})    
-              
+            id = int(request.args.get("id"))
+            pipeline = self.srvFunc.pipelineForTakingDataBasedOfStartAndEndTime(start_timestamp_datetime,end_timestamp_datetime,id)                
             response_docs = list(self.srvFunc.timeSeries.aggregate(pipeline))
-
-            print(response_docs)
             return jsonify(json.loads(json_util.dumps(response_docs))), 200 
+        
         except ValueError:
-            return jsonify({"error": "Invalid timestamp format"}), 400       
+            return jsonify({"error": "Invalid url query arguments"}), 400       
         except errors.PyMongoError as e:
             print(f"PyMongoError occurred: {e}")
             return jsonify({"error": str(e)}), 500  
             
     def getEnvRoomDataRaw(self):
         try:
-            insert_local_timezone = request.args.get("timezone_aware")
             
             last_env_room_reading = self.getLastUserInputHandler("EnvRoomData")
             if last_env_room_reading is None:
@@ -357,6 +330,15 @@ class timeSeriesEndpoints(serverRouters):
             print(f"PyMongoError occurred: {e}")
             env_data_response = {"error":str(e)}
             return jsonify(env_data_response),500  
+
+    def  getEnvRoomDataMultipeEntries(self,start_timestamp_datetime,end_timestamp_datetime):
+
+       
+        pipeline = self.srvFunc.pipelineForTakingDataBasedOfStartAndEndTime(start_timestamp_datetime,end_timestamp_datetime)                
+        response_docs = list(self.srvFunc.UserInput.aggregate(pipeline))
+        return jsonify(json.loads(json_util.dumps(response_docs))), 200 
+        
+
 
     def postTimeSeriesData(self):
         try: 

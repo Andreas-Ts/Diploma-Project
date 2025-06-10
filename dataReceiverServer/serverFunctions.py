@@ -121,6 +121,55 @@ class ServerFunctions:
         iso_format_correct = converted_datetime.isoformat()
         return iso_format_correct
     
+    def getDateTimeFromEpoch(self, timestamp_epoch: int):
+
+        return datetime.fromtimestamp((int(timestamp_epoch)/1000),  self.zoneInfo)
+
+    def pipelineForTakingDataBasedOfStartAndEndTime(self,start_timestamp_datetime,end_timestamp_datetime, id = None,is_the_front_end_timezone_naive = False):
+
+       
+
+        match_stage = {
+            '$match': {
+                'timestamp': {'$gte': start_timestamp_datetime, '$lte': end_timestamp_datetime}
+            }
+        }
+
+        if id is not None:
+            match_stage['$match']['id'] = id
+        if (is_the_front_end_timezone_naive == True): 
+            addFields  = {
+                        "$addFields": {
+                            "timestamp": {
+                                        "$dateToString": {
+                                            
+                                            "date": "$timestamp",
+                                            "timezone" : "Europe/Athens"
+
+                                        }
+                                    }}
+            }  
+        elif (is_the_front_end_timezone_naive== False or is_the_front_end_timezone_naive is None):     
+       
+            addFields  ={"$addFields": {
+                                    "timestamp": {
+                                        "$dateToString": {
+                                          
+                                            "date": "$timestamp",
+
+                                        }
+                                    }
+                                }}       
+        pipeline = [
+            match_stage,
+            addFields,
+            {
+                '$sort': {'timestamp': 1}  # Sort by timestamp in ascending order
+            }
+        ]
+
+        return pipeline
+
     def checkSensorStability(self, id):
        
         thirty_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=30)

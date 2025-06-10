@@ -52,7 +52,6 @@ void setup() {
 void loop() {
 
 
-
   bool hasNewData =loopSensor();
 
   if (WiFi.status() != WL_CONNECTED) {

@@ -140,8 +140,11 @@ bool setupBME680(){
     if (minutes30HavePassed == 1){
           updateCCS811Baseline();
         }
+    
     //ask for url every hour
-    if ((firstTimeAskingEnvironmentalData == true and minutes30HavePassed == 1) or (abs((int)(millis()-ENVIRONMENTAL_DATA_CCS811_TIMER))>ENVIRONMENTAL_DATA_CCS811_FREQUENCY)){
+    unsigned long time_until_next_env_get = abs((int)(millis()-ENVIRONMENTAL_DATA_CCS811_TIMER));
+   
+    if ((firstTimeAskingEnvironmentalData == true and minutes30HavePassed == 1) or (time_until_next_env_get>ENVIRONMENTAL_DATA_CCS811_FREQUENCY)){
       if (WiFi.status() == WL_CONNECTED) {
         Serial.println("Asking for environmental data");
         getEnvironmentalData();
@@ -318,7 +321,6 @@ void updateCCS811Baseline(){
       Serial.println(bsecState[i], HEX);
     }
 
-    EEPROM.write(0, BSEC_MAX_STATE_BLOB_SIZE);
     EEPROM.commit();
   }
 }
@@ -327,7 +329,8 @@ void getEnvironmentalData(){
     HTTPClient http;
     Serial.println("Asking data from the server...");
     //default url + the specified endpoint
-    http.begin(serverUrl +"getEnvRoomData");
+    createTheUrl(endpoint +"getEnvRoomData");
+    http.begin(serverUrl);
     http.setTimeout(2000); // Set timeout to 2 seconds
     int httpResponseCode  = http.GET();
      if (httpResponseCode == HTTP_CODE_OK) {
@@ -344,16 +347,15 @@ void getEnvironmentalData(){
         Serial.print("Room Humidity: ");  
         Serial.println(roomHumidity);
         ccs.setEnvironmentalData(roomHumidity, roomTemperature);
-        firstTimeAskingEnvironmentalData = false; //we have asked the environmental data for the first time
-        ENVIRONMENTAL_DATA_CCS811_TIMER = millis(); //set timer 
+        
 
     } else {
         Serial.print("POST failed. Error: ");
         Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
-        
-        
+           
     }
-
+    firstTimeAskingEnvironmentalData = false; //we have asked the environmental data for the first time
+    ENVIRONMENTAL_DATA_CCS811_TIMER = millis(); //set timer 
    // End HTTP connection
     http.end();
 }
