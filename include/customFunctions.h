@@ -20,6 +20,7 @@ bool loopBME680();
 
 bool loopCCS811();
 
+void IRAM_ATTR ccs811Interrupt();
 
 // Helper functions declarations for the bme680 bsec
 bool checkIaqSensorStatus(bool atSetup);
@@ -59,6 +60,8 @@ void getEnvironmentalData();
 void setupConnectionInformation();
 void connectToWifiAndServer();
 void createTheUrl(String IP);
+
+void scanWiFiNetworks();
 
 void listAvailableWiFiNetworks();
 

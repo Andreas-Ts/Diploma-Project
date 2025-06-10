@@ -26,11 +26,20 @@ def server_routers():
     @app.route("/", methods=["GET","POST"])
     def index():
         router = serverRouters.serverRouters()
-
-        if request.method == "GET":
+    
+        if request.method == "GET" :
            return router.getIndex()   
         elif request.method == "POST":
            return  router.postIndex()
+    @app.route("/<utilityUrl>", methods=["GET","POST"])
+    def utilityUrl(utilityUrl):
+
+        router = serverRouters.utilityUrl()
+        if request.method == "GET":
+            return router.get(utilityUrl)
+        if request.method == "POST":
+            return router.post(utilityUrl)
+
     @app.route("/description")
     def description():
         return render_template("description.html")    

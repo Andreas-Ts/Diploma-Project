@@ -49,7 +49,7 @@ unsigned long CCS811_FREQUENCY = 3 * 1000;
 
 unsigned long CCS811_TIMER = 0;
 
-int CCS811_EEPROM_SIZE = sizeof(uint16_t); //so 2 bytes size
+unsigned int CCS811_EEPROM_SIZE = sizeof(uint16_t) + 1; //so 2 bytes size
 
 float roomTemperature;
 float roomHumidity;
@@ -65,5 +65,9 @@ WiFiMulti wifiMulti;
 
 wifi_Information    selectedWIFI;
 String    selectedIP;
-HTTPClient http;
+
  wifi_Information* connectionInformation = nullptr;
+
+volatile bool dataReadyCCS811 = false;
+
+const uint CCS811_INT_PIN = 27 ; // GPIO pin connected to nINT

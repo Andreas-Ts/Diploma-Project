@@ -46,7 +46,7 @@ extern unsigned long CCS811_TIMER;
 extern uint8_t minutes30HavePassed;
 
 extern unsigned long CCS811_FREQUENCY;
-extern int CCS811_EEPROM_SIZE;
+extern unsigned int CCS811_EEPROM_SIZE;
 
 extern unsigned long ENVIRONMENTAL_DATA_CCS811_FREQUENCY;
 extern unsigned long ENVIRONMENTAL_DATA_CCS811_TIMER;
@@ -68,7 +68,8 @@ extern String port;
 
 extern  wifi_Information    selectedWIFI;
 extern  String    selectedIP;
-extern    HTTPClient http;
 
+extern volatile bool dataReadyCCS811;
 
+extern const uint CCS811_INT_PIN;
 #endif

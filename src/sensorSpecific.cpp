@@ -1,5 +1,5 @@
 #include "custom_headers.h"
-#include "customFunctions.h"
+
 
 
 
@@ -52,13 +52,15 @@ bool setupBME680(){
   
   
   bool setupCCS811(){
-    //Serial.println("CCS811 test");
-   
+    
     if(!ccs.begin()){
       Serial.println("Failed to start sensor! Please check your wiring.");
       return false;
     }
-  
+    //Serial.println("CCS811 test");
+   
+    ccs.setDriveMode(CCS811_DRIVE_MODE_1SEC);
+
     // Wait for the sensor to be ready
     while(!ccs.available());
     // Set the memory to be used for the baseline resistance
@@ -117,21 +119,24 @@ bool setupBME680(){
 
   bool loopCCS811(){
     bool haveNewData = false; 
-    //read data after one second
-    if(ccs.available() and (abs((int)(millis()-CCS811_TIMER))>CCS811_FREQUENCY)){
-      uint8_t readDataResult = ccs.readData();
-      if(readDataResult==0){
+    //read data afterat interupt
+  
+    if (ccs.available()) {
+      if (!ccs.readData()) {
+
         messageJSON["CCS811:eCO2"] = ccs.geteCO2();
         messageJSON["CCS811:TVOC"] = ccs.getTVOC();
         messageJSON["CCS811:RawResistance"]=ccs.getRawADCreading();
         haveNewData = true;
-        CCS811_TIMER = millis(); //set timer 
         checkIf30MinutesHavePassedCSS811(); //we calculate if the 30 minutes after activation have passed
-        
+
       }
-    
-    
-  }
+      else{
+          Serial.println("Error reading CCS811 data");
+      }
+    }
+   
+
     if (minutes30HavePassed == 1){
           updateCCS811Baseline();
         }
@@ -141,13 +146,17 @@ bool setupBME680(){
         Serial.println("Asking for environmental data");
         getEnvironmentalData();
       }
-      ENVIRONMENTAL_DATA_CCS811_TIMER = millis(); //set timer 
     }
    
    return haveNewData;
   }
-   
-  
+   //interrupt when data is ready
+  void IRAM_ATTR ccs811Interrupt() {
+     dataReadyCCS811 = true;
+}
+
+
+
   // if bool atSetup=false, then we will terminate the loop of the device
   
   bool checkIaqSensorStatus(bool atSetup)
@@ -276,8 +285,8 @@ if (EEPROM.read(0) == CCS811_EEPROM_SIZE) {
   } else {
     // Erase the EEPROM with zeroes
     Serial.println("Erasing EEPROM");
-
-    for (uint8_t i = 0; i < CCS811_EEPROM_SIZE + 1; i++)
+    EEPROM.write(0,CCS811_EEPROM_SIZE);  
+    for (uint8_t i = 0 + 1; i < CCS811_EEPROM_SIZE ; i++)
     EEPROM.write(i, 0);
 
     EEPROM.commit();
@@ -336,6 +345,8 @@ void getEnvironmentalData(){
         Serial.println(roomHumidity);
         ccs.setEnvironmentalData(roomHumidity, roomTemperature);
         firstTimeAskingEnvironmentalData = false; //we have asked the environmental data for the first time
+        ENVIRONMENTAL_DATA_CCS811_TIMER = millis(); //set timer 
+
     } else {
         Serial.print("POST failed. Error: ");
         Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description

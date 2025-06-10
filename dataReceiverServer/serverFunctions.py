@@ -4,7 +4,7 @@ from pymongo import MongoClient,errors
 import os
 import csv
 from zoneinfo  import ZoneInfo
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Literal,Optional
 import logging
 # Create subdirectory path (e.g., "logs/" relative to current file)
@@ -84,12 +84,10 @@ class ServerFunctions:
         
         if lastUserInputElement is not None and  is_front_end_account_for_local_timezone == "Yes":
             lastUserInputElement["timestamp"] =lastUserInputElement["timestamp"].isoformat()   
-            print (lastUserInputElement["timestamp"] )
 
 
         if lastUserInputElement is not None and  is_front_end_account_for_local_timezone == "No":
             lastUserInputElement["timestamp"] = self.makeDateCorrectForJavascript(lastUserInputElement["timestamp"])
-            print (lastUserInputElement["timestamp"] )
 
         return lastUserInputElement
         
@@ -118,3 +116,46 @@ class ServerFunctions:
         converted_datetime = datetime_naive_with_timezone.astimezone(ZoneInfo("Europe/Athens"))
         iso_format_correct = converted_datetime.isoformat()
         return iso_format_correct
+    
+    def checkSensorStability(self, id):
+       
+        thirty_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=30)
+        pipeline = [
+    {
+        '$match': {
+            'Sensor': 'BME680',
+            'id': id,
+            'timestamp': {'$gte': thirty_minutes_ago}
+        }
+    },
+    {
+        '$group': {
+            '_id': None,
+            'all_accuracy_2_or_3': {
+                '$min': {
+                    '$cond': [{'$in': ['$accuracy', [2, 3]]}, 1, 0]
+                }
+            },
+            'min_timestamp': {'$min': '$timestamp'},
+            'count': {'$sum': 1}
+        }
+    },
+    {
+        '$project': {
+            '_id': id,
+            'has_full_30_min_data': {
+                '$lte': ['min_timestamp', thirty_minutes_ago]
+            },
+            'all_accuracy_2_or_3': 1,
+            'result': {
+                '$and': [
+                    {'$eq': ['$all_accuracy_2_or_3', 1]},
+                    {'$lte': ['min_timestamp', thirty_minutes_ago]}
+                ]
+            }
+        }
+    }
+]
+
+        result = list(self.timeSeries.aggregate(pipeline))
+        return result[0] if result else None

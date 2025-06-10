@@ -1,3 +1,36 @@
+function downloadLogFile() {
+  fetch('/getLogs')  // or the correct URL you defined
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.blob();  // Get response as a Blob (file-like object)
+    })
+    .then(blob => {
+      // Create a temporary URL for the blob
+      const url = window.URL.createObjectURL(blob);
+
+      // Create a temporary <a> element to trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      
+      // Set the filename (you can hardcode or try to read from headers)
+      a.download = 'server_requests.log';
+      
+      // Append <a> to the DOM, trigger click, then remove it
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      // Revoke the object URL to free memory
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+      console.error('Download error:', error);
+      alert('Failed to download logs.');
+    });
+}
+ 
  document.addEventListener('DOMContentLoaded', () => {
 
     fetch('/lastUserInputExperimentState/Any')
@@ -11,36 +44,28 @@
         
         })
         .catch(err => {
-          console.error('Failed to load start time:', err);
+          console.error('error', err);
           // optionally show an error message in the UI
         });
  
 
  });
-function checkSensorsState(){
 
-
-
-
-}
  function checkExperimentState(response){
     const experimentStateText = document.getElementById("experiment_state");
 
 
     //just in case of no previous experiment state
-
+    if (areAllSensorsStable(experimentStateText, document.getElementById("submitExperimentState")) == false){
+        return ;
+    }
     if (response.noPreviousInput == true) {
         submitExperimentStateClickListener("http://localhost:8080/postUserInput/StartingExperiment","POST","StartingExperiment")
         experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
         
         return ;
     }
-    if (response.noStableSensors == true){
-
-
-       experimentStateText.textContent = "Οι αισθητήρες δεν είναι ακόμα σταθεροί.Δες περιγραφή για την σταθεροποίηση τους";
-       document.getElementById("submitExperimentState").disabled = true;
-    }
+    
     console.log(response.timestamp);
     const startTime = new Date(response.timestamp);     // parsed into Date object the ISO Object
     console.log(startTime);
@@ -90,6 +115,39 @@ function checkSensorsState(){
     }
 
  }
+function areAllSensorsStable(experimentStateText,submitExperimentStateElement){
+      fetch('/checkSensorStability')
+      .then(res =>{
+        if (!res.ok) throw new Error('Network response was not ok');
+       return res.json();
+      })
+      .then(response => {
+        console.log(response);
+        if ("error" in response){
+            experimentStateText.textContent = "Προέκυψε πρόβλημα στον σέρβερ" + response.error;
+            submitExperimentStateElement.disabled = true;
+            submitExperimentStateElement.textContent = "";
+            return false;
+        }
+        finalText = checkEveryPosibilityForSensorStability(response);
+        if (finalText == ""){
+            return true;
+        }
+        else{
+          experimentStateText.textContent = finalText;
+          submitExperimentStateElement.disabled = true;
+          submitExperimentStateElement.textContent = "Οι αισθητήρες δεν είναι ακόμα σταθεροί.Δες περιγραφή για την σταθεροποίηση τους";
+          return false;
+        }
+       
+      }).catch(err => {
+          console.error('error', err);
+          // optionally show an error message in the UI
+        });
+ 
+      }
+
+
 
  function submitExperimentStateClickListener(url,method,experimentStateToBeSubmitted) {
     
@@ -149,4 +207,34 @@ function createDeleteButton(){
 
         });
         document.getElementById("submitExperimentState").insertAdjacentElement('afterend',deleteButton);
+}
+
+function checkEveryPosibilityForSensorStability(response) {
+
+    let finalText = "";
+    
+    finalText += checkEveryPosibilityForSensorStabilityOnePerTime(response, 0,"CCS811 με την λευκή βάση");
+    finalText += checkEveryPosibilityForSensorStabilityOnePerTime(response, 1,"ΒΜΕ680 με την διαφανή βάση");
+    finalText += checkEveryPosibilityForSensorStabilityOnePerTime(response, 2,"BME680 με την κίτρινη βάση");
+   
+    
+    return finalText;
+}
+
+
+function checkEveryPosibilityForSensorStabilityOnePerTime(response, sensorId,sensorDescription) {
+    let finalText = "";
+    let id_field = "id:" + sensorId;
+    if (!(id_field in response) || response["id_field"] == null){
+          finalText+="Δεν υπάρχει ο αισθητήρας "+ sensorDescription +" στην βάση δεδομένων για τα τελευταια 30 λεπτά.";
+          return finalText;
+        }
+    else if (response[id_field].has_full_30_min_data == false){
+        finalText += "Ο αισθητήρας " +sensorDescription+" δεν έχει σταθεροποιηθεί ακόμα. Πρέπει να έχεις τουλαχιστον 30 λεπτά δεδομένων για να θεωρηθεί σταθερός.";
+    }
+    else if (response[id_field].all_accuracy_2_or_3 == false){
+        finalText += "Ο αισθητήρας " +sensorDescription+ " δεν έχει σταθεροποιηθεί ακόμα. Πρέπει να έχεις τουλαχιστον 30 λεπτά δεδομένων με ακρίβεια 2 ή 3 για να θεωρηθεί σταθερός.";
+
+    }
+    return finalText;
 }

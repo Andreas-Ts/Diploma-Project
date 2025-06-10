@@ -7,8 +7,8 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   Serial.println("hi");
+  scanWiFiNetworks();
   setupConnectionInformation(); 
-  listAvailableWiFiNetworks();
     connectToWifiAndServer();
  
   // Connect to Wi-Fi
@@ -50,15 +50,18 @@ void setup() {
 }
 
 void loop() {
+
+
+
+  bool hasNewData =loopSensor();
+
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Wi-Fi disconnected. Reconnecting...");
     connectToWifiAndServer();
   }
 
 
-
-
-if (loopSensor()){ //a new value has been read from the sensor 
+if (hasNewData){ //a new value has been read from the sensor 
     // Begin HTTP connection
     HTTPClient http;
 
@@ -69,7 +72,7 @@ if (loopSensor()){ //a new value has been read from the sensor
     http.begin((serverUrl));//in case of adding more url sections into the url we send the post request
 
     http.addHeader("Content-Type", "application/json");
-        http.setTimeout(4000);
+    http.setTimeout(2000);
 
     // Serialize the  JSON
     String messageJSONString;

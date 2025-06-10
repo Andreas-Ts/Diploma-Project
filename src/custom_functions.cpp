@@ -90,12 +90,12 @@ void connectToWifiAndServer(){
   bool wifi_found = false;
   bool server_found =false;
   //continue until you find a connection
-  while (wifi_found != true && server_found != true){
-    
+  while (wifi_found != true || server_found != true){
+    wifi_found = false;
+
     for (int i = 0 ; ((i < numberOfWifiRouters) && (wifi_found != true && server_found != true));i++){
        
         server_found =false;
-        wifi_found = false;
         Serial.println("Trying to connect to Wi-Fi: " + String(connectionInformation[i].ssid) + " .With password: "+connectionInformation[i].password);
         WiFi.begin(connectionInformation[i].ssid.c_str(), connectionInformation[i].password.c_str()); 
         Serial.println(connectionInformation[i].ssid.c_str());
@@ -115,23 +115,23 @@ void connectToWifiAndServer(){
           Serial.println("Wifi choosen:"+selectedWIFI.ssid);
 
           for (int j=0 ; j <numberOfPotentialServers and server_found != true;j++){
-              
+              HTTPClient http;
               selectedIP = selectedWIFI.serverIp[j];
-              createTheUrl("/");
-              Serial.println("Trying to connect to server: " + selectedWIFI.serverIp[i]);
+              createTheUrl(endpoint+"checkConnection");
+              Serial.println("Trying to connect to server: " + selectedWIFI.serverIp[j]);
               http.begin(serverUrl);
-              http.setTimeout(3000); // Set timeout to 5 seconds
+              http.setTimeout(2000); // Set timeout to 5 seconds
               Serial.println("URL: " + serverUrl);
               int httpCode = http.GET(); 
               //code received
               if (httpCode > 0){
-                  selectedIP = selectedWIFI.serverIp[i];
+                  selectedIP = selectedWIFI.serverIp[j];
                   Serial.println("Connected to server at IP: " + selectedIP);
                   server_found =true;
               }else{
                 Serial.println("Server not found");
               }
-                  http.end();
+              http.end();
 
           }
         }
@@ -152,3 +152,22 @@ void createTheUrl(String endpoint){
 
 }
 
+void scanWiFiNetworks() {
+  Serial.println("Scanning for WiFi networks...");
+
+  int n = WiFi.scanNetworks();
+  if (n == 0) {
+    Serial.println("No networks found.");
+  } else {
+    Serial.printf("%d networks found:\n", n);
+    for (int i = 0; i < n; ++i) {
+      Serial.printf("%d: %s (%d dBm) %s\n", 
+                    i + 1,
+                    WiFi.SSID(i).c_str(),
+                    WiFi.RSSI(i),
+                    (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? "Open" : "Secured");
+      delay(10);
+    }
+  }
+  Serial.println();
+}

@@ -1,4 +1,4 @@
-from flask import Flask, request,Response, jsonify, render_template
+from flask import Flask, request,Response, jsonify, render_template, send_file
 from serverFunctions import ServerFunctions 
 from markupsafe import escape
 from datetime import datetime
@@ -40,8 +40,10 @@ class serverRouters:
      
     def postIndex(self):
         pass
+
    
-   
+    
+
 
     def getLastUserInputHandler(self,userInputCategory,userInputType:Optional[str]=None,
     is_front_end_account_for_local_timezone= 'Yes' ):
@@ -66,8 +68,45 @@ class serverRouters:
         return env_last_reading
 
     
+class utilityUrl(serverRouters):
+    def __init__(self):
+        super().__init__()
+    def get(self,utilityUrl):
+        if utilityUrl == "getLogs":
+            return self.getLogs()
+        elif utilityUrl == "description":
+            return render_template("description.html")
+        elif utilityUrl == "checkSensorStability":
+            return self.checkStability()
+        else:
+            return render_template('base.html', temp_error="Invalid utility URL.")
+    def post(self,utilityUrl):
+        pass
+    def getLogs(self):
+        log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "logs"))
+        log_file_path = os.path.join(log_dir, "server_requests.log")
+        print(log_file_path)
+        if not os.path.exists(log_file_path):
+            return render_template('base.html', temp_error="Log file does not exist.")
+        
+        return send_file(log_file_path, as_attachment=True)
+    def checkStability(self):
+        try:
+            total_result ={"id:0":self.srvFunc.checkSensorStability(0),
+                        "id:1":self.srvFunc.checkSensorStability(1),
+                        "id:2":self.srvFunc.checkSensorStability(2),
+            }
+        except errors.PyMongoError as e:
+            print(f"PyMongoError occurred: {e}")
+            return  jsonify({"error": "No data available"}), 500
+        if total_result is None:
+            print("No data available")
+            return jsonify({"error": "No data available"}), 500
+        else:
+            print("Data available")
+            return jsonify(total_result),200
 
-   
+
 class getlastUserInputExperimentState(serverRouters):
     def __init__(self):
         super().__init__()
@@ -233,6 +272,9 @@ class timeSeriesEndpoints(serverRouters):
     def __init__(self):
         super().__init__()
     def get(self,endpoint):
+        if endpoint == "checkConnection":
+            return jsonify({"response": "ok"}), 200  
+
         if endpoint == "getEnvRoomData":
             return self.getEnvRoomDataRaw()
         elif endpoint == "getTimeSeriesData":
@@ -324,13 +366,21 @@ class timeSeriesEndpoints(serverRouters):
             data['timestamp'] = self.srvFunc.getCurrentDateTime()
 
             #Insert the data into the database,deleting the irrelevant fields
-            #keep the Timestamp,Id and Sensor fields
+            #keep the Timestamp,Id and Sensor fields for both sensors
             keep_fields = ['timestamp', 'Id', 'Sensor']
+             #trim from bme680 some fields to save storage space
+            trim_fields = ["BME680:co2EquivalentAccuracy","BME680:breathVocEquivalentAccuracy",
+                           "BME680:rawTemperature","BME680:pressure","BME680:rawHumidity"
+                           "BME680:stabStatus","BME680:runInStatus","BME680:gasPercentageAccuracy"
+                           ] 
+
+
             # Create a new dictionary with only the fields we want to keep
             data = {key: value 
                     for key, value in data.items() 
-                    if  key.startswith(data["Sensor"]) or key in keep_fields}
-           
+                    if  key.startswith(data["Sensor"]) or (key in keep_fields and key not in trim_fields)}
+
+
             self.srvFunc.timeSeries.insert_one(data)
             return jsonify({"status": "OK"}), 200
         except errors.PyMongoError as e:

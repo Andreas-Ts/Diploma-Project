@@ -17,7 +17,7 @@
          <!-- See Description   -->
         
   
-        <button onclick="location.href='{{ url_for('description')}}'" class="submit-button">
+        <button onclick="location.href='{{ url_for('utilityUrl',utilityUrl='description')}}' class="submit-button">
             Διάβασε την περιγραφή και λεπτομέρειες του πειράματος
         </button>
             
@@ -56,7 +56,10 @@
             Υπόβαλε Θερμοκρασία και Υγρασία Δωματίου
         </button>
         </div>
-   
+ <button   onclick="downloadLogFile()" class="submit-button" id="getLogFile">
+    Κατέβασε τα logs του server
+ </button>    
+
     
 
     </div>
