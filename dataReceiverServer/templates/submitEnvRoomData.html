@@ -20,7 +20,7 @@
     </div>
     <form class="submit-Env-Room-Data" method="POST" action="{{ url_for('submitEnvRoomData') }}">
         <label class="sub-title" for="temperature">Temperature (°C):</label>
-        <input type="number" name="temperature" id="temperature" min="-40" max="65" required>
+        <input type="number" name="temperature" id="temperature" min="-40" max="65" step="0.1" required>
 
         <label class="sub-title" for="humidity">Relative Humidity (%):</label>
         <input type="number" name="humidity" id="humidity" min="0" max="100" step="1" required>

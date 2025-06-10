@@ -98,9 +98,13 @@ class ServerFunctions:
         return currentDateAndTime 
     #get current date and time in ISO format at the local timezone
     def getCurrentDateTimeISOformat(self):
-        timeStamp =datetime.isoformat(self.getCurrentDateTime())
-        return timeStamp
-
+        timestamp =datetime.isoformat(self.getCurrentDateTime())
+        return timestamp
+    def getCurrentDateTimeUTC(self):
+         # Get the current date and time in the local timezone
+        getCurrentDateTimeUTC = datetime.now(tzinfo=ZoneInfo("UTC"))
+       # print (f"Current date and time: {currentDateAndTime}")
+        return getCurrentDateTimeUTC 
     def getReadableDateTimeFromISOformat(self,isoDateTime):
         # Convert ISO format to datetime object
         dt = datetime.fromisoformat(isoDateTime)
@@ -111,7 +115,7 @@ class ServerFunctions:
     def makeDateCorrectForJavascript(self,DateTimeWithoutTimezone):
         
 
-        datetime_naive_with_timezone = DateTimeWithoutTimezone.replace(tzinfo=ZoneInfo("UTC"))
+        datetime_naive_with_timezone = DateTimeWithoutTimezone.replace(tzinfo=ZoneInfo("utc"))
 
         converted_datetime = datetime_naive_with_timezone.astimezone(ZoneInfo("Europe/Athens"))
         iso_format_correct = converted_datetime.isoformat()

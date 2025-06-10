@@ -240,7 +240,7 @@ class submitenvRoomDataRouter(serverRouters):
             # Sanitize inputs
             temperature = escape(temperature)
             humidity = escape(humidity)
-            timestamp = self.srvFunc.getCurrentDate()
+            timestamp = self.srvFunc.getCurrentDateTimeUTC()
            
 
             # Save to MongoDB
@@ -252,7 +252,7 @@ class submitenvRoomDataRouter(serverRouters):
             })
             #create a last reading object 
             env_last_reading = {
-                'timestamp': self.srvFunc.getReadableDateTimeFromISOformat(datetime.isoformat(timestamp)),
+                'timestamp': self.srvFunc.makeDateCorrectForJavascript(timestamp),
                 'userInputCategory': "EnvRoomData",
                 'temperature': temperature,
                 'humidity': humidity,
