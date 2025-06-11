@@ -85,23 +85,23 @@ function downloadLogFile() {
         experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
         return ;
     }
-    else if (minutesPassed < 5 && (response.experimentState === "StartingExperiment" || 
+    else if (minutesPassed < 10 && (response.experimentState === "StartingExperiment" || 
              response.experimentState === "RemovingSourcePollutant")) {
             document.getElementById("submitExperimentState").disabled = true;
-            experimentStateText.textContent = "Άσε τον χώρο να αεριστεί για 5 λεπτά.";
+            experimentStateText.textContent = "Άσε τον χώρο να αεριστεί για 10 λεπτά.";
             document.getElementById("timer-container").hidden = false;
             document.getElementById("timer-container").querySelector("h1").textContent= "Χρόνος που πέρασε από την εισαγωγή δήλωσης του πειράματος";
-            startTimer(startTime,"5 Minutes");
+            startTimer(startTime,"10 Minutes");
             return ;
     }
-    else if (response.experimentState !== "InsertingSourcePollutant" && minutesPassed >=5  ) {
+    else if (response.experimentState !== "InsertingSourcePollutant" && minutesPassed >=10  ) {
         submitExperimentStateClickListener("http://localhost:8080/postUserInput/InsertingSourcePollutant","GET","InsertingSourcePollutant");
         experimentStateText.textContent = "Εισήγαγε την πηγή ρύπου";
         return ;
     }
     else if (response.experimentState === "InsertingSourcePollutant"){
          
-         experimentStateText.textContent = "Άσε τον ρύπο να εξελιχτεί με βάση τις συνθήκες που δώσατε για τουλάχιστον 20 λεπτά."+
+         experimentStateText.textContent = "Άσε τον ρύπο να εξελιχτεί με βάση τις συνθήκες που δώσατε για τουλάχιστον 30 λεπτά."+
          "Στα 45 λεπτά, θα εμφανίστει και ακουστεί ειδοποίηση για να βγάλετε την πηγή.\n"+
          "Αν έγινε κάποιο λάθος στην εισαγωγή πηγής, πάτα το κουμπί \"Διαγραφή της προηγούμενης εισαγωγής ρύπου\".";
           createDeleteButton();  
@@ -109,7 +109,7 @@ function downloadLogFile() {
           document.getElementById("timer-container").querySelector("h1").textContent= "Χρόνος που πέρασε από την εισαγωγή της πηγής ρύπου";
           submitExperimentStateClickListener("postUserInput/RemovingSourcePollutant","POST","RemovingSourcePollutant")
 
-        startTimer(startTime,"20 Minutes");
+        startTimer(startTime,"30 Minutes");
 
 
     }
@@ -225,10 +225,13 @@ function checkEveryPosibilityForSensorStability(response) {
 function checkEveryPosibilityForSensorStabilityOnePerTime(response, sensorId,sensorDescription) {
     let finalText = "";
     let id_field = "id:" + sensorId;
-    if (!(id_field in response) || response["id_field"] == null){
+    console.log(id_field);
+    /*
+    if (!(id_field in response) || response[id_field] == null){
           finalText+="Δεν υπάρχει ο αισθητήρας "+ sensorDescription +" στην βάση δεδομένων για τα τελευταια 30 λεπτά.";
           return finalText;
         }
+
     else if (response[id_field].has_full_30_min_data == false){
         finalText += "Ο αισθητήρας " +sensorDescription+" δεν έχει σταθεροποιηθεί ακόμα. Πρέπει να έχεις τουλαχιστον 30 λεπτά δεδομένων για να θεωρηθεί σταθερός.";
     }
@@ -236,5 +239,6 @@ function checkEveryPosibilityForSensorStabilityOnePerTime(response, sensorId,sen
         finalText += "Ο αισθητήρας " +sensorDescription+ " δεν έχει σταθεροποιηθεί ακόμα. Πρέπει να έχεις τουλαχιστον 30 λεπτά δεδομένων με ακρίβεια 2 ή 3 για να θεωρηθεί σταθερός.";
 
     }
+        */
     return finalText;
 }

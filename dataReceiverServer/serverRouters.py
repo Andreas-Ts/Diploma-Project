@@ -1,4 +1,4 @@
-from flask import Flask, request,Response, jsonify, render_template, send_file
+from flask import Flask, redirect, request,Response, jsonify, render_template, send_file, url_for
 from serverFunctions import ServerFunctions 
 from markupsafe import escape
 from datetime import datetime
@@ -25,7 +25,7 @@ class serverRouters:
            
 
             # Get the last environment data
-            env_last_reading = self.getLastUserInputHandler("EnvRoomData",is_front_end_account_for_local_timezone = 'Yes')
+            env_last_reading = self.getLastUserInputHandler("EnvRoomData",is_front_end_account_for_local_timezone = 'No')
             # In real use, fetch from your data source; here we simulate no history
             if env_last_reading is not None:
 
@@ -103,7 +103,6 @@ class utilityUrl(serverRouters):
             print("No data available")
             return jsonify({"error": "No data available"}), 500
         else:
-            print("Data available")
             return jsonify(total_result),200
 
 
@@ -217,7 +216,7 @@ class submitenvRoomDataRouter(serverRouters):
     def __init__(self):
         super().__init__()
     def get(self):
-        env_last_reading = self.getLastUserInputHandler("EnvRoomData",is_front_end_account_for_local_timezone = 'Yes')
+        env_last_reading = self.getLastUserInputHandler("EnvRoomData",is_front_end_account_for_local_timezone = 'No')
         
         return render_template(
             'submitEnvRoomData.html',
@@ -227,8 +226,8 @@ class submitenvRoomDataRouter(serverRouters):
     def post(self):
         env_last_reading = None
         try:
-            temperature = int(request.form['temperature'])
-            humidity = int(request.form['humidity'])
+            temperature = float(request.form['temperature'])
+            humidity = float(request.form['humidity'])
 
             # Basic input validation
             if not (0 <= humidity <= 100):
@@ -252,15 +251,15 @@ class submitenvRoomDataRouter(serverRouters):
             })
             #create a last reading object 
             env_last_reading = {
-                'timestamp': self.srvFunc.makeDateCorrectForJavascript(timestamp),
+                'timestamp': self.srvFunc.getReadableDateTimeFromISOformat(self.srvFunc.makeDateCorrectForJavascript(timestamp)),
                 'userInputCategory': "EnvRoomData",
                 'temperature': temperature,
                 'humidity': humidity,
             }
-            Response.code = 200
-            return render_template('base.html',env_last_reading= env_last_reading,temp_success="Η θερμοκρασία αποθηκεύτηκε σωστά" )
+            
+            return redirect(url_for('index',env_last_reading= env_last_reading,temp_success="Η θερμοκρασία αποθηκεύτηκε σωστά" ))
     
-        except ValueError:
+        except ValueError as e:
             Response.code = 400
             return render_template('base.html',env_last_reading= env_last_reading,temp_error = "error"+ str(e) + "with the value")
         except errors.PyMongoError as e:
@@ -274,6 +273,7 @@ class timeSeriesEndpoints(serverRouters):
     def get(self,endpoint):
         start_timestamp_epoch = request.args.get("start")
         end_timestamp_epoch =   request.args.get("end")
+        print(start_timestamp_epoch)
         if start_timestamp_epoch is not None and end_timestamp_epoch is not None:
             start_timestamp_datetime = self.srvFunc.getDateTimeFromEpoch(start_timestamp_epoch)
             end_timestamp_datetime = self.srvFunc.getDateTimeFromEpoch(end_timestamp_epoch)
@@ -301,9 +301,10 @@ class timeSeriesEndpoints(serverRouters):
     def getTimeSeriesData(self,start_timestamp_datetime,end_timestamp_datetime):
         
         try:
-
-            id = int(request.args.get("id"))
-            pipeline = self.srvFunc.pipelineForTakingDataBasedOfStartAndEndTime(start_timestamp_datetime,end_timestamp_datetime,id)                
+            
+            id = int(request.args.get("Id"))
+        
+            pipeline = self.srvFunc.pipelineForTakingDataBasedOfStartAndEndTime(start_timestamp_datetime,end_timestamp_datetime,id = id)                
             response_docs = list(self.srvFunc.timeSeries.aggregate(pipeline))
             return jsonify(json.loads(json_util.dumps(response_docs))), 200 
         
@@ -334,7 +335,10 @@ class timeSeriesEndpoints(serverRouters):
     def  getEnvRoomDataMultipeEntries(self,start_timestamp_datetime,end_timestamp_datetime):
 
        
-        pipeline = self.srvFunc.pipelineForTakingDataBasedOfStartAndEndTime(start_timestamp_datetime,end_timestamp_datetime)                
+        pipeline = self.srvFunc.pipelineForTakingDataBasedOfStartAndEndTime(start_timestamp_datetime,end_timestamp_datetime,
+        amIcheckingUserInputDataOfEnvRoomData = True)
+        #add an extra match state
+        
         response_docs = list(self.srvFunc.UserInput.aggregate(pipeline))
         return jsonify(json.loads(json_util.dumps(response_docs))), 200 
         
@@ -352,7 +356,7 @@ class timeSeriesEndpoints(serverRouters):
             keep_fields = ['timestamp', 'Id', 'Sensor']
              #trim from bme680 some fields to save storage space
             trim_fields = ["BME680:co2EquivalentAccuracy","BME680:breathVocEquivalentAccuracy",
-                           "BME680:rawTemperature","BME680:pressure","BME680:rawHumidity"
+                           "BME680:rawTemperature","BME680:pressure","BME680:rawHumidity",
                            "BME680:stabStatus","BME680:runInStatus","BME680:gasPercentageAccuracy"
                            ] 
 
@@ -360,7 +364,7 @@ class timeSeriesEndpoints(serverRouters):
             # Create a new dictionary with only the fields we want to keep
             data = {key: value 
                     for key, value in data.items() 
-                    if  key.startswith(data["Sensor"]) or (key in keep_fields and key not in trim_fields)}
+                    if  (key.startswith(data["Sensor"]) and key not in trim_fields) or (key in keep_fields)}
 
 
             self.srvFunc.timeSeries.insert_one(data)

@@ -1,12 +1,14 @@
 const form = document.querySelector("form");
+console.log(form);
 form.addEventListener("submit", (e) => {
    e.preventDefault(); 
   if (!form.checkValidity()) {
     form.reportValidity(); // Show the browser's validation message
     return ;//stop the rest of execution
   }
-  
+    trimInputs(form);
     const formData = new FormData(form);
+    
     let confirm_text = createConfirmText(formData);
 
     
@@ -64,4 +66,14 @@ function createConfirmText(formData){
      
     }
      return confirm_text;
+}
+
+function trimInputs(form){
+
+    for (const element of form.elements) {
+      if (element.type === "text") {
+        element.value = element.value.trim();
+      }
+    }
+   
 }

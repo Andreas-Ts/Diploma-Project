@@ -1,0 +1,5 @@
+Για να ενεργοποιήσεις το jupyter lab:
+
+cd /path/to/project
+source myenv/bin/activate
+jupyter-lab

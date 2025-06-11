@@ -100,11 +100,13 @@ class ServerFunctions:
     def getCurrentDateTimeISOformat(self):
         timestamp =datetime.isoformat(self.getCurrentDateTime())
         return timestamp
+
     def getCurrentDateTimeUTC(self):
          # Get the current date and time in the local timezone
-        getCurrentDateTimeUTC = datetime.now(tzinfo=ZoneInfo("UTC"))
+        getCurrentDateTimeUTC = datetime.now(ZoneInfo("UTC"))
        # print (f"Current date and time: {currentDateAndTime}")
         return getCurrentDateTimeUTC 
+
     def getReadableDateTimeFromISOformat(self,isoDateTime):
         # Convert ISO format to datetime object
         dt = datetime.fromisoformat(isoDateTime)
@@ -115,7 +117,7 @@ class ServerFunctions:
     def makeDateCorrectForJavascript(self,DateTimeWithoutTimezone):
         
 
-        datetime_naive_with_timezone = DateTimeWithoutTimezone.replace(tzinfo=ZoneInfo("utc"))
+        datetime_naive_with_timezone = DateTimeWithoutTimezone.replace(tzinfo=ZoneInfo("UTC"))
 
         converted_datetime = datetime_naive_with_timezone.astimezone(ZoneInfo("Europe/Athens"))
         iso_format_correct = converted_datetime.isoformat()
@@ -123,20 +125,31 @@ class ServerFunctions:
     
     def getDateTimeFromEpoch(self, timestamp_epoch: int):
 
-        return datetime.fromtimestamp((int(timestamp_epoch)/1000),  self.zoneInfo)
+        return datetime.fromtimestamp((int(timestamp_epoch)/1000),  ZoneInfo("UTC"))
 
-    def pipelineForTakingDataBasedOfStartAndEndTime(self,start_timestamp_datetime,end_timestamp_datetime, id = None,is_the_front_end_timezone_naive = False):
+    def pipelineForTakingDataBasedOfStartAndEndTime(self,start_timestamp_datetime,end_timestamp_datetime
+    , id = None,is_the_front_end_timezone_naive = False,amIcheckingUserInputDataOfEnvRoomData = False):
 
-       
-
+        
+            
+        pipeline = []
         match_stage = {
             '$match': {
                 'timestamp': {'$gte': start_timestamp_datetime, '$lte': end_timestamp_datetime}
             }
         }
+        pipeline.append(match_stage)
+        if (amIcheckingUserInputDataOfEnvRoomData):
+            envRoomData_match_stage = {
+                '$match':{
+                     "userInputCategory": {"$eq":"EnvRoomData"}
+                }
+            }  
+            pipeline.append(envRoomData_match_stage)
+
 
         if id is not None:
-            match_stage['$match']['id'] = id
+            match_stage['$match']['Id'] = id
         if (is_the_front_end_timezone_naive == True): 
             addFields  = {
                         "$addFields": {
@@ -149,6 +162,7 @@ class ServerFunctions:
                                         }
                                     }}
             }  
+          
         elif (is_the_front_end_timezone_naive== False or is_the_front_end_timezone_naive is None):     
        
             addFields  ={"$addFields": {
@@ -159,56 +173,94 @@ class ServerFunctions:
 
                                         }
                                     }
-                                }}       
-        pipeline = [
-            match_stage,
-            addFields,
-            {
-                '$sort': {'timestamp': 1}  # Sort by timestamp in ascending order
-            }
-        ]
-
+                                }}  
+        pipeline.append(addFields)                              
+       
         return pipeline
 
     def checkSensorStability(self, id):
-       
+        
         thirty_minutes_ago = datetime.now(timezone.utc) - timedelta(minutes=30)
-        pipeline = [
-    {
-        '$match': {
-            'Sensor': 'BME680',
-            'id': id,
-            'timestamp': {'$gte': thirty_minutes_ago}
-        }
-    },
-    {
-        '$group': {
-            '_id': None,
-            'all_accuracy_2_or_3': {
-                '$min': {
-                    '$cond': [{'$in': ['$accuracy', [2, 3]]}, 1, 0]
+
+        #THE sensor CCS811
+        if id == 0:
+            sensor = "CCS811"
+        elif id==1 or id ==2:
+            sensor = "BME680"
+        else:
+            return None
+        match_stage ={
+            '$match': {
+                'Sensor': sensor,
+                'Id': id,
+                'timestamp': {'$gte': thirty_minutes_ago}
                 }
-            },
-            'min_timestamp': {'$min': '$timestamp'},
-            'count': {'$sum': 1}
-        }
-    },
-    {
-        '$project': {
-            '_id': id,
-            'has_full_30_min_data': {
-                '$lte': ['min_timestamp', thirty_minutes_ago]
-            },
-            'all_accuracy_2_or_3': 1,
-            'result': {
-                '$and': [
-                    {'$eq': ['$all_accuracy_2_or_3', 1]},
-                    {'$lte': ['min_timestamp', thirty_minutes_ago]}
-                ]
             }
+        if sensor == "CCS811":
+            group_stage = {
+                '$group':{
+                    '_id': None,
+                    'all_accuracy_1': {
+                        '$min': {
+                            '$cond': [{'$eq': ['$CCS811:30minutesPassed', 1]}, 1, 0]
+                        }
+                    },
+                'min_timestamp': {'$min': '$timestamp'},
+                'count': {'$sum': 1}
+                }
+            }
+            project_state =  {
+                '$project': {
+                    '_id': id,
+                    'has_full_30_min_data': {
+                        '$lte': ['min_timestamp', thirty_minutes_ago]
+                    },
+                    'all_accuracy_1': 1,
+                    'result': {
+                        '$and': [
+                            {'$eq': ['$all_accuracy_1', 1]},
+                            {'$lte': ['min_timestamp', thirty_minutes_ago]}
+                        ]
+                    }
+                }
         }
-    }
-]
+        elif sensor == "BME680":
+            group_stage = {
+                '$group':{
+                    '_id': None,
+                    'all_accuracy_2_or_3': {
+                        '$min': {
+                            '$cond': [{'$in': ['$BME680:iaqAccuracy', [2, 3]]}, 1, 0]
+                        }
+                    },
+                'min_timestamp': {'$min': '$timestamp'},
+                'count': {'$sum': 1}
+                }
+            }
+            project_state = {
+                    '$project': {
+                        '_id': id,
+                        'has_full_30_min_data': {
+                            '$lte': ['min_timestamp', thirty_minutes_ago]
+                        },
+                        'all_accuracy_2_or_3': 1,
+                        'result': {
+                            '$and': [
+                                {'$eq': ['$all_accuracy_2_or_3', 1]},
+                                {'$lte': ['min_timestamp', thirty_minutes_ago]}
+                            ]
+                        }
+                    }
+                }
+        
+        pipeline = [
+            match_stage,
+            group_stage,
+            project_state
+        ]
+      
+
 
         result = list(self.timeSeries.aggregate(pipeline))
+        print(result)
         return result[0] if result else None
