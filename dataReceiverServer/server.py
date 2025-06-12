@@ -87,7 +87,11 @@ def server_routers():
         if request.method == "POST":
             return router.post(endpoint)
 
-
+    @app.route("/dataAnalysisEndpoints/<endpoint>",methods=["GET"])
+    def dataAnalysisEndpoints(endpoint):
+        router = serverRouters.dataAnalysisEndpoints()
+        if request.method == "GET":
+            return router.get(endpoint) 
     
  
 # Run the server if this file is executed directly

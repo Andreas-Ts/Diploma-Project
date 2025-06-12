@@ -383,4 +383,18 @@ class timeSeriesEndpoints(serverRouters):
             return jsonify({"error": "Internal server error"}), 500
     
         
-            
+class dataAnalysisEndpoints(serverRouters):
+    def __init__(self):
+        super().__init__()  
+
+    def get(self,endpoint):
+        if endpoint == "getAllUserInputsExperimentState":
+           return self.getAllUserInputsExperimentState()
+    def getAllUserInputsExperimentState(self):  
+        try:
+            docs = list(self.srvFunc.UserInput.find({"userInputCategory":"ExperimentState"}))
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            return jsonify({"error": "Internal server error"}), 500  
+        return jsonify(json.loads(json_util.dumps(docs))), 200 
+    

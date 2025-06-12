@@ -26,16 +26,24 @@ function update(startTime,state) {
         $h.textContent = String(hours).padStart(2, '0');
         $m.textContent = String(minutes).padStart(2, '0');
         $s.textContent = String(seconds).padStart(2, '0');
+        console.log("hi");
         if (state==="10 Minutes" && minutes > 10){
           console.log("Time to insert source pollutant");
           window.location.href = "/"
         }
+        
         if (state==="30 Minutes"){
+                  console.log("hiaaa");
+
           submit_button = document.getElementById("submitExperimentState");
-          if (minutes < 30){
+          if (minutes < 30 && hours < 1){
+                    console.log("hibbb");
+
              submit_button.disabled = true; 
           }
           else{
+                    console.log("hiccc");
+
             submit_button.disabled = false; 
           }
           if (minutes > 45){
