@@ -52,8 +52,8 @@ extern unsigned long ENVIRONMENTAL_DATA_CCS811_FREQUENCY;
 extern unsigned long ENVIRONMENTAL_DATA_CCS811_TIMER;
 
 
-extern float roomTemperature;
-extern float roomHumidity;
+extern float temperature;
+extern float humidity;
 
 
 extern String sensorLocatedIntoDevice;
@@ -72,4 +72,8 @@ extern  String    selectedIP;
 extern volatile bool dataReadyCCS811;
 
 extern const uint CCS811_INT_PIN;
+
+extern unsigned long timeSinceLastReading;
+
+extern unsigned long timeSinceLastReadingMaxTolerance;
 #endif

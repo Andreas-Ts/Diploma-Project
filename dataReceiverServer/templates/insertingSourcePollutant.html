@@ -8,26 +8,25 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="main-title"Εισήγαγε τις παρακάτω πληροφορίες και έπειτα βάλε τον ρύπο στον χώρο.</h1>
+        <h1 class="main-title">Εισήγαγε τις παρακάτω πληροφορίες και έπειτα βάλε τον ρύπο στον χώρο.</h1>
 
         <form action="{{url_for("submitSourcePollutantDetails")}}" method="post">
-        
+        <p>"{{details}}"</p>
             <label for="pollutant-type">Τύπος ρύπου:</label>
-            <input type="text"  name="pollutant-type"  list="pollutant-type" 
-              value="{{ details['pollutant-type-latest_value'] if details else '' }}"
+            <input type="text"  name="pollutant-type"  list="pollutant-type"  autocomplete="off"
              required/>
             
             <datalist id="pollutant-type">
-            {%if details %}    
+            {%if details %}      
                 {% for item in details['pollutant-type-distinct-list'] %}
                     <option value="{{item}}">
                 {%endfor%}
-             {%endif%}    
+            {%endif%}    
+
             </datalist>
             <label for="item-used">Αντικείμενο προέλευσης</label>
 
-            <input type="text" name="item-used"  list="item-used" 
-                          value="{{ details['item-used-latest_value'] if details else '' }}"
+            <input type="text" name="item-used"  list="item-used"  autocomplete="off"
      
             required/>
             <datalist id="item-used">
@@ -40,8 +39,7 @@
             </datalist>
 
             <label for="quantity-used">Ποσότητα που χρησιμοποιείται:</label>
-            <input type="text" name="quantity-used"  list="quantity-used" 
-                          value="{{ details['quantity-used-latest_value'] if details else '' }}"
+            <input type="text" name="quantity-used"  list="quantity-used"  autocomplete="off"
    
      
                 required/>
@@ -54,9 +52,8 @@
             </datalist>
 
             <label for="room">Δωμάτιο:</label>
-            <input type="text" name="room" list="room" 
-                                      value="{{ details['room-latest_value'] if details else '' }}"
-   
+            <input type="text" name="room" list="room"  autocomplete="off"
+
          
             required/>
             <datalist id="room">

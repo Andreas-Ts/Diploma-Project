@@ -262,5 +262,4 @@ class ServerFunctions:
 
 
         result = list(self.timeSeries.aggregate(pipeline))
-        print(result)
         return result[0] if result else None

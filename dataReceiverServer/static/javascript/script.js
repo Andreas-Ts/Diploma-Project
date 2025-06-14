@@ -85,13 +85,13 @@ function downloadLogFile() {
         experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
         return ;
     }
-    else if (minutesPassed < 10 && (response.experimentState === "StartingExperiment" || 
+    else if (minutesPassed < 5 && (response.experimentState === "StartingExperiment" || 
              response.experimentState === "RemovingSourcePollutant")) {
-            document.getElementById("submitExperimentState").disabled = true;
-            experimentStateText.textContent = "Άσε τον χώρο να αεριστεί για 10 λεπτά.";
+            //document.getElementById("submitExperimentState").disabled = true;
+            experimentStateText.textContent = "Άσε τον χώρο να αεριστεί για 5 λεπτά.";
             document.getElementById("timer-container").hidden = false;
             document.getElementById("timer-container").querySelector("h1").textContent= "Χρόνος που πέρασε από την εισαγωγή δήλωσης του πειράματος";
-            startTimer(startTime,"10 Minutes");
+            startTimer(startTime,"5 Minutes");
             return ;
     }
     else if (response.experimentState !== "InsertingSourcePollutant" && minutesPassed >=10  ) {

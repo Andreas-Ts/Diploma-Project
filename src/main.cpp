@@ -47,23 +47,26 @@ void setup() {
  Serial.println("I have the "+ sensorLocatedIntoDevice + " sensor");
  //initialize the message json
   initializemessageJSON();
+
 }
 
 void loop() {
 
 
   bool hasNewData =loopSensor();
-
+  if (millis()- timeSinceLastReading>timeSinceLastReadingMaxTolerance){
+    sendErrorMessage("Reading sensor has stopped",0);
+  }
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Wi-Fi disconnected. Reconnecting...");
     connectToWifiAndServer();
   }
+  
 
-
-if (hasNewData){ //a new value has been read from the sensor 
+  if (hasNewData){ //a new value has been read from the sensor 
     // Begin HTTP connection
     HTTPClient http;
-
+    timeSinceLastReading = millis();
     Serial.println("Sending data to server...");
     createTheUrl(endpoint +"postTimeSeriesData");
 

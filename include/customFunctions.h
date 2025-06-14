@@ -55,6 +55,8 @@ void updateCCS811Baseline();
 
 void getEnvironmentalData();
 
+void sendErrorMessage(String error_message,uint8_t error);
+
 
 
 void setupConnectionInformation();

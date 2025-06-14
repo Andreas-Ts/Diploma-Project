@@ -1,4 +1,5 @@
 #include "custom_headers.h"
+#include "customFunctions.h"
 
 
 
@@ -122,7 +123,8 @@ bool setupBME680(){
     //read data afterat interupt
   
     if (ccs.available()) {
-      if (!ccs.readData()) {
+      uint8_t error= ccs.readData();
+      if (!error) {
 
         messageJSON["CCS811:eCO2"] = ccs.geteCO2();
         messageJSON["CCS811:TVOC"] = ccs.getTVOC();
@@ -133,6 +135,8 @@ bool setupBME680(){
       }
       else{
           Serial.println("Error reading CCS811 data");
+          Serial.println("error code:"+error);
+          sendErrorMessage("Error reading CCS811 data",error);
       }
     }
    
@@ -144,7 +148,7 @@ bool setupBME680(){
     //ask for url every hour
     unsigned long time_until_next_env_get = abs((int)(millis()-ENVIRONMENTAL_DATA_CCS811_TIMER));
    
-    if ((firstTimeAskingEnvironmentalData == true and minutes30HavePassed == 1) or (time_until_next_env_get>ENVIRONMENTAL_DATA_CCS811_FREQUENCY)){
+    if ((firstTimeAskingEnvironmentalData == true) or (time_until_next_env_get>ENVIRONMENTAL_DATA_CCS811_FREQUENCY)){
       if (WiFi.status() == WL_CONNECTED) {
         Serial.println("Asking for environmental data");
         getEnvironmentalData();
@@ -330,6 +334,7 @@ void getEnvironmentalData(){
     Serial.println("Asking data from the server...");
     //default url + the specified endpoint
     createTheUrl(endpoint +"getEnvRoomData");
+    Serial.println(serverUrl);
     http.begin(serverUrl);
     http.setTimeout(2000); // Set timeout to 2 seconds
     int httpResponseCode  = http.GET();
@@ -340,13 +345,13 @@ void getEnvironmentalData(){
         JsonDocument response;
         deserializeJson(response,stringResponse);
         Serial.println("Response:");
-        roomTemperature = response["roomTemperature"];
-        roomHumidity = response["roomHumidity"];
+        temperature = response["temperature"];
+        humidity = response["humidity"];
         Serial.print("Room Temperature: ");
-        Serial.println(roomTemperature);
+        Serial.println(temperature);
         Serial.print("Room Humidity: ");  
-        Serial.println(roomHumidity);
-        ccs.setEnvironmentalData(roomHumidity, roomTemperature);
+        Serial.println(humidity);
+        ccs.setEnvironmentalData(humidity, temperature);
         
 
     } else {
@@ -359,3 +364,40 @@ void getEnvironmentalData(){
    // End HTTP connection
     http.end();
 }
+
+
+void sendErrorMessage(String error_message,uint8_t error){
+  flashLeds();
+ HTTPClient http;
+  JsonDocument jsonError;
+    Serial.println("Sending data to server...");
+    createTheUrl(endpoint +"postError");
+
+    Serial.println("The url is:"+(serverUrl));
+    http.begin((serverUrl));//in case of adding more url sections into the url we send the post request
+
+    http.addHeader("Content-Type", "application/json");
+    http.setTimeout(2000);
+    jsonError["error_number"] = error;
+    // Serialize the  JSON
+    String messageJSONString;
+    serializeJsonPretty(jsonError, messageJSONString);
+    Serial.println(messageJSONString);
+    // Send POST request
+    int httpResponseCode = http.POST(messageJSONString);
+    Serial.println("The wifi is being:"+ String(WL_CONNECTED));
+    // Print response
+    if (httpResponseCode > 0) {
+        String response = http.getString();
+        Serial.println("Response:");
+        Serial.println(response);
+    } else {
+        Serial.print("POST failed to arrive at server. Error: ");
+        Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
+        
+    }
+
+    http.end();
+
+}
+

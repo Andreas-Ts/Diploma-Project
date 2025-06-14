@@ -3,9 +3,10 @@ from flask import Flask, request, jsonify, render_template,Response
 import serverRouters
 import logging
 import os
-
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # This enables CORS for all routes and origins
 
 
 # Function to run the server

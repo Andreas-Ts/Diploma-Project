@@ -85,7 +85,6 @@ class utilityUrl(serverRouters):
     def getLogs(self):
         log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "logs"))
         log_file_path = os.path.join(log_dir, "server_requests.log")
-        print(log_file_path)
         if not os.path.exists(log_file_path):
             return render_template('base.html', temp_error="Log file does not exist.")
         
@@ -170,29 +169,59 @@ class submitSourcePollutantDetails(serverRouters):
         super().__init__()
     def get(self):
         try:
-            pipeline = [
-                { "$sort" : {"timestamp" : -1} },
-                {"$group":{
-                    "_id": None,
-                    "pollutant-type-distinct-list": {"$addToSet":"details.pollutant-type"},
-                    "item-used-distinct-list": {"$addToSet": "item-used"},
-                    "quantity-used-distinct-list" : {"$addToSet": "quantity-used"},
-                    "room-list" : {"$addToSet": "room-list"},
+            pipeline = [{
+                #Step 0: take all the documents with the category inside experimentState 
+                "$match" :{
+                    "userInputCategory":"ExperimentState",
+                    "experimentState":"InsertingSourcePollutant"
+                }
+            },
+                # Step 1: Flatten 'details' fields into root level
+                {
+                    "$project": {
+                        "pollutant-type": "$details.pollutant-type",
+                        "item-used": "$details.item-used",
+                        "quantity-used": "$details.quantity-used",
+                        "room": "$details.room",
+                        "front-wall": "$details.front-wall",
+                        "side-right-wall": "$details.side-right-wall",
+                        "are-windows-opened": "$details.are-windows-opened",
+                        "timestamp": 1  # preserve timestamp for sorting
+                    }
+                },
+                   {  
+                        "$sort": {
+                            "timestamp": -1
+                        }
+                    },
+                
+                # Step 3: Group to get distinct + latest values
+                {
+                    "$group": {
+                        "_id": None,
+                        "pollutant-type-distinct-list": { "$addToSet": "$pollutant-type" },
+                        "item-used-distinct-list": { "$addToSet": "$item-used" },
+                        "quantity-used-distinct-list": { "$addToSet": "$quantity-used" },
+                        "room-distinct-list": { "$addToSet": "$room" },
 
-                    "pollutant-type-latest_value":{"$first":"details.pollutant-type"},
-                    "item-used-latest_value": {"$first": "item-used"},
-                    "quantity-used-latest_value" : {"$first": "quantity-used"},
-                    "room-latest_value" :{"$first" :"room"},
-                    "front-wall-distance-latest_value": {"$first":"front-wall"},
-                    "side-right-wall-distance-latest_value": {"$first":"side-right-wall"}
-                    
-                }}
+                        "pollutant-type-latest_value": { "$first": "$pollutant-type" },
+                        "item-used-latest_value": { "$first": "$item-used" },
+                        "quantity-used-latest_value": { "$first": "$quantity-used" },
+                        "room-latest_value": { "$first": "$room" },
+                        "front-wall-latest_value": { "$first": "$front-wall" },
+                        "side-right-wall-latest_value": { "$first": "$side-right-wall" },
+                        "are-windows-opened-latest_value": { "$first": "$are-windows-opened" }
+                    }
+                }
             ]
+          
             if self.getLastUserInputHandler("ExperimentState","InsertingSourcePollutant") is None:
+                print("noeeeeee")
                 return render_template('insertingSourcePollutant.html')
             else:   
-                details = list(self.srvFunc.timeSeries.aggregate(pipeline))
-                return render_template('insertingSourcePollutant.html',details = details)
+                details = list(self.srvFunc.UserInput.aggregate(pipeline))
+                print(details)
+                return render_template('insertingSourcePollutant.html',details = details[0])
         except errors.PyMongoError as e:
             print(f"PyMongoError occurred: {e}")
             Response.code = 500
@@ -273,7 +302,6 @@ class timeSeriesEndpoints(serverRouters):
     def get(self,endpoint):
         start_timestamp_epoch = request.args.get("start")
         end_timestamp_epoch =   request.args.get("end")
-        print(start_timestamp_epoch)
         if start_timestamp_epoch is not None and end_timestamp_epoch is not None:
             start_timestamp_datetime = self.srvFunc.getDateTimeFromEpoch(start_timestamp_epoch)
             end_timestamp_datetime = self.srvFunc.getDateTimeFromEpoch(end_timestamp_epoch)
@@ -297,13 +325,16 @@ class timeSeriesEndpoints(serverRouters):
 
         if endpoint == "postTimeSeriesData":
             return self.postTimeSeriesData()
+        if endpoint == "postError":
+            return self.postError()
         
     def getTimeSeriesData(self,start_timestamp_datetime,end_timestamp_datetime):
         
         try:
             
-            id = int(request.args.get("Id"))
-        
+            id = request.args.get("Id")
+            if id is not None:
+                id = int(id)
             pipeline = self.srvFunc.pipelineForTakingDataBasedOfStartAndEndTime(start_timestamp_datetime,end_timestamp_datetime,id = id)                
             response_docs = list(self.srvFunc.timeSeries.aggregate(pipeline))
             return jsonify(json.loads(json_util.dumps(response_docs))), 200 
@@ -381,8 +412,11 @@ class timeSeriesEndpoints(serverRouters):
         except Exception as e:
             print(f"Unexpected error: {e}")
             return jsonify({"error": "Internal server error"}), 500
-    
         
+    def postError(self):
+        error =request.get_json()
+        print("Error from "+error['id']+":" + error["error_message"])
+        return jsonify({"response" :"ok"}),200
 class dataAnalysisEndpoints(serverRouters):
     def __init__(self):
         super().__init__()  

@@ -51,10 +51,10 @@ unsigned long CCS811_TIMER = 0;
 
 unsigned int CCS811_EEPROM_SIZE = sizeof(uint16_t) + 1; //so 2 bytes size
 
-float roomTemperature;
-float roomHumidity;
+float temperature;
+float humidity;
 
-unsigned long ENVIRONMENTAL_DATA_CCS811_FREQUENCY = 60 * 60 * 1000; //1 hour
+unsigned long ENVIRONMENTAL_DATA_CCS811_FREQUENCY = 30 * 60 * 1000; //30 minutes
 unsigned long ENVIRONMENTAL_DATA_CCS811_TIMER = 0; //timer for the environmental data
 
 uint16_t stateUpdateCounter = 0 ; //counter for the state update of the CCS811 sensor and the BME680 sensor
@@ -71,3 +71,7 @@ String    selectedIP;
 volatile bool dataReadyCCS811 = false;
 
 const uint CCS811_INT_PIN = 27 ; // GPIO pin connected to nINT
+
+unsigned long timeSinceLastReading=0;
+
+unsigned long timeSinceLastReadingMaxTolerance = 20 * 1000; //20 seconds
