@@ -415,7 +415,7 @@ class timeSeriesEndpoints(serverRouters):
         
     def postError(self):
         error =request.get_json()
-        print("Error from "+error['id']+":" + error["error_message"])
+        print("Error message"+str(error["error_message"])+"Error number:"+str(error["error_number"]))
         return jsonify({"response" :"ok"}),200
 class dataAnalysisEndpoints(serverRouters):
     def __init__(self):

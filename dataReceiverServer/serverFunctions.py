@@ -40,8 +40,8 @@ class ServerFunctions:
         # Path to save the CSV file
         log_dir = os.path.join(os.path.dirname(__file__), 'logs')
         os.makedirs(log_dir, exist_ok=True)  # Ensure the directory exists
-
-        log_file_path = os.path.join(log_dir, 'server_requests.log')
+        current_date = datetime.now(self.zoneInfo).date()
+        log_file_path = os.path.join(log_dir, 'server_requests_'+str(current_date)+'.log')
         logging.basicConfig(
                 filename=log_file_path,
                 level=logging.INFO,

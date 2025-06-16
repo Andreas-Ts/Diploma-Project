@@ -60,7 +60,7 @@ bool setupBME680(){
     }
     //Serial.println("CCS811 test");
    
-    ccs.setDriveMode(CCS811_DRIVE_MODE_1SEC);
+    ccs.setDriveMode(CCS811_DRIVE_MODE_10SEC);
 
     // Wait for the sensor to be ready
     while(!ccs.available());
@@ -123,8 +123,8 @@ bool setupBME680(){
     //read data afterat interupt
   
     if (ccs.available()) {
-      uint8_t error= ccs.readData();
-      if (!error) {
+   
+      if (! ccs.readData()) {
 
         messageJSON["CCS811:eCO2"] = ccs.geteCO2();
         messageJSON["CCS811:TVOC"] = ccs.getTVOC();
@@ -134,6 +134,7 @@ bool setupBME680(){
 
       }
       else{
+          uint8_t error = ccs.read8(CCS811_ERROR_ID);
           Serial.println("Error reading CCS811 data");
           Serial.println("error code:"+error);
           sendErrorMessage("Error reading CCS811 data",error);
@@ -203,6 +204,7 @@ bool setupBME680(){
       }
       else{
         Serial.println("Some error occured");
+        sendErrorMessage(output,iaqSensor.bme68xStatus);
         errLeds();
         return false;
   
@@ -379,6 +381,7 @@ void sendErrorMessage(String error_message,uint8_t error){
     http.addHeader("Content-Type", "application/json");
     http.setTimeout(2000);
     jsonError["error_number"] = error;
+    jsonError["error_message"] = error_message;
     // Serialize the  JSON
     String messageJSONString;
     serializeJsonPretty(jsonError, messageJSONString);

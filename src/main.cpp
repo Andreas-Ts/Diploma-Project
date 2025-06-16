@@ -48,6 +48,7 @@ void setup() {
  //initialize the message json
   initializemessageJSON();
 
+ timeSinceLastReading = millis();
 }
 
 void loop() {
@@ -56,10 +57,13 @@ void loop() {
   bool hasNewData =loopSensor();
   if (millis()- timeSinceLastReading>timeSinceLastReadingMaxTolerance){
     sendErrorMessage("Reading sensor has stopped",0);
+    timeSinceLastReading = millis();
   }
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Wi-Fi disconnected. Reconnecting...");
     connectToWifiAndServer();
+     timeSinceLastReading = millis();
+
   }
   
 
