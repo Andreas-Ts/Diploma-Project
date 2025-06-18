@@ -93,7 +93,7 @@ void connectToWifiAndServer(){
   while (wifi_found != true || server_found != true){
     wifi_found = false;
 
-    for (int i = 0 ; ((i < numberOfWifiRouters) && (wifi_found != true && server_found != true));i++){
+    for (int i = 0 ; ((i < numberOfWifiRouters) || (wifi_found != true && server_found != true));i++){
        
         server_found =false;
         Serial.println("Trying to connect to Wi-Fi: " + String(connectionInformation[i].ssid) + " .With password: "+connectionInformation[i].password);

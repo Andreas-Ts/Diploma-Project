@@ -85,7 +85,7 @@ function downloadLogFile() {
         experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
         return ;
     }
-    else if (minutesPassed < 5 && (response.experimentState === "StartingExperiment" || 
+    else if (minutesPassed < 1 && (response.experimentState === "StartingExperiment" || 
              response.experimentState === "RemovingSourcePollutant")) {
             //document.getElementById("submitExperimentState").disabled = true;
             experimentStateText.textContent = "Άσε τον χώρο να αεριστεί για 5 λεπτά.";
@@ -94,7 +94,7 @@ function downloadLogFile() {
             startTimer(startTime,"5 Minutes");
             return ;
     }
-    else if (response.experimentState !== "InsertingSourcePollutant" && minutesPassed >=10  ) {
+    else if (response.experimentState !== "InsertingSourcePollutant" && minutesPassed > 1 ) {
         submitExperimentStateClickListener("http://localhost:8080/postUserInput/InsertingSourcePollutant","GET","InsertingSourcePollutant");
         experimentStateText.textContent = "Εισήγαγε την πηγή ρύπου";
         return ;
