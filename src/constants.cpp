@@ -75,3 +75,5 @@ const uint CCS811_INT_PIN = 27 ; // GPIO pin connected to nINT
 unsigned long timeSinceLastReading;
 
 unsigned long timeSinceLastReadingMaxTolerance = 30 * 1000; //30 seconds
+
+hw_timer_t * timerBegin(uint32_t frequency);

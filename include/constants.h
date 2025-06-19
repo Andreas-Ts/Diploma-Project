@@ -76,4 +76,6 @@ extern const uint CCS811_INT_PIN;
 extern unsigned long timeSinceLastReading;
 
 extern unsigned long timeSinceLastReadingMaxTolerance;
+
+extern
 #endif

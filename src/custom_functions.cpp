@@ -171,3 +171,96 @@ void scanWiFiNetworks() {
   }
   Serial.println();
 }
+
+ 
+  ///This function is used to loop the sensor and get the data from it. It will be called in the main loop of the code.
+  ///It will check if the sensor is BME680 or CCS811 and call the appropriate function to get the data from it.
+  ///It will also check if the data is new and if it is, it will tell the loop to send message into the wifi
+  bool loopSensor(){
+    bool haveNewData = false;
+
+      if ( sensorLocatedIntoDevice== "BME680"){
+        haveNewData = loopBME680();
+
+      }
+      if (sensorLocatedIntoDevice== "CCS811"){
+        haveNewData = loopCCS811();
+      }
+    return haveNewData;
+  }
+
+  //Make a http get request to the server to get the environmental data of the room
+void getEnvironmentalData(){
+    HTTPClient http;
+    Serial.println("Asking data from the server...");
+    //default url + the specified endpoint
+    createTheUrl(endpoint +"getEnvRoomData");
+    Serial.println(serverUrl);
+    http.begin(serverUrl);
+    http.setTimeout(2000); // Set timeout to 2 seconds
+    int httpResponseCode  = http.GET();
+     if (httpResponseCode == HTTP_CODE_OK) {
+
+        String stringResponse = http.getString();
+        Serial.println(stringResponse);
+        JsonDocument response;
+        deserializeJson(response,stringResponse);
+        Serial.println("Response:");
+        temperature = response["temperature"];
+        humidity = response["humidity"];
+        Serial.print("Room Temperature: ");
+        Serial.println(temperature);
+        Serial.print("Room Humidity: ");  
+        Serial.println(humidity);
+        ccs.setEnvironmentalData(humidity, temperature);
+        
+
+    } else {
+        Serial.print("POST failed. Error: ");
+        Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
+           
+    }
+    firstTimeAskingEnvironmentalData = false; //we have asked the environmental data for the first time
+    ENVIRONMENTAL_DATA_CCS811_TIMER = millis(); //set timer 
+   // End HTTP connection
+    http.end();
+}
+
+
+void sendErrorMessage(String error_message,uint8_t error){
+  flashLeds();
+ HTTPClient http;
+  JsonDocument jsonError;
+    Serial.println("Sending data to server...");
+    createTheUrl(endpoint +"postError");
+
+    Serial.println("The url is:"+(serverUrl));
+    http.begin((serverUrl));//in case of adding more url sections into the url we send the post request
+
+    http.addHeader("Content-Type", "application/json");
+    http.setTimeout(2000);
+    jsonError["error_number"] = error;
+    jsonError["error_message"] = error_message;
+    // Serialize the  JSON
+    String messageJSONString;
+    serializeJsonPretty(jsonError, messageJSONString);
+    Serial.println(messageJSONString);
+    // Send POST request
+    int httpResponseCode = http.POST(messageJSONString);
+    Serial.println("The wifi is being:"+ String(WL_CONNECTED));
+    // Print response
+    if (httpResponseCode > 0) {
+        String response = http.getString();
+        Serial.println("Response:");
+        Serial.println(response);
+    } else {
+        Serial.print("POST failed to arrive at server. Error: ");
+        Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
+        
+    }
+
+    http.end();
+
+}
+
+void connecToWifi

@@ -1,19 +1,44 @@
 #include "custom_headers.h"
 
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 3600 * 2;//3600 seconds= 1 hour, so timezone 2 hours
+const int   daylightOffset_sec = 3200;
 
+int wifiIndex = 0;
+int httpIndex = 0;
 
+void connectionWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info){
+
+}
+void connectToWifi(){
+  
+  Wifi.begin(connectionInformation[wifiIndex].ssid,connectionInformation[wifiIndex].password);
+  
+
+}
 void setup() {
   
   Serial.begin(115200);
   delay(1000);
+
+  Wifi.onEvent(connectionWifiEvent,ARDUINO_EVENT_WIFI_STA_START);
   Serial.println("hi");
-  scanWiFiNetworks();
+  //scanWiFiNetworks();
   setupConnectionInformation(); 
-    connectToWifiAndServer();
+
+
+  //connectToWifiAndServer();
  
   // Connect to Wi-Fi
 
-
+  // Init and get the time
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+    struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
   id = chooseIDBasedOfMAC(MAC_LIBRARY);
 
   Serial.println(String(id));
@@ -69,8 +94,20 @@ void loop() {
 
   if (hasNewData){ //a new value has been read from the sensor 
     // Begin HTTP connection
+        struct tm timeinfo;
+
+    if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
     HTTPClient http;
     timeSinceLastReading = millis();
+    char isoTime[25];  // Buffer for ISO string
+    strftime(isoTime, sizeof(isoTime), "%Y-%m-%dT%H:%M:%S", &timeinfo);
+    // Append fixed timezone
+    String finalTime = String(isoTime) + "+00:00";
+    messageJSON["DateTime"]  = isoTime;
     Serial.println("Sending data to server...");
     createTheUrl(endpoint +"postTimeSeriesData");
 

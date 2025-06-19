@@ -14,6 +14,6 @@
 #include <EEPROM.h>
 #include <Arduino.h>
 #include <WiFiMulti.h>
-
+#include <time.h>
 
 #endif
