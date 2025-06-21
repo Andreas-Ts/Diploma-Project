@@ -65,12 +65,14 @@ int chooseIDBasedOfMAC(const uint8_t *MAC_LIBRARY[]){
 
 
 /* Halt in case of failure */
+
 void errLeds(void)
 {
   for (;;){
     flashLeds();
   }
 }
+
 /*For debugging reasons*/
 
 void flashLeds(){
@@ -146,12 +148,12 @@ void connectToWifiAndServer(){
 
 }
 
-void createTheUrl(String endpoint){
+
+String createTheUrl(String endpoint){
 
    serverUrl = "http://"+ selectedIP + port + endpoint;
 
 }
-
 void scanWiFiNetworks() {
   Serial.println("Scanning for WiFi networks...");
 
@@ -263,4 +265,47 @@ void sendErrorMessage(String error_message,uint8_t error){
 
 }
 
-void connecToWifi
+
+void wifiEventConnectedToWifiWithIP(WiFiEvent_t event, WiFiEventInfo_t info){
+    timerStop(wifiTimer);
+    Serial.println("ESP32 connected to Wifi with ssid:"+connectionInformation[wifiIndex].ssid);    
+    //asign the wifi found as the selected wifi
+    selectedWIFI = connectionInformation[wifiIndex];
+    Serial.println("Time to connect to server");
+    statusConnectedToWifi = true;    
+              
+}
+void resetConnectionStatus(){
+    bool statusConnectedToWifi = false;
+    bool statusConnectedToServer = false;
+    unsigned int wifiIndex = 0;
+    unsigned int httpIndex = 0;
+}
+
+
+void connectToServerHandler(){
+    if (httpIndex >= numberOfPotentialServers){
+      Serial.println("The wifi"+connectionInformation[wifiIndex].ssid+'doesn\'t have any server any eligible server running.');
+      wifiNoConnection();
+      return;
+    }
+
+}
+
+
+//wifi was not connected in the given time or handler didn't found any server
+void wifiNoConnection(){
+    Serial.println("The wifi "+String(connectionInformation[wifiIndex].ssid)+" didn't connect.");
+    //go to the next one,either 1 from 0 or 0 from 1
+    statusConnectedToWifi = false;
+}
+
+unsigned int seeTimeElapsed(unsigned long pastTime){
+    unsigned long currentTime = millis();
+    unsigned int timeElapsed = (int) currentTime - pastTime;
+    if (timeElapsed < 0){
+      Serial.println("Past time given is in future.Something wrong happened");
+      flashLeds();
+    } 
+    return timeElapsed;
+}

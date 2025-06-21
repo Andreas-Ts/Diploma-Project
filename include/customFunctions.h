@@ -57,14 +57,19 @@ void getEnvironmentalData();
 
 void sendErrorMessage(String error_message,uint8_t error);
 
+void wifiNoConnection();
 
+unsigned int seeTimeElapsed(unsigned long pastTime);
 
 void setupConnectionInformation();
 void connectToWifiAndServer();
-void createTheUrl(String IP);
 
 void scanWiFiNetworks();
 
 void listAvailableWiFiNetworks();
+
+String createTheUrl(String endpoint);
+
+bool setNetworkConnections(bool newReadingJustOccured)
 
 #endif

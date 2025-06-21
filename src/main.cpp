@@ -1,35 +1,21 @@
 #include "custom_headers.h"
 
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 3600 * 2;//3600 seconds= 1 hour, so timezone 2 hours
-const int   daylightOffset_sec = 3200;
 
-int wifiIndex = 0;
-int httpIndex = 0;
 
-void connectionWifiEvent(WiFiEvent_t event, WiFiEventInfo_t info){
-
-}
-void connectToWifi(){
-  
-  Wifi.begin(connectionInformation[wifiIndex].ssid,connectionInformation[wifiIndex].password);
-  
-
-}
 void setup() {
   
   Serial.begin(115200);
-  delay(1000);
+  
+  timerAttachInterrupt(wifiTimer,wifiNoConnection,false);
 
-  Wifi.onEvent(connectionWifiEvent,ARDUINO_EVENT_WIFI_STA_START);
+   
+
+  Wifi.onEvent(wifiEventConnectedToWifiWithIP,ARDUINO_EVENT_WIFI_STA_GOT_IP);
   Serial.println("hi");
   //scanWiFiNetworks();
   setupConnectionInformation(); 
 
 
-  //connectToWifiAndServer();
- 
-  // Connect to Wi-Fi
 
   // Init and get the time
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
@@ -77,22 +63,14 @@ void setup() {
 }
 
 void loop() {
+   bool newReadingJustOccured =false;
 
+  bool newReadingJustOccured = loopSensor();
+  ////////////////////////
 
-  bool hasNewData =loopSensor();
-  if (millis()- timeSinceLastReading>timeSinceLastReadingMaxTolerance){
-    sendErrorMessage("Reading sensor has stopped",0);
-    timeSinceLastReading = millis();
-  }
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Wi-Fi disconnected. Reconnecting...");
-    connectToWifiAndServer();
-     timeSinceLastReading = millis();
-
-  }
-  
-
-  if (hasNewData){ //a new value has been read from the sensor 
+  bool hasDoneNetworkSetAction = setNetworkConnections(newReadingJustOccured);
+ 
+  if (newReadingJustOccured and !hasDoneNetworkSetAction){ //a new value has been read from the sensor 
     // Begin HTTP connection
         struct tm timeinfo;
 
