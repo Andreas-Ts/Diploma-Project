@@ -4,6 +4,7 @@ import serverRouters
 import logging
 import os
 from flask_cors import CORS
+from waitress import serve
 
 app = Flask(__name__)
 CORS(app)  # This enables CORS for all routes and origins
@@ -98,7 +99,14 @@ def server_routers():
 # Run the server if this file is executed directly
 if __name__ == "__main__":
     # Initialize the server functions
-    
+    print("Server is starting...")
     server_routers()
     
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    serve(app,host="0.0.0.0", 
+        port=8080,
+        threads=8,
+        channel_timeout=600,  # Keep-Alive timeout set to 10 minutes
+        connection_limit=1000
+        )
+    print("Server is running...")
+

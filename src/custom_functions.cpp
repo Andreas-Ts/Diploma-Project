@@ -3,64 +3,32 @@
 #include "customFunctions.h"
 
 
-//Initialize the values of the json object to zero
-void initializemessageJSON(){
-  messageJSON["DateTime"] = nullptr;
-  messageJSON["Id"] = id;
-  messageJSON["Sensor"] = sensorLocatedIntoDevice;
-  messageJSON["BME680:iaq"] = nullptr;
-  messageJSON["BME680:iaqAccuracy"] = nullptr;
-  
-  messageJSON["BME680:staticIaq"] = nullptr;
-  messageJSON["BME680:co2Equivalent"] = nullptr;
-  messageJSON["BME680:co2EquivalentAccuracy"] = nullptr;
 
-  messageJSON["BME680:breathVocEquivalent"] = nullptr;
-  messageJSON["BME680:breathVocEquivalentAccuracy"] = nullptr;
-
-  messageJSON["BME680:rawTemperature"] = nullptr;
-  messageJSON["BME680:pressure"] = nullptr;
-  messageJSON["BME680:rawHumidity"] = nullptr;
-  messageJSON["BME680:gasResistance"] = nullptr;
-  messageJSON["BME680:stabStatus"] = nullptr;
-  messageJSON["BME680:runInStatus"] = nullptr;
-  messageJSON["BME680:temperature"] = nullptr;
-  messageJSON["BME680:humidity"] = nullptr;
-  messageJSON["BME680:gasPercentage"] = nullptr;
-  messageJSON["BME680:gasPercentageAccuracy"] = nullptr;
-
-  messageJSON["CCS811:eCO2"] = nullptr;
-  messageJSON["CCS811:TVOC"] = nullptr;
-  messageJSON["CCS811:RawResistance"]=nullptr;
-  messageJSON["CCS811:30minutesPassed"] = minutes30HavePassed;
-
-}
 
 //choose id based on the MAC address of the device
 //and return the id of the device
-int chooseIDBasedOfMAC(const uint8_t *MAC_LIBRARY[]){
-  int id;
+void chooseIDBasedOfMAC(){
   
   esp_err_t  res= esp_wifi_get_mac(WIFI_IF_STA,my_MAC);
   Serial.println("so:"+String(res));
   if (res != ESP_OK){
      Serial.println("Failed to read MAC address");
-     return -1;
+     errLeds();
   }
-  
-  int position=0;
-  for ( ;  position < ESP32_TOTAL_DEVICES_NUMBER; position++ ){
-    if (! memcmp(MAC_LIBRARY[position],my_MAC,sizeof(my_MAC))){
-        return position;
+  Serial.println(ESP32_TOTAL_DEVICES_NUMBER);
+  for ( int i =0;  i < ESP32_TOTAL_DEVICES_NUMBER; i++ ){
+    if (! memcmp(MAC_LIBRARY[i],my_MAC,sizeof(my_MAC))){
+       Serial.println("My id is"+ String(id));
+       id = i;
     }
   }
-
-  if (position >= ESP32_TOTAL_DEVICES_NUMBER){
+  //only positive values are legit
+  if (id < 0 ){
        Serial.println("Failed to find a saved MAC address");
-        return -1;
+      errLeds();
+
   }
-  //just a safe check
-  return -1;
+  
 }
 
 
@@ -84,75 +52,12 @@ void flashLeds(){
 }
 
 
-void connectToWifiAndServer(){
-
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
-  Serial.println("Connecting to Wi-Fi");
-  bool wifi_found = false;
-  bool server_found =false;
-  //continue until you find a connection
-  while (wifi_found != true || server_found != true){
-    wifi_found = false;
-
-    for (int i = 0 ; ((i < numberOfWifiRouters) || (wifi_found != true && server_found != true));i++){
-       
-        server_found =false;
-        Serial.println("Trying to connect to Wi-Fi: " + String(connectionInformation[i].ssid) + " .With password: "+connectionInformation[i].password);
-        WiFi.begin(connectionInformation[i].ssid.c_str(), connectionInformation[i].password.c_str()); 
-        Serial.println(connectionInformation[i].ssid.c_str());
-          Serial.println(connectionInformation[i].password.c_str());
-        Serial.println("Before delay" + String(WiFi.status()));
-        unsigned long startAttemptTime = millis();
-        const unsigned long wifiTimeout = 10000; // 10 seconds
-          while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < wifiTimeout) {
-            delay(500);
-            Serial.print(".");
-          }
-        Serial.println();
-        Serial.println("After delay"+String(WiFi.status()));
-        if (WiFi.status() == WL_CONNECTED){
-          selectedWIFI = connectionInformation[i];
-          wifi_found = true;
-          Serial.println("Wifi choosen:"+selectedWIFI.ssid);
-
-          for (int j=0 ; j <numberOfPotentialServers and server_found != true;j++){
-              HTTPClient http;
-              selectedIP = selectedWIFI.serverIp[j];
-              createTheUrl(endpoint+"checkConnection");
-              Serial.println("Trying to connect to server: " + selectedWIFI.serverIp[j]);
-              http.begin(serverUrl);
-              http.setTimeout(2000); // Set timeout to 5 seconds
-              Serial.println("URL: " + serverUrl);
-              int httpCode = http.GET(); 
-              //code received
-              if (httpCode > 0){
-                  selectedIP = selectedWIFI.serverIp[j];
-                  Serial.println("Connected to server at IP: " + selectedIP);
-                  server_found =true;
-              }else{
-                Serial.println("Server not found");
-              }
-              http.end();
-
-          }
-        }
-        else{
-          WiFi.disconnect(true);  // Disconnect and erase old config
-          delay(1000);
-        }
-
-    }  
-}
-  digitalWrite(LED_BUILTIN, LOW);
-
-}
 
 
 String createTheUrl(String endpoint){
 
    serverUrl = "http://"+ selectedIP + port + endpoint;
-
+    return serverUrl;
 }
 void scanWiFiNetworks() {
   Serial.println("Scanning for WiFi networks...");
@@ -174,6 +79,25 @@ void scanWiFiNetworks() {
   Serial.println();
 }
 
+void setupSensor(){
+  // Setup Sensor with enum type based of the sensor we have.You can put multiple type
+ if (setupBME680()==true){
+    Serial.println("BME680 sensor found");
+    sensorLocatedIntoDevice = "BME680";
+ }
+
+ if (setupCCS811()==true){ 
+  Serial.println("CCS811 sensor found");
+    sensorLocatedIntoDevice = "CCS811";
+ }
+   
+ //If we still don't have a sensor we recognized,stop the loop
+ if (sensorLocatedIntoDevice=="NO_KNOWN_SENSOR"){
+ 
+      Serial.println("No known sensor was found");
+      errLeds();
+ } 
+}
  
   ///This function is used to loop the sensor and get the data from it. It will be called in the main loop of the code.
   ///It will check if the sensor is BME680 or CCS811 and call the appropriate function to get the data from it.
@@ -285,7 +209,7 @@ void resetConnectionStatus(){
 
 void connectToServerHandler(){
     if (httpIndex >= numberOfPotentialServers){
-      Serial.println("The wifi"+connectionInformation[wifiIndex].ssid+'doesn\'t have any server any eligible server running.');
+      Serial.println("The wifi"+connectionInformation[wifiIndex].ssid+"doesn\'t have any server any eligible server running.");
       wifiNoConnection();
       return;
     }
@@ -308,4 +232,33 @@ unsigned int seeTimeElapsed(unsigned long pastTime){
       flashLeds();
     } 
     return timeElapsed;
+}
+String getLocalDateTime(){
+   // Begin HTTP connection
+  struct tm timeinfo;
+
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    errLeds();
+  }else{
+    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+
+  }
+  
+  char isoTime[25];  // Buffer for ISO string
+  strftime(isoTime, sizeof(isoTime), "%Y-%m-%dT%H:%M:%S", &timeinfo);
+   // Append fixed timezone
+  String finalTime = String(isoTime) + "+00:00";
+  return finalTime;
+}
+
+
+void ramAvailable(){
+  Serial.println("Free heap: " + String(ESP.getFreeHeap()) + " bytes");
+  Serial.println("Total heap: " + String(ESP.getHeapSize()) + " bytes");
+  Serial.println("Minimum free heap: " + String(ESP.getMinFreeHeap()) + " bytes");
+  Serial.println("Max allocatable heap: " + String(ESP.getMaxAllocHeap()) + " bytes");
+  Serial.println("Free PSRAM: " + String(ESP.getFreePsram()) + " bytes");
+  Serial.println("Sketch size: " + String(ESP.getSketchSize()) + " bytes");
+  Serial.println("Sketch free space: " + String(ESP.getFreeSketchSpace()) + " bytes");
 }

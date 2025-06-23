@@ -57,24 +57,9 @@ bool setupBME680(){
     if (iaqSensor.run()) { // If new data is available
       haveNewData = true; 
 
+      addMessageToBuffer();
 
-      messageJSON["BME680:iaq"] = iaqSensor.iaq;
-      messageJSON["BME680:iaqAccuracy"] = iaqSensor.iaqAccuracy;
-      messageJSON["BME680:staticIaq"] = iaqSensor.staticIaq;
-      messageJSON["BME680:co2Equivalent"] = iaqSensor.co2Equivalent;
-      messageJSON["BME680:co2EquivalentAccuracy"] = iaqSensor.co2Accuracy;
-      messageJSON["BME680:breathVocEquivalent"] = iaqSensor.breathVocEquivalent;
-      messageJSON["BME680:breathVocEquivalentAccuracy"] = iaqSensor.breathVocAccuracy;
-      messageJSON["BME680:rawTemperature"] = iaqSensor.rawTemperature;
-      messageJSON["BME680:pressure"] = iaqSensor.pressure;
-      messageJSON["BME680:rawHumidity"] = iaqSensor.rawHumidity;
-      messageJSON["BME680:gasResistance"] = iaqSensor.gasResistance;
-      messageJSON["BME680:stabStatus"] = iaqSensor.stabStatus;
-      messageJSON["BME680:runInStatus"] = iaqSensor.runInStatus;
-      messageJSON["BME680:temperature"] = iaqSensor.temperature;
-      messageJSON["BME680:humidity"] = iaqSensor.humidity;
-      messageJSON["BME680:gasPercentage"] = iaqSensor.gasPercentage;
-      messageJSON["BME680:gasPercentageAccuracy"] = iaqSensor.gasPercentageAccuracy;
+     
 
     } 
     updateBME680State();

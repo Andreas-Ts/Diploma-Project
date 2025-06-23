@@ -36,10 +36,7 @@ void connectToWifiAndServer();
 /// @param MAC_LIBRARY the array that contain the MAC addresses of all the devices that are going to be used
 /// @return //if the MAC address exists, return an ID based of the position of the address at the MAC_LIBRARY array,
             //if the MAC address doesn't exists, return false.
-int chooseIDBasedOfMAC(const uint8_t *MAC_LIBRARY[]);
-
-
-void initializemessageJSON();
+void chooseIDBasedOfMAC();
 
 
 
@@ -61,15 +58,24 @@ void wifiNoConnection();
 
 unsigned int seeTimeElapsed(unsigned long pastTime);
 
+String getLocalDateTime();
+
+void ramAvailable();
+
 void setupConnectionInformation();
 void connectToWifiAndServer();
 
 void scanWiFiNetworks();
 
+void setupSensor();
+
 void listAvailableWiFiNetworks();
 
 String createTheUrl(String endpoint);
 
-bool setNetworkConnections(bool newReadingJustOccured)
+bool setNetworkConnections();
+void addMessageToBuffer();
+JsonDocument createIndividualMessage();
+bool clearBufferAndCounter();
 
 #endif

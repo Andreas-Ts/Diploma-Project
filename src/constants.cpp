@@ -12,7 +12,7 @@ const uint8_t *MAC_LIBRARY[] = {
 };
 uint8_t my_MAC[6] = {0x0,0x0,0x0,0x0,0x0,0x0};
 
-int id;
+int id = -1;
 
 //all the mac has the same size
 const int ESP32_TOTAL_DEVICES_NUMBER = sizeof(MAC_LIBRARY)/sizeof(MAC_LIBRARY[0]);
@@ -66,7 +66,7 @@ bool firstTimeAskingEnvironmentalData = true; //to know if we have asked the env
 
 
 wifi_Information    selectedWIFI;
-String    selectedIP;
+String    selectedIP = "";
 
  wifi_Information* connectionInformation = nullptr;
 
@@ -83,16 +83,15 @@ HTTPClient http;
 bool atSetup = true;
 
 const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 3600 * 2;//3600 seconds= 1 hour, so timezone 2 hours
-const int   daylightOffset_sec = 3200;
+const long  gmtOffset_sec =0;//we want the utc time
+const int   daylightOffset_sec = 0;
 const uint32_t frequency_divider = 8000; //we would use 80000,but the divider reaches to 65536
 float divided_frequency = (8 *10^7) /frequency_divider;//the timer will count as 0.1 milliseconds
 float cofficient_to_reach_one_millisecond = (10^-3)/divided_frequency;
 float millisecond_unit = cofficient_to_reach_one_millisecond * divided_frequency;
 
-unsigned int wifiIndex = 0;
-unsigned int httpIndex = 0;
-int timeToConnectToWifi = 5000;
+
+const int timeToConnectToWifi = 5000;
 //set the timers
 hw_timer_t *bme680Timer = timerBegin(0,frequency_divider,true);
 
@@ -103,3 +102,9 @@ bool statusConnectedToWifi = false;
 bool statusConnectedToServer = false;
 
 unsigned long timeUntilNextReaind =0;
+
+JsonDocument doc;
+JsonArray buffer = doc.to<JsonArray>();
+
+const unsigned int maxBufferSize = 60;
+unsigned int currentNumberOfUnsendedData = 0;

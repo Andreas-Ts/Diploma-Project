@@ -80,23 +80,27 @@ extern unsigned long timeSinceLastReadingMaxTolerance;
 extern HTTPClient http;
 extern bool atSetup;
 
-extern const char* ntpServer = "pool.ntp.org";
-extern const long  gmtOffset_sec = 3600 * 2;//3600 seconds= 1 hour, so timezone 2 hours
-extern const int   daylightOffset_sec = 3200;
-extern const uint32_t frequency_divider = 8000; //we would use 80000,but the divider reaches to 65536
-extern float divided_frequency = (8 *10^7) /frequency_divider;//the timer will count as 0.1 milliseconds
-extern float cofficient_to_reach_one_millisecond = (10^-3)/divided_frequency;
-extern float millisecond_unit = cofficient_to_reach_one_millisecond * divided_frequency;
+extern const char* ntpServer ;
+extern const long  gmtOffset_sec ;//3600 seconds= 1 hour, so timezone 2 hours
+extern const int   daylightOffset_sec ; //we would use 80000,but the divider reaches to 65536
+extern float divided_frequency;//the timer will count as 0.1 milliseconds
+extern float cofficient_to_reach_one_millisecond;
+extern float millisecond_unit ;
 
-extern int wifiIndex = 0;
-extern int httpIndex = 0;
-extern int timeToConnectToWifi = 5000;
+extern int wifiIndex ;
+extern int httpIndex ;
+extern const int timeToConnectToWifi;
 //set the timers
-extern hw_timer_t *bme680Timer = timerBegin(0,8000,true);
+extern hw_timer_t *bme680Timer;
 
-extern hw_timer_t *wifiTimer = timerBegin(1,frequency_divider,true);
+extern hw_timer_t *wifiTimer;
 
 extern bool statusConnectedToWifi;
 extern bool statusConnectedToServer;
-extern unsigned long timeUntilNextReaind
+extern unsigned long timeUntilNextReading;
+
+extern JsonDocument doc;
+extern JsonArray buffer;
+extern const unsigned int maxBufferSize;
+extern unsigned int currentNumberOfUnsendedData;
 #endif

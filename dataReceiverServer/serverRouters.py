@@ -380,25 +380,13 @@ class timeSeriesEndpoints(serverRouters):
             data = request.get_json()
             if not data:
               return jsonify({"error": "Missing or invalid JSON data"}), 400
-            data['timestamp'] = self.srvFunc.getCurrentDateTime()
 
-            #Insert the data into the database,deleting the irrelevant fields
-            #keep the Timestamp,Id and Sensor fields for both sensors
-            keep_fields = ['timestamp', 'Id', 'Sensor']
-             #trim from bme680 some fields to save storage space
-            trim_fields = ["BME680:co2EquivalentAccuracy","BME680:breathVocEquivalentAccuracy",
-                           "BME680:rawTemperature","BME680:pressure","BME680:rawHumidity",
-                           "BME680:stabStatus","BME680:runInStatus","BME680:gasPercentageAccuracy"
-                           ] 
+            # Check if the required fields are present
+
+            print(data)
 
 
-            # Create a new dictionary with only the fields we want to keep
-            data = {key: value 
-                    for key, value in data.items() 
-                    if  (key.startswith(data["Sensor"]) and key not in trim_fields) or (key in keep_fields)}
-
-
-            self.srvFunc.timeSeries.insert_one(data)
+            self.srvFunc.timeSeries.insert_many(data)
             return jsonify({"status": "OK"}), 200
         except errors.PyMongoError as e:
             print(f"An error occurred while inserting data into MongoDB: {e}")

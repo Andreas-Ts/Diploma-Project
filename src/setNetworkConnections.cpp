@@ -1,76 +1,91 @@
 #include "custom_headers.h"
 
-bool setNetworkConnections(bool newReadingJustOccured){
-  static bool tryingConnectingWifi = false;
-  static bool tryingConnectingServer = false;
+bool setNetworkConnections() {
+  bool haveDoneNetworkSetAction = false;
+  static bool tryingToConnectToWifi = false;
   static unsigned int wifiIndex = 0;
   static int httpIndex = -1;
   static unsigned long timeFiredWifiBegin = 0;
-  if (!newReadingJustOccured)  //don't do anything until we have a fresh reading
-  {
-      return false;
-  }
-  //if we are 
-  if (WiFi.status() != WL_CONNECTED and tryingConnectingWifi == false ) {
 
-    Serial.println("Wi-Fi disconnected. Reconnect to the server");
-    
-    wifiIndex = 0;
-    Serial.println("Connect to the wifi:"+connectionInformation[wifiIndex].ssid);
-    WiFi.begin(connectionInformation[wifiIndex].ssid,connectionInformation[wifiIndex].password);
-    httpIndex = -1;
-    timeFiredWifiBegin = millis();
-    tryingConnectingWifi = true;
-    tryingConnectingServer = false;
-    return true;
-  }
+    if (WiFi.status() != WL_CONNECTED and tryingToConnectToWifi == false ) {
+        digitalWrite(LED_BUILTIN, HIGH);
+
+        Serial.println("Wi-Fi disconnected. Reconnect to the server");
+        
+        Serial.println("Connect to the wifi:"+connectionInformation[wifiIndex].ssid);
+        WiFi.begin(connectionInformation[wifiIndex].ssid,connectionInformation[wifiIndex].password);
+        httpIndex = -1;
+        timeFiredWifiBegin = millis();
+        tryingToConnectToWifi = true;
+        haveDoneNetworkSetAction =  true;
+
+      }
+
+ 
+  
   //if we tried to connect and it wasn't successful
-  if (WiFi.status() != WL_CONNECTED and tryingConnectingWifi == true and  seeTimeElapsed(timeFiredWifiBegin) > 6000 ){
+  if (WiFi.status() != WL_CONNECTED and tryingToConnectToWifi == true and  
+      seeTimeElapsed(timeFiredWifiBegin) > timeToConnectToWifi )
+  {
       Serial.print("I didn't managed to connect to the wifi:");
       Serial.println(connectionInformation[wifiIndex].ssid);
+      tryingToConnectToWifi = false;
+
       wifiIndex = (wifiIndex + 1) % numberOfWifiRouters; 
-      return true;
+      haveDoneNetworkSetAction =  true;
 
   }
 
-   if (WiFi.status() == WL_CONNECTED and tryingConnectingWifi == true){
-      tryingConnectingWifi = false;
+   if (WiFi.status() == WL_CONNECTED and tryingToConnectToWifi == true){
+      tryingToConnectToWifi = false;
       selectedWIFI = connectionInformation[wifiIndex];
       Serial.print("I connected to the wifi:");
       Serial.println(selectedWIFI.ssid);
-      tryingConnectingServer = true;
-      return true;
+      haveDoneNetworkSetAction = true;
 
     }
 
 
-  if (WiFi.status() == WL_CONNECTED and tryingConnectingWifi == false and tryingConnectingServer == true){
+  if (WiFi.status() == WL_CONNECTED and haveDoneNetworkSetAction == false and selectedIP == ""){
     httpIndex++;
     if (httpIndex>=numberOfPotentialServers){
-        tryingConnectingServer = false;
+        Serial.println("No more servers to try. I will stop trying to connect to this wifi.");
+        WiFi.disconnect();
+        
+        httpIndex = -1; //reset the index of the http servers
+        wifiIndex = (wifiIndex + 1) % numberOfWifiRouters; 
+        Serial.println("wifiIndex"+String(wifiIndex));
+        haveDoneNetworkSetAction =  true;
+
     }
     else{
-    String url = createTheUrl(endpoint+"checkConnection");
-    Serial.println("I will send  to the server" + selectedWIFI.serverIp[httpIndex]);
+      selectedIP = selectedWIFI.serverIp[httpIndex]; 
+      createTheUrl(endpoint +"checkConnection");
+      Serial.println("I will send  to the server" + serverUrl);
 
-    http.begin(url);
-    http.setTimeout(1500); 
-    http.setReuse(true); // Enables keep-alive
-    int httpCode = http.GET(); 
-    //code received
-    if (httpCode > 0){
-        selectedIP = selectedWIFI.serverIp[httpIndex];
-        Serial.println("Connected to server at IP: " + selectedIP);
-        statusConnectedToServer = true;
-    }else{
-      Serial.println("Server not found");
-    }
-    }
-    return true;
+      http.begin(serverUrl);
+      http.setTimeout(1500); 
+      http.setReuse(true); // Enables keep-alive
+      int httpCode = http.GET(); 
+      //code received
+      if (httpCode > 0){
+          selectedIP = selectedWIFI.serverIp[httpIndex];
+          Serial.println("Connected to server at IP: " + selectedIP);
+          statusConnectedToServer = true;
+          digitalWrite(LED_BUILTIN, LOW);
+
+        }else{
+          Serial.println("Server not found");
+          selectedIP ="";
+        }
+
+       haveDoneNetworkSetAction =  true;
+
+      }
 
   } 
 
-
-
+return haveDoneNetworkSetAction ;
 
 }
+

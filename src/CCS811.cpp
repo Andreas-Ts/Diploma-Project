@@ -27,18 +27,13 @@
    
       if (! ccs.readData()) {
 
-        messageJSON["CCS811:eCO2"] = ccs.geteCO2();
-        messageJSON["CCS811:TVOC"] = ccs.getTVOC();
-        messageJSON["CCS811:RawResistance"]=ccs.getRawADCreading();
+       addMessageToBuffer();
         haveNewData = true;
-        checkIf30MinutesHavePassedCSS811(); //we calculate if the 30 minutes after activation have passed
 
       }
       else{
-          uint8_t error = ccs.read8(CCS811_ERROR_ID);
           Serial.println("Error reading CCS811 data");
-          Serial.println("error code:"+error);
-          sendErrorMessage("Error reading CCS811 data",error);
+          
       }
     }
    
