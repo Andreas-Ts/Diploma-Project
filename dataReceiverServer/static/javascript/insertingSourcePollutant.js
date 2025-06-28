@@ -1,7 +1,10 @@
-
+const form = document.querySelector("form");
 console.log(form);
 form.addEventListener("submit", (e) => {
-   e.preventDefault(); 
+   e.preventDefault();
+  if (checkWallDistanceValidity()){
+         return ;
+  }
   if (!form.checkValidity()) {
     form.reportValidity(); // Show the browser's validation message
     return ;//stop the rest of execution
@@ -76,4 +79,25 @@ function trimInputs(form){
       }
     }
    
+}
+
+function checkWallDistanceValidity(){
+    const front = parseFloat(document.getElementById('front-wall').value) || 0;
+    const back = parseFloat(document.getElementById('back-wall').value) || 0;
+    const right = parseFloat(document.getElementById('side-right-wall').value) || 0;
+    const left = parseFloat(document.getElementById('side-left-wall').value) || 0;
+
+    // At least one of front or back must be filled with a value > 0
+    if (front <= 0 && back <= 0) {
+        alert("Συμπληρώστε είτε την απόσταση από τον μπροστινό τοίχο είτε από τον πίσω τοίχο.");
+        return false;
+    }
+
+    // At least one of side-right or side-left must be filled with a value > 0
+    if (right <= 0 && left <= 0) {
+        alert("Συμπληρώστε είτε την απόσταση από τον δεξιό τοίχο είτε από τον αριστερό τοίχο.");
+        return false;
+    }
+
+    return true; // Allow form submission
 }

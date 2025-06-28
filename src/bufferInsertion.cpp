@@ -20,7 +20,7 @@ void addMessageToBuffer(){
   }
    
   currentNumberOfUnsendedData++;
-  Serial.println("The number of unsent data is"+ String(currentNumberOfUnsendedData));
+  Serial.println("The number of unsent data is "+ String(currentNumberOfUnsendedData));
   Serial.println("Message added to buffer");
   ramAvailable();
 }
@@ -29,7 +29,7 @@ void addMessageToBuffer(){
 
 JsonDocument createIndividualMessage(){
     JsonDocument messageJSON;
-    messageJSON["DateTime"] = getLocalDateTime();
+    messageJSON["timestamp"] = getLocalDateTime();
     messageJSON["Id"] = id;
     messageJSON["Sensor"] = sensorLocatedIntoDevice;
      if (sensorLocatedIntoDevice =="BME680"){

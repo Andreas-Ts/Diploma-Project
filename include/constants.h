@@ -78,6 +78,7 @@ extern unsigned long timeSinceLastReading;
 extern unsigned long timeSinceLastReadingMaxTolerance;
 
 extern HTTPClient http;
+extern WiFiClient wifiClient;
 extern bool atSetup;
 
 extern const char* ntpServer ;
@@ -103,4 +104,5 @@ extern JsonDocument doc;
 extern JsonArray buffer;
 extern const unsigned int maxBufferSize;
 extern unsigned int currentNumberOfUnsendedData;
+extern   bool  serverLostConnection;
 #endif

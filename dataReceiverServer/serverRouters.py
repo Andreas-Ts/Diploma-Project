@@ -380,11 +380,9 @@ class timeSeriesEndpoints(serverRouters):
             data = request.get_json()
             if not data:
               return jsonify({"error": "Missing or invalid JSON data"}), 400
-
-            # Check if the required fields are present
-
-            print(data)
-
+            # Transport string timestamp to datetime
+            for element in data:
+                element["timestamp"] = datetime.strptime(element["timestamp"],"%Y-%m-%dT%H:%M:%S%z")
 
             self.srvFunc.timeSeries.insert_many(data)
             return jsonify({"status": "OK"}), 200

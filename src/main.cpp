@@ -32,7 +32,6 @@ void setup() {
 void loop() {
   static 
   bool newReadingJustOccured =false;
-  bool static serverLostConnection = false;
 
   newReadingJustOccured = loopSensor();
   bool hasDoneNetworkSetAction =false;
@@ -50,12 +49,11 @@ void loop() {
     http.begin((serverUrl));//in case of adding more url sections into the url we send the post request
 
     http.addHeader("Content-Type", "application/json");
-    http.setTimeout(2000);
+    http.setTimeout(1500);
 
     // Serialize the  JSON buffer
     String messageJSONString;
     serializeJsonPretty(buffer, messageJSONString);
-    Serial.println(messageJSONString);
     // Send POST request
     int httpResponseCode = http.POST(messageJSONString);
     // Print response

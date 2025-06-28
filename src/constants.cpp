@@ -79,6 +79,7 @@ unsigned long timeSinceLastReadingMaxTolerance = 30 * 1000; //30 seconds
 
 
 HTTPClient http;
+WiFiClient wifiClient;
 
 bool atSetup = true;
 
@@ -106,5 +107,7 @@ unsigned long timeUntilNextReaind =0;
 JsonDocument doc;
 JsonArray buffer = doc.to<JsonArray>();
 
-const unsigned int maxBufferSize = 60;
+const unsigned int maxBufferSize = 100;
 unsigned int currentNumberOfUnsendedData = 0;
+
+  bool  serverLostConnection = false;

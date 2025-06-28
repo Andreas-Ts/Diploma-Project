@@ -241,13 +241,14 @@ String getLocalDateTime(){
     Serial.println("Failed to obtain time");
     errLeds();
   }else{
-    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+    //Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
 
   }
   
   char isoTime[25];  // Buffer for ISO string
   strftime(isoTime, sizeof(isoTime), "%Y-%m-%dT%H:%M:%S", &timeinfo);
-   // Append fixed timezone
+   // Append millisecond and fixed timezone
+   
   String finalTime = String(isoTime) + "+00:00";
   return finalTime;
 }
@@ -256,9 +257,6 @@ String getLocalDateTime(){
 void ramAvailable(){
   Serial.println("Free heap: " + String(ESP.getFreeHeap()) + " bytes");
   Serial.println("Total heap: " + String(ESP.getHeapSize()) + " bytes");
-  Serial.println("Minimum free heap: " + String(ESP.getMinFreeHeap()) + " bytes");
-  Serial.println("Max allocatable heap: " + String(ESP.getMaxAllocHeap()) + " bytes");
-  Serial.println("Free PSRAM: " + String(ESP.getFreePsram()) + " bytes");
-  Serial.println("Sketch size: " + String(ESP.getSketchSize()) + " bytes");
-  Serial.println("Sketch free space: " + String(ESP.getFreeSketchSpace()) + " bytes");
+  
+
 }

@@ -47,6 +47,8 @@ bool setNetworkConnections() {
 
 
   if (WiFi.status() == WL_CONNECTED and haveDoneNetworkSetAction == false and selectedIP == ""){
+            digitalWrite(LED_BUILTIN, HIGH);
+
     httpIndex++;
     if (httpIndex>=numberOfPotentialServers){
         Serial.println("No more servers to try. I will stop trying to connect to this wifi.");
@@ -60,11 +62,16 @@ bool setNetworkConnections() {
     }
     else{
       selectedIP = selectedWIFI.serverIp[httpIndex]; 
-      createTheUrl(endpoint +"checkConnection");
+      String url = endpoint +"checkConnection";
+     
+      if (!connectToTCP(selectedIP)){
+           Serial.println("Server not found");
+           selectedIP ="";
+      }
       Serial.println("I will send  to the server" + serverUrl);
-
-      http.begin(serverUrl);
-      http.setTimeout(1500); 
+      
+      http.begin();
+      http.setTimeout(1000); 
       http.setReuse(true); // Enables keep-alive
       int httpCode = http.GET(); 
       //code received
@@ -75,8 +82,7 @@ bool setNetworkConnections() {
           digitalWrite(LED_BUILTIN, LOW);
 
         }else{
-          Serial.println("Server not found");
-          selectedIP ="";
+         
         }
 
        haveDoneNetworkSetAction =  true;
@@ -89,3 +95,12 @@ return haveDoneNetworkSetAction ;
 
 }
 
+bool connectToTCP(String selectedIP){
+ int is_connected = wifiClient.connect(selectedIP.c_str(),port.toInt(),500);
+ if (wifiClient.connected()){
+   return true;
+ }
+ else{
+  return false;
+ }
+}

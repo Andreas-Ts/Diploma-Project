@@ -11,7 +11,6 @@
         <h1 class="main-title">Εισήγαγε τις παρακάτω πληροφορίες και έπειτα βάλε τον ρύπο στον χώρο.</h1>
 
         <form action="{{url_for("submitSourcePollutantDetails")}}" method="post">
-        <p>"{{details}}"</p>
             <label for="pollutant-type">Τύπος ρύπου:</label>
             <input type="text"  name="pollutant-type"  list="pollutant-type"  autocomplete="off"
              required/>
@@ -65,16 +64,22 @@
              </datalist>           
             <div class="container">
                 <label for="front-wall">Απόσταση από μπροστινό τοίχο σε μέτρα:</label>
-                <input type="number" name="front-wall" id="front-wall" min="0" step="0.01" 
-                                  value="{{ details['front-wall-latest_value'] if details else '' }}"
-    
-                    required>
-                <label for="side-right-wall">Απόσταση από δεξίο τοίχο σε μέτρα:</label>
-                <input type="number" name="side-right-wall" id="side-right-wall" min="0" step="0.01" 
-                                 value="{{ details['side-right-wall-latest_value'] if details else '' }}"
+                <input type="number" name="front-wall" id="front-wall" min="0" step="0.01"
+                    value="{{ details['front-wall-latest_value'] if details else '' }}">
 
-                required>
+                <label for="back-wall">Απόσταση από πίσω τοίχο σε μέτρα:</label>
+                <input type="number" name="back-wall" id="back-wall" min="0" step="0.01"
+                    value="{{ details['back-wall-latest_value'] if details else '' }}">
+
+                <label for="side-right-wall">Απόσταση από δεξιό τοίχο σε μέτρα:</label>
+                <input type="number" name="side-right-wall" id="side-right-wall" min="0" step="0.01"
+                    value="{{ details['side-right-wall-latest_value'] if details else '' }}">
+
+                <label for="side-left-wall">Απόσταση από αριστερό τοίχο σε μέτρα:</label>
+                <input type="number" name="side-left-wall" id="side-left-wall" min="0" step="0.01"
+                    value="{{ details['side-left-wall-latest_value'] if details else '' }}">
             </div>
+
             <div>
             <input type="checkbox" id="are-windows-opened" name="are-windows-opened">
             <label for="are-windows-opened">Θα είναι τα παράθυρα ανοιχτά?</label>

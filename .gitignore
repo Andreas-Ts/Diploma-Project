@@ -5,5 +5,5 @@
 .vscode/ipch
 .sensor_data.csv
 data/sensor_data.csv
-dataReceiverServer/logs/server_requests.log
+dataReceiverServer/logs/
 secrets.cpp

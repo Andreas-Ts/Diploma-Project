@@ -56,7 +56,7 @@ bool setupBME680(){
 
     if (iaqSensor.run()) { // If new data is available
       haveNewData = true; 
-
+      
       addMessageToBuffer();
 
      
