@@ -77,5 +77,7 @@ bool setNetworkConnections();
 void addMessageToBuffer();
 JsonDocument createIndividualMessage();
 bool clearBufferAndCounter();
+void noServerFound();
+bool connectToTCP(String selectedIP);
 
 #endif

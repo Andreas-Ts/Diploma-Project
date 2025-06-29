@@ -60,7 +60,6 @@ extern String sensorLocatedIntoDevice;
 
 extern bool firstTimeAskingEnvironmentalData; //to know if we have asked the environmental data for the first time
 
-extern WiFiMulti wifiMulti;
 
 extern String endpoint ;
 

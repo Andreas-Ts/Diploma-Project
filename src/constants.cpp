@@ -32,7 +32,7 @@ JsonDocument messageJSON;
 // Server URL
 
 
-String port =":8080"; // Port number for the server
+String port ="8080"; // Port number for the server
 String endpoint = "/timeSeriesEndpoints/";
 String serverUrl  ;  // Your computer's local IP
 

@@ -39,14 +39,17 @@ void loop() {
   if (newReadingJustOccured and (WiFi.status() != WL_CONNECTED or serverLostConnection)) {
     hasDoneNetworkSetAction = setNetworkConnections();
   }
- 
-  if (newReadingJustOccured and !hasDoneNetworkSetAction){ //a new value has been read from the sensor 
+  if (!wifiClient.connected()){
+      Serial.println("aaaaaaaaaaa");
+      serverLostConnection = true;
+  }
+  if (newReadingJustOccured and !hasDoneNetworkSetAction and !serverLostConnection){ //a new value has been read from the sensor 
     
     Serial.println("Sending data to server...");
-    createTheUrl(endpoint +"postTimeSeriesData");
+    String url = endpoint +"postTimeSeriesData";
 
     Serial.println("The url is:"+(serverUrl));
-    http.begin((serverUrl));//in case of adding more url sections into the url we send the post request
+    http.begin(wifiClient,url.c_str());//in case of adding more url sections into the url we send the post request
 
     http.addHeader("Content-Type", "application/json");
     http.setTimeout(1500);
