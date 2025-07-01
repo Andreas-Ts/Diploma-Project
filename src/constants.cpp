@@ -107,7 +107,7 @@ unsigned long timeUntilNextReaind =0;
 JsonDocument doc;
 JsonArray buffer = doc.to<JsonArray>();
 
-const unsigned int maxBufferSize = 100;
+const unsigned int maxBufferSize = 200;
 unsigned int currentNumberOfUnsendedData = 0;
 
   bool  serverLostConnection = false;

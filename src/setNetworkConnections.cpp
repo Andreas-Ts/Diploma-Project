@@ -61,33 +61,42 @@ bool setNetworkConnections() {
 
     }
     else{
+        wifiClient = WiFiClient();  // Replaces existing object with a fresh one
       selectedIP = selectedWIFI.serverIp[httpIndex]; 
       String url = endpoint +"checkConnection";
-     
+      String serverUrltemp= createTheUrl(url);
+      Serial.println("Sending data to server..."+serverUrltemp);
+      Serial.println("The url is:"+(serverUrltemp));
       if (!connectToTCP(selectedIP)){
           noServerFound();
       }
       else{
-      Serial.println("I will send  to the server" + serverUrl);
+      Serial.println("I will send  to the server" + url);
+      Serial.println("String(wifiClient.connected():"+String(wifiClient.connected()));
+
+      http.begin(wifiClient,serverUrltemp);
       
-      http.begin(wifiClient,url);
       http.setTimeout(1500); 
       http.setReuse(true); // Enables keep-alive
       int httpCode = http.GET(); 
       //code received
       if (httpCode > 0){
+        String response = http.getString();
+        Serial.println("Response:");
+        Serial.println(response);
           selectedIP = selectedWIFI.serverIp[httpIndex];
           Serial.println("Connected to server at IP: " + selectedIP);
           statusConnectedToServer = true;
           digitalWrite(LED_BUILTIN, LOW);
           serverLostConnection = false;
-
-
+  
+            Serial.println("String(wifiClient.connected():"+String(wifiClient.connected()));
 
         }
         else{
-          Serial.println("Post request failed.");
+          Serial.println("GET request failed.");
           noServerFound();
+          disconnectFromTCP();
         }
 
        haveDoneNetworkSetAction =  true;
@@ -114,4 +123,17 @@ bool connectToTCP(String selectedIP){
 void noServerFound(){
       Serial.println("Server not found");
       selectedIP ="";
+}
+
+void disconnectFromTCP(){
+
+  Serial.println("Connection lost.Stop the tcp and http setReuse.");
+
+  selectedIP= "";
+  serverLostConnection = true;
+   http.setReuse(false);
+   http.end();
+   wifiClient.stop();
+  delay(100);
+
 }

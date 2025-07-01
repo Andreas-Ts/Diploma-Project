@@ -36,20 +36,21 @@ void loop() {
   newReadingJustOccured = loopSensor();
   bool hasDoneNetworkSetAction =false;
   ////////////////////////
-  if (newReadingJustOccured and (WiFi.status() != WL_CONNECTED or serverLostConnection)) {
+    if (wifiClient.connected() and newReadingJustOccured == true and serverLostConnection != false){
+    hasDoneNetworkSetAction = true;
+  }
+  if (newReadingJustOccured and !hasDoneNetworkSetAction and (WiFi.status() != WL_CONNECTED or serverLostConnection)) {
+    Serial.println("Trying to Reconnect");
     hasDoneNetworkSetAction = setNetworkConnections();
   }
-  if (!wifiClient.connected()){
-      Serial.println("aaaaaaaaaaa");
-      serverLostConnection = true;
-  }
+
   if (newReadingJustOccured and !hasDoneNetworkSetAction and !serverLostConnection){ //a new value has been read from the sensor 
     
-    Serial.println("Sending data to server...");
     String url = endpoint +"postTimeSeriesData";
+    String serverUrltemp= createTheUrl(url);
+      Serial.println("Sending data to server..."+serverUrltemp);
 
-    Serial.println("The url is:"+(serverUrl));
-    http.begin(wifiClient,url.c_str());//in case of adding more url sections into the url we send the post request
+    http.begin(wifiClient,serverUrltemp);//in case of adding more url sections into the url we send the post request
 
     http.addHeader("Content-Type", "application/json");
     http.setTimeout(1500);
@@ -69,8 +70,7 @@ void loop() {
     } else {
         Serial.print("POST failed to arrive at server. Error: ");
         //time to send to new server:
-        selectedIP ="";
-        serverLostConnection = true;
+        disconnectFromTCP();
         Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
         
     }

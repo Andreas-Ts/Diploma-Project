@@ -56,7 +56,7 @@ void flashLeds(){
 
 String createTheUrl(String endpoint){
 
-   serverUrl = "http://"+ selectedIP + port + endpoint;
+   serverUrl = "http://"+ selectedIP +":" + port + endpoint;
     return serverUrl;
 }
 void scanWiFiNetworks() {

@@ -79,5 +79,6 @@ JsonDocument createIndividualMessage();
 bool clearBufferAndCounter();
 void noServerFound();
 bool connectToTCP(String selectedIP);
+void disconnectFromTCP();
 
 #endif
