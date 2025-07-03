@@ -4,6 +4,8 @@
 .vscode/launch.json
 .vscode/ipch
 .sensor_data.csv
-data/sensor_data.csv
+data/
+dataAnalysis and machine learning/data/.ipynb_checkpoints
 dataReceiverServer/logs/
 secrets.cpp
+data/TimeSeries.json

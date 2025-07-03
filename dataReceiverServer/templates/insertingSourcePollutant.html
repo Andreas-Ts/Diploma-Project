@@ -13,8 +13,9 @@
         <form action="{{url_for("submitSourcePollutantDetails")}}" method="post">
             <label for="pollutant-type">Τύπος ρύπου:</label>
             <input type="text"  name="pollutant-type"  list="pollutant-type"  autocomplete="off"
+                    value="{{ details['pollutant-type-latest_value'] if details else '' }}"
              required/>
-            
+
             <datalist id="pollutant-type">
             {%if details %}      
                 {% for item in details['pollutant-type-distinct-list'] %}
@@ -26,7 +27,9 @@
             <label for="item-used">Αντικείμενο προέλευσης</label>
 
             <input type="text" name="item-used"  list="item-used"  autocomplete="off"
-     
+                    value="{{ details['item-used-latest_value'] if details else '' }}"
+
+            
             required/>
             <datalist id="item-used">
              {%if details %}        
@@ -39,8 +42,9 @@
 
             <label for="quantity-used">Ποσότητα που χρησιμοποιείται:</label>
             <input type="text" name="quantity-used"  list="quantity-used"  autocomplete="off"
-   
-     
+
+                         value="{{ details['quantity-used-latest_value'] if details else '' }}"
+
                 required/>
             <datalist id="quantity-used">
             {%if details %}
@@ -52,6 +56,7 @@
 
             <label for="room">Δωμάτιο:</label>
             <input type="text" name="room" list="room"  autocomplete="off"
+                         value="{{ details['room-latest_value'] if details else '' }}"
 
          
             required/>

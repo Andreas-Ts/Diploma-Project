@@ -184,7 +184,9 @@ class submitSourcePollutantDetails(serverRouters):
                         "quantity-used": "$details.quantity-used",
                         "room": "$details.room",
                         "front-wall": "$details.front-wall",
+                        "back-wall": "$details.back-wall",
                         "side-right-wall": "$details.side-right-wall",
+                        "side-left-wall": "$details.side-left-wall",
                         "are-windows-opened": "$details.are-windows-opened",
                         "timestamp": 1  # preserve timestamp for sorting
                     }
@@ -209,7 +211,10 @@ class submitSourcePollutantDetails(serverRouters):
                         "quantity-used-latest_value": { "$first": "$quantity-used" },
                         "room-latest_value": { "$first": "$room" },
                         "front-wall-latest_value": { "$first": "$front-wall" },
+                        "back-wall-latest_value": { "$first": "$back-wall" },
                         "side-right-wall-latest_value": { "$first": "$side-right-wall" },
+                        "side-left-wall-latest_value": { "$first": "$side-left-wall" },
+
                         "are-windows-opened-latest_value": { "$first": "$are-windows-opened" }
                     }
                 }

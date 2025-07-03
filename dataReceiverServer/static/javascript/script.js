@@ -60,7 +60,7 @@ function downloadLogFile() {
         return ;
     }
     if (response.noPreviousInput == true) {
-        submitExperimentStateClickListener("http://localhost:8080/postUserInput/StartingExperiment","POST","StartingExperiment")
+        submitExperimentStateClickListener("postUserInput/StartingExperiment","POST","StartingExperiment")
         experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
         
         return ;
@@ -81,7 +81,7 @@ function downloadLogFile() {
     const hoursPassed = diffInMs / (1000 * 60 * 60); // convert to hours
     console.log(`Time since last experiment: ${minutesPassed} minutes, ${hoursPassed} hours`);
     if  (hoursPassed > 2 ) {
-        submitExperimentStateClickListener("http://localhost:8080/postUserInput/StartingExperiment","POST","StartingExperiment");
+        submitExperimentStateClickListener("postUserInput/StartingExperiment","POST","StartingExperiment");
         experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
         return ;
     }
@@ -95,7 +95,7 @@ function downloadLogFile() {
             return ;
     }
     else if (response.experimentState !== "InsertingSourcePollutant" && minutesPassed > 1 ) {
-        submitExperimentStateClickListener("http://localhost:8080/postUserInput/InsertingSourcePollutant","GET","InsertingSourcePollutant");
+        submitExperimentStateClickListener("postUserInput/InsertingSourcePollutant","GET","InsertingSourcePollutant");
         experimentStateText.textContent = "Εισήγαγε την πηγή ρύπου";
         return ;
     }
