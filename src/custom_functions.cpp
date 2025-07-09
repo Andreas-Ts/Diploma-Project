@@ -2,6 +2,26 @@
 #include "custom_headers.h"
 #include "customFunctions.h"
 
+void scanWiFiNetworks(unsigned int *numberOfWifiRouter) {
+  Serial.println("Scanning for WiFi networks...");
+
+  *numberOfWifiRouter  = (int) WiFi.scanNetworks();
+  if (*numberOfWifiRouter == 0) {
+    Serial.println("No networks found.");
+  } else {
+    Serial.printf("%d networks found:\n", *numberOfWifiRouter);
+    for (int i = 0; i < *numberOfWifiRouter; ++i) {
+      Serial.printf("%d: %s (%d dBm) %s\n", 
+                    i + 1,
+                    WiFi.SSID(i).c_str(),
+                    WiFi.RSSI(i),
+                    (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? "Open" : "Secured");
+      delay(10);
+    }
+  }
+  Serial.println();
+  
+}
 
 
 
@@ -58,25 +78,6 @@ String createTheUrl(String endpoint){
 
    serverUrl = "http://"+ selectedIP +":" + port + endpoint;
     return serverUrl;
-}
-void scanWiFiNetworks() {
-  Serial.println("Scanning for WiFi networks...");
-
-  int n = WiFi.scanNetworks();
-  if (n == 0) {
-    Serial.println("No networks found.");
-  } else {
-    Serial.printf("%d networks found:\n", n);
-    for (int i = 0; i < n; ++i) {
-      Serial.printf("%d: %s (%d dBm) %s\n", 
-                    i + 1,
-                    WiFi.SSID(i).c_str(),
-                    WiFi.RSSI(i),
-                    (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? "Open" : "Secured");
-      delay(10);
-    }
-  }
-  Serial.println();
 }
 
 void setupSensor(){
@@ -190,39 +191,8 @@ void sendErrorMessage(String error_message,uint8_t error){
 }
 
 
-void wifiEventConnectedToWifiWithIP(WiFiEvent_t event, WiFiEventInfo_t info){
-    timerStop(wifiTimer);
-    Serial.println("ESP32 connected to Wifi with ssid:"+connectionInformation[wifiIndex].ssid);    
-    //asign the wifi found as the selected wifi
-    selectedWIFI = connectionInformation[wifiIndex];
-    Serial.println("Time to connect to server");
-    statusConnectedToWifi = true;    
-              
-}
-void resetConnectionStatus(){
-    bool statusConnectedToWifi = false;
-    bool statusConnectedToServer = false;
-    unsigned int wifiIndex = 0;
-    unsigned int httpIndex = 0;
-}
 
 
-void connectToServerHandler(){
-    if (httpIndex >= numberOfPotentialServers){
-      Serial.println("The wifi"+connectionInformation[wifiIndex].ssid+"doesn\'t have any server any eligible server running.");
-      wifiNoConnection();
-      return;
-    }
-
-}
-
-
-//wifi was not connected in the given time or handler didn't found any server
-void wifiNoConnection(){
-    Serial.println("The wifi "+String(connectionInformation[wifiIndex].ssid)+" didn't connect.");
-    //go to the next one,either 1 from 0 or 0 from 1
-    statusConnectedToWifi = false;
-}
 
 unsigned int seeTimeElapsed(unsigned long pastTime){
     unsigned long currentTime = millis();

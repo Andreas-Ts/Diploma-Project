@@ -41,6 +41,14 @@ String serverUrl  ;  // Your computer's local IP
 const uint8_t bsec_config_iaq[] = {
   #include "config/generic_33v_3s_4d/bsec_iaq.txt"
 };
+
+const String wifiPasswords[]= {
+  #include "secrets/passwords.txt"
+};
+const String wifiNames[]= {
+  #include "secrets/wifi names.txt"
+};
+
  const unsigned long  STATE_SAVE_PERIOD	= 360 * 60 * 1000; // 360 minutes - 4 times a day
  uint8_t bsecState[BSEC_MAX_STATE_BLOB_SIZE] = {0};
 
@@ -65,15 +73,13 @@ uint16_t stateUpdateCounter = 0 ; //counter for the state update of the CCS811 s
 bool firstTimeAskingEnvironmentalData = true; //to know if we have asked the environmental data for the first time
 
 
-wifi_Information    selectedWIFI;
 String    selectedIP = "";
-
- wifi_Information* connectionInformation = nullptr;
-
+String    selectedWIFI = "";
+unsigned int numberOfWifiRouters = wifiNames[0].toInt(); 
+unsigned int numberOfAvailablePasswords= wifiPasswords[0].toInt();
 volatile bool dataReadyCCS811 = false;
 
 
-unsigned long timeSinceLastReading;
 
 unsigned long timeSinceLastReadingMaxTolerance = 30 * 1000; //30 seconds
 
@@ -107,7 +113,11 @@ unsigned long timeUntilNextReaind =0;
 JsonDocument doc;
 JsonArray buffer = doc.to<JsonArray>();
 
-const unsigned int maxBufferSize = 200;
+const unsigned int maxBufferSize = 300;
 unsigned int currentNumberOfUnsendedData = 0;
 
   bool  serverLostConnection = false;
+
+const char* mDNSname = "personal-laptop.local";
+
+

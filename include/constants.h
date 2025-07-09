@@ -3,7 +3,6 @@
 #define CONSTANTS_H
 
 #include "library_dependencies.h"
-#include "secrets.h"
 
 
 // Create an object of the class Bsec
@@ -65,7 +64,7 @@ extern String endpoint ;
 
 extern String port;
 
-extern  wifi_Information    selectedWIFI;
+extern  String   selectedWIFI;
 extern  String    selectedIP;
 
 extern volatile bool dataReadyCCS811;
@@ -87,8 +86,7 @@ extern float divided_frequency;//the timer will count as 0.1 milliseconds
 extern float cofficient_to_reach_one_millisecond;
 extern float millisecond_unit ;
 
-extern int wifiIndex ;
-extern int httpIndex ;
+
 extern const int timeToConnectToWifi;
 //set the timers
 extern hw_timer_t *bme680Timer;
@@ -104,4 +102,9 @@ extern JsonArray buffer;
 extern const unsigned int maxBufferSize;
 extern unsigned int currentNumberOfUnsendedData;
 extern   bool  serverLostConnection;
+extern const char* mDNSname;
+extern const String wifiPasswords[];
+extern  unsigned int numberOfWifiRouters;
+extern unsigned int numberOfAvailablePasswords;
+extern const String wifiNames[];
 #endif

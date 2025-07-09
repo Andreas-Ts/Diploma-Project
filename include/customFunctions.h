@@ -9,6 +9,9 @@
 #include "constants.h"
 
 
+
+
+
 bool setupBME680();
 
 
@@ -65,7 +68,9 @@ void ramAvailable();
 void setupConnectionInformation();
 void connectToWifiAndServer();
 
-void scanWiFiNetworks();
+void scanWiFiNetworks(unsigned int *numberOfWifiRouters);
+
+
 
 void setupSensor();
 
@@ -81,4 +86,7 @@ void noServerFound();
 bool connectToTCP(String selectedIP);
 void disconnectFromTCP();
 
+void incrementPasswordIndex();
+
+void incrementWifiIndex();
 #endif

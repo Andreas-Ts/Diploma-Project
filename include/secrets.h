@@ -16,8 +16,7 @@ typedef struct wifi_Information{
 
 extern wifi_Information* connectionInformation;
 
-extern const int numberOfWifiRouters;
+extern  int numberOfWifiRouters;
 
 extern const int numberOfPotentialServers;
-
 #endif

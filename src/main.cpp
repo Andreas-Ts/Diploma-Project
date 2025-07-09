@@ -3,13 +3,11 @@
 
 
 void setup() {
-  
   Serial.begin(115200);
   //See all the available WiFi networks
-
   //Configure all the  Wifi ssids,their paswords and the server IPs which we are going to use
 
-  setupConnectionInformation();
+ // setupConnectionInformation();
    // connect to wifi and server
   while (selectedIP == ""){
     setNetworkConnections();
@@ -70,7 +68,7 @@ void loop() {
     } else {
         Serial.print("POST failed to arrive at server. Error: ");
         //time to send to new server:
-        disconnectFromTCP();
+        noServerFound();
         Serial.println(http.errorToString(httpResponseCode).c_str());  // Get error description
         
     }
