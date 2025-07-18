@@ -1,15 +1,15 @@
 
     
 // 2) start the interval timer
-function startTimer(startTime,state) {
+function startTimer(startTime) {
  
 
   // first immediate update
-  update(startTime,state);
+  update(startTime);
   // then update every second
-  setInterval(() => update(startTime,state), 1000);
+  setInterval(() => update(startTime), 1000);
 }
-function update(startTime,state) {
+function update(startTime) {
      
         const $h = document.getElementById('hours');
         const $m = document.getElementById('minutes');
@@ -26,7 +26,7 @@ function update(startTime,state) {
         $h.textContent = String(hours).padStart(2, '0');
         $m.textContent = String(minutes).padStart(2, '0');
         $s.textContent = String(seconds).padStart(2, '0');
-        console.log("hi");
+        /*
         if (state==="5 Minutes" && minutes > 5){
           console.log("Time to insert source pollutant");
           window.location.href = "/"
@@ -51,15 +51,17 @@ function update(startTime,state) {
               setInterval(() => {
                 document.title = (document.title === alertTitle) ? originalTitle : alertTitle;
               }, 1000);
-              /*
+              
               // Stop flashing after some time (e.g., 10 seconds)
               setTimeout(() => {
                 clearInterval(flashInterval);
                 document.title = originalTitle;
               }, 1000);
-              */
+              
+             
           }
         }
+        */
    }
 
       

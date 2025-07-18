@@ -80,11 +80,12 @@ function downloadLogFile() {
     const minutesPassed = diffInMs / (1000 * 60);    // convert to minutes
     const hoursPassed = diffInMs / (1000 * 60 * 60); // convert to hours
     console.log(`Time since last experiment: ${minutesPassed} minutes, ${hoursPassed} hours`);
-    if  (hoursPassed > 2 ) {
+    if  (hoursPassed > 2 || response.experimentState ==="RemovingSourcePollutant") {
         submitExperimentStateClickListener("postUserInput/StartingExperiment","POST","StartingExperiment");
-        experimentStateText.textContent = "Πρέπει να ξεκινήσει καινούργιος κύκλος πειραμάτων";
+        experimentStateText.textContent = "Ξεκίνα καινούργιο πείραμα";
         return ;
     }
+    /*
     else if (minutesPassed < 1 && (response.experimentState === "StartingExperiment" || 
              response.experimentState === "RemovingSourcePollutant")) {
             //document.getElementById("submitExperimentState").disabled = true;
@@ -94,8 +95,13 @@ function downloadLogFile() {
             startTimer(startTime,"5 Minutes");
             return ;
     }
-    else if (response.experimentState !== "InsertingSourcePollutant" && minutesPassed > 1 ) {
+    */
+    else if (response.experimentState ==="StartingExperiment" ) {
+        document.getElementById("timer-container").hidden = false;
+                startTimer(startTime);
+
         submitExperimentStateClickListener("postUserInput/InsertingSourcePollutant","GET","InsertingSourcePollutant");
+        createDeleteButton("StartingExperiment");  
         experimentStateText.textContent = "Εισήγαγε την πηγή ρύπου";
         return ;
     }
@@ -104,12 +110,12 @@ function downloadLogFile() {
          experimentStateText.textContent = "Άσε τον ρύπο να εξελιχτεί με βάση τις συνθήκες που δώσατε για τουλάχιστον 30 λεπτά."+
          "Στα 45 λεπτά, θα εμφανίστει και ακουστεί ειδοποίηση για να βγάλετε την πηγή.\n"+
          "Αν έγινε κάποιο λάθος στην εισαγωγή πηγής, πάτα το κουμπί \"Διαγραφή της προηγούμενης εισαγωγής ρύπου\".";
-          createDeleteButton();  
+          createDeleteButton("InsertingSourcePollutant");  
           document.getElementById("timer-container").hidden = false;
           document.getElementById("timer-container").querySelector("h1").textContent= "Χρόνος που πέρασε από την εισαγωγή της πηγής ρύπου";
           submitExperimentStateClickListener("postUserInput/RemovingSourcePollutant","POST","RemovingSourcePollutant")
 
-        startTimer(startTime,"30 Minutes");
+        startTimer(startTime);
 
 
     }
@@ -154,11 +160,11 @@ function areAllSensorsStable(experimentStateText,submitExperimentStateElement){
     const experimentStateButton = document.getElementById("submitExperimentState");
     if (method === "POST") {
           if (experimentStateToBeSubmitted === "StartingExperiment") {
-            experimentStateButton.textContent = "Υποβολή καινούργιου κύκλου πειράματος.";
+            experimentStateButton.textContent = "Ξεκίνα καινούργιο πείραμα";
                     
           }
           else if (experimentStateToBeSubmitted === "RemovingSourcePollutant"){
-            experimentStateButton.textContent = "Απομάκρυνση πηγής ρύπου και τερματισμός κύκλου πειράματος.";
+            experimentStateButton.textContent = "Απομάκρυνση πηγής ρύπου και τερματισμός  πειράματος.";
           }
           else {
             return ;
@@ -187,10 +193,10 @@ function areAllSensorsStable(experimentStateText,submitExperimentStateElement){
  }
 }
 
-function createDeleteButton(){
+function createDeleteButton(experiment_state){
       console.log("hii from delete");
         deleteButton = document.createElement("button");
-         deleteButton.textContent = "Διαγραφή της προηγούμενης εισαγωγής πηγής ρύπου";
+         deleteButton.textContent = "Διαγραφή δεδομένων προηγούμενων πειραμάτων";
          deleteButton.className = "delete-button";
          deleteButton.id = "delete-last-source-insertion";
         
@@ -201,9 +207,16 @@ function createDeleteButton(){
              if (confirm(confirm_text) != true){
                 return ;
              }
-             const fetchPromise = fetch("/lastUserInputExperimentState/InsertingSourcePollutant",{method : 'DELETE'});
+             //delete only the starting experiment document
+             console.log("experiment_state",experiment_state);
+             const fetchPromise = fetch("/lastUserInputExperimentState/ExperimentState",{method : 'DELETE'});
              
-              genericHandlerResponse(fetchPromise,"DELETE");
+                
+                genericHandlerResponse(fetchPromise,"DELETE");
+             
+          
+
+
 
         });
         document.getElementById("submitExperimentState").insertAdjacentElement('afterend',deleteButton);

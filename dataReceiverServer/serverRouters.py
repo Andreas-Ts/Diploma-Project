@@ -118,17 +118,18 @@ class getlastUserInputExperimentState(serverRouters):
         
         return  jsonify(returnState) if returnState else jsonify({"noPreviousInput": True}), 200
 
-    def delete(self,ExperimentState):
+    def delete(self,userInputCategory):
         try:
-         inputToBeDeleted = self.getLastUserInputHandler("ExperimentState",ExperimentState)
+            inputToBeDeleted = self.getLastUserInputHandler(userInputCategory,"Any",is_front_end_account_for_local_timezone = "No")
+            print(f"Last user input to be deleted for experimentState:'{userInputCategory}:" 
+                f"{inputToBeDeleted}")
         
-        # print(f"Last user input to be deleted for experimentState:'{ExperimentState}': {inputToBeDeleted}") 
-         self.srvFunc.UserInput.delete_one({"_id": inputToBeDeleted["_id"]})   
-         return render_template('base.html',temp_success = "Διαγράφτηκε με επιτυχία η τελευταία εισαγωγή του χρήστη.")
+            self.srvFunc.UserInput.delete_one({"_id": inputToBeDeleted["_id"]})   
+            return {"response": "OK"}, 200
         except errors.PyMongoError as e:
-            print(f"PyMongoError occurred: {e}")
-            Response.code = 500
-            return render_template('base.html', temp_error=str(e))  
+                print(f"PyMongoError occurred: {e}")
+                Response.code = 500
+                return render_template('base.html', temp_error=str(e))  
 
     
        
