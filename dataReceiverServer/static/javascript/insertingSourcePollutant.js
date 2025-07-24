@@ -61,7 +61,11 @@ function createConfirmText(formData){
         case "are-people-inside":
            name = "Είναι άνθρωποι μέσα";   
            value = "Ναι";
-           break;      
+           break;    
+         case "are-fans-on":
+           name = "Είναι ανεμιστήρες ανοιχτοί";   
+           value = "Ναι";
+           break;   
       }
      console.log(name);
 

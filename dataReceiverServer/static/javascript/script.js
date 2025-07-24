@@ -40,6 +40,10 @@ function downloadLogFile() {
         })
         .then(response => {
           console.log(response);
+          console.log("timestamp is", response.timestamp);
+          let previous_datetime_experiment_state ="Ο χρόνος που εισάχθηκε η προηγούμενη εισαγωγή του χρήστη είναι:\n" + response.timestamp;
+          document.getElementById("previous-datetime-experiment-state").textContent=previous_datetime_experiment_state;
+
           checkExperimentState(response);
         
         })

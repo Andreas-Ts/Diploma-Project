@@ -12,19 +12,21 @@
         <h1 class="main-title">Διπλωματικη εργασία για την εύρεση της πηγής ενός ρύπου αέρα με αισθητήρες χαμηλού κόστους. </h1>
 
      
-        </p>
         <p class="note">Για μία παρακολούθηση των τιμών των αισθητήρων σε συνεχές χρόνο,ο χρήστης μπορεί να μπει στα <a href="http://localhost:3000" target="_blank">Dashboards της Grafana</a>.</p>
          <!-- See Description   -->
         
   
-        <button onclick="location.href='{{ url_for('utilityUrl',utilityUrl='description')}}' class="submit-button">
-            Διάβασε την περιγραφή και λεπτομέρειες του πειράματος
+       <button onclick="location.href='{{ url_for('utilityUrl', utilityUrl='description') }}'" class="submit-button">
+        Διάβασε την περιγραφή και λεπτομέρειες του πειράματος
         </button>
             
 
         <!-- Experiment State -->
         <h2 class="sub-title">Κατάσταση του πειράματος</h2>
-        <div id="experiment_state" class="state-box"></div>
+        <div id="experiment_state" class="state-box">
+          
+        </div>
+        <div id="previous-datetime-experiment-state" class="state-box"></div>
         <div id="timer-container" class="container" hidden>
             <h1></h1>
             <p></p>
