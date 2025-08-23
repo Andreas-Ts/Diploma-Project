@@ -66,8 +66,15 @@
                     <option value="{{item}}">
                 {%endfor%}
             {%endif%}    
-             </datalist>           
-            <div class="container">
+             </datalist>    
+            <h3>Θέση πηγής ρύπου</h3>
+       
+            <div class="container" id="source-location-position">
+                <label for="no-source-located" >Κάνουμε καταμετρήση των τιμών των αισθητήρων χωρίς κάποια επιλεγμένη πηγή ρύπου </label>
+                </label>
+                <input type="checkbox" id="no-source-located" name="no-source-located">
+                </input>
+                <br><br>
                 <label for="front-wall">Απόσταση από μπροστινό τοίχο σε μέτρα:</label>
                 <input type="number" name="front-wall" id="front-wall" min="0" step="0.01"
                     value="{{ details['front-wall-latest_value'] if details else '' }}">

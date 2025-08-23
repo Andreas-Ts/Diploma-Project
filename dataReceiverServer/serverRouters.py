@@ -174,7 +174,7 @@ class submitSourcePollutantDetails(serverRouters):
                 #Step 0: take all the documents with the category inside experimentState 
                 "$match" :{
                     "userInputCategory":"ExperimentState",
-                    "experimentState":"InsertingSourcePollutant"
+                    "experimentState":{ "$in": ["InsertingSourcePollutant", "NoSourcePollutantInserted"] }
                 }
             },
                 # Step 1: Flatten 'details' fields into root level
@@ -221,7 +221,7 @@ class submitSourcePollutantDetails(serverRouters):
                 }
             ]
           
-            if self.getLastUserInputHandler("ExperimentState","InsertingSourcePollutant") is None:
+            if (self.getLastUserInputHandler("ExperimentState","InsertingSourcePollutant") or self.getLastUserInputHandler("ExperimentState","NoSourcePollutantInserted")) is None:
                 print("noeeeeee")
                 return render_template('insertingSourcePollutant.html')
             else:   
@@ -236,9 +236,15 @@ class submitSourcePollutantDetails(serverRouters):
        
     def post(self):
         try:
+            checkbox_value = request.form.get("no-source-located")  # returns None if not checked
+            if not checkbox_value:
+                experimentState = "InsertingSourcePollutant"
+            else:
+                experimentState = "NoSourcePollutantInserted"
+
             insertion = { 'timestamp': self.srvFunc.getCurrentDateTime(),
                     'userInputCategory': "ExperimentState",
-                    'experimentState': "InsertingSourcePollutant",
+                    'experimentState': experimentState,
                     "details": request.form }
             self.srvFunc.UserInput.insert_one(insertion)
             return self.getIndex()

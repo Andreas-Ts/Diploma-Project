@@ -84,7 +84,7 @@ function downloadLogFile() {
     const minutesPassed = diffInMs / (1000 * 60);    // convert to minutes
     const hoursPassed = diffInMs / (1000 * 60 * 60); // convert to hours
     console.log(`Time since last experiment: ${minutesPassed} minutes, ${hoursPassed} hours`);
-    if  (hoursPassed > 2 || response.experimentState ==="RemovingSourcePollutant") {
+    if  (response.experimentState ==="RemovingSourcePollutant") {
         submitExperimentStateClickListener("postUserInput/StartingExperiment","POST","StartingExperiment");
         experimentStateText.textContent = "Ξεκίνα καινούργιο πείραμα";
         return ;
@@ -109,11 +109,18 @@ function downloadLogFile() {
         experimentStateText.textContent = "Εισήγαγε την πηγή ρύπου";
         return ;
     }
-    else if (response.experimentState === "InsertingSourcePollutant"){
-         
-         experimentStateText.textContent = "Άσε τον ρύπο να εξελιχτεί με βάση τις συνθήκες που δώσατε για τουλάχιστον 30 λεπτά."+
+    else if (response.experimentState === "InsertingSourcePollutant" || response.experimentState === "NoSourcePollutantInserted") {
+         let text;
+    
+         if (response.experimentState === "NoSourcePollutantInserted") {
+            text ="Δεν έχει εισαχθεί πηγή ρύπου αλλά θα ληφθούν υπόψη οι τιμές. Είναι για να δούμε το πείραμα σε κατάσταση ηρεμίας"
+         }
+         else {
+            text = "Άσε τον ρύπο να εξελιχτεί με βάση τις συνθήκες που δώσατε για τουλάχιστον 30 λεπτά."+
          "Στα 45 λεπτά, θα εμφανίστει και ακουστεί ειδοποίηση για να βγάλετε την πηγή.\n"+
          "Αν έγινε κάποιο λάθος στην εισαγωγή πηγής, πάτα το κουμπί \"Διαγραφή της προηγούμενης εισαγωγής ρύπου\".";
+         }
+         experimentStateText.textContent = text;
           createDeleteButton("InsertingSourcePollutant");  
           document.getElementById("timer-container").hidden = false;
           document.getElementById("timer-container").querySelector("h1").textContent= "Χρόνος που πέρασε από την εισαγωγή της πηγής ρύπου";

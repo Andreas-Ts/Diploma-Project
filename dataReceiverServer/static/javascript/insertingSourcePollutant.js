@@ -1,3 +1,27 @@
+const checkbox = document.getElementById("no-source-located");
+const numberInputs = document.querySelectorAll("#source-location-position input[type=number]");
+
+checkbox.addEventListener("change", function () {
+        if (this.checked) {
+            // disable all number inputs
+            numberInputs.forEach(input => input.disabled = true);
+        } else {
+            // re-enable all number inputs
+            numberInputs.forEach(input => input.disabled = false);
+        }
+    });
+ 
+ 
+ document.getElementById("no-source-located").addEventListener("", function () {
+        const container = this.closest(".container"); 
+        const inputs = container.querySelectorAll("input[type=number]");
+        inputs.forEach(input => {
+            input.disabled = this.checked;
+        });
+    });
+
+
+
 const form = document.querySelector("form");
 console.log(form);
 form.addEventListener("submit", (e) => {
@@ -43,6 +67,9 @@ function createConfirmText(formData){
            break;
         case "room":
            name = "Δωμάτιο";
+           break;
+        case "no-source-located":
+           name = "Δεν υπάρχει πηγή ρύπου";
            break;  
         case "front-wall":
            name = "Απόσταση από μπροστινό τοίχο σε μέτρα";
