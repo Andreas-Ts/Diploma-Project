@@ -10,4 +10,4 @@ dataReceiverServer/logs/
 secrets.cpp
 data/TimeSeries.json
 dataAnalysis and machine learning/df_userInputData_smallScale.json
-dataAnalysis and machine learning/.ipynb_checkpoints/df_userInputData_smallScale-checkpoint.json
+"dataAnalysis and machine learning/.ipynb_checkpoints/"
