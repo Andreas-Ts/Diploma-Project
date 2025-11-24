@@ -1,0 +1,5 @@
+Για να ενεργοποιήσεις το jupyter lab:
+
+ανοίξε terminal του linux
+source venv/bin/activate
+jupyter-lab
