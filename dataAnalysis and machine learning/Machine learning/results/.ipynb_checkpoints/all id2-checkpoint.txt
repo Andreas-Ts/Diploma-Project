@@ -1,0 +1,98 @@
+X AXIS ALL DATA CV=10
+
+Running GridSearchCV for LinearRegression...
+Fitting 10 folds for each of 6 candidates, totalling 60 fits
+LinearRegression best score: -0.9279799854546112
+LinearRegression best params: {'PCA__n_components': 3}
+
+Running GridSearchCV for Ridge...
+Fitting 10 folds for each of 120 candidates, totalling 1200 fits
+Ridge best score: -0.9276381278740079
+Ridge best params: {'PCA__n_components': 3, 'model__alpha': 100, 'model__solver': 'auto'}
+
+Running GridSearchCV for Lasso...
+Fitting 10 folds for each of 30 candidates, totalling 300 fits
+Lasso best score: -0.9113408692405734
+Lasso best params: {'PCA__n_components': 3, 'model__alpha': 10, 'model__max_iter': 10000}
+
+Running GridSearchCV for ElasticNet...
+Fitting 10 folds for each of 120 candidates, totalling 1200 fits
+ElasticNet best score: -0.9113408692405734
+ElasticNet best params: {'PCA__n_components': 3, 'model__alpha': 10, 'model__l1_ratio': 0.5, 'model__max_iter': 10000}
+
+Running GridSearchCV for SVR...
+Fitting 10 folds for each of 192 candidates, totalling 1920 fits
+SVR best score: -0.8893950811505658
+SVR best params: {'PCA__n_components': 4, 'model__C': 1, 'model__epsilon': 0.2, 'model__gamma': 'scale', 'model__kernel': 'rbf'}
+
+Running GridSearchCV for DecisionTree...
+Fitting 10 folds for each of 162 candidates, totalling 1620 fits
+DecisionTree best score: -0.9978686349505905
+DecisionTree best params: {'PCA__n_components': 3, 'model__max_depth': 5, 'model__min_samples_leaf': 4, 'model__min_samples_split': 10}
+
+Running GridSearchCV for RandomForest...
+Fitting 10 folds for each of 648 candidates, totalling 6480 fits
+RandomForest best score: -0.9328843514719425
+RandomForest best params: {'PCA__n_components': 4, 'model__max_depth': 5, 'model__min_samples_leaf': 2, 'model__min_samples_split': 2, 'model__n_estimators': 10}
+
+Running GridSearchCV for GradientBoosting...
+Fitting 10 folds for each of 2592 candidates, totalling 25920 fits
+
+X AXIS NO OPEN DOOR CV=10
+
+Running GridSearchCV for LinearRegression...
+Fitting 10 folds for each of 6 candidates, totalling 60 fits
+LinearRegression best score: -3.3235995727389067
+LinearRegression best params: {'PCA__n_components': 5}
+
+Running GridSearchCV for Ridge...
+Fitting 10 folds for each of 120 candidates, totalling 1200 fits
+Ridge best score: -3.323611046488775
+Ridge best params: {'PCA__n_components': 5, 'model__alpha': 0.01, 'model__solver': 'auto'}
+
+Running GridSearchCV for Lasso...
+Fitting 10 folds for each of 30 candidates, totalling 300 fits
+Lasso best score: -0.9164351607431309
+Lasso best params: {'PCA__n_components': 3, 'model__alpha': 10, 'model__max_iter': 10000}
+
+Running GridSearchCV for ElasticNet...
+Fitting 10 folds for each of 120 candidates, totalling 1200 fits
+ElasticNet best score: -0.9164351607431309
+ElasticNet best params: {'PCA__n_components': 3, 'model__alpha': 10, 'model__l1_ratio': 0.5, 'model__max_iter': 10000}
+
+Running GridSearchCV for SVR...
+Fitting 10 folds for each of 192 candidates, totalling 1920 fits
+SVR best score: -0.8678617480618268
+SVR best params: {'PCA__n_components': 4, 'model__C': 1, 'model__epsilon': 0.2, 'model__gamma': 'scale', 'model__kernel': 'rbf'}
+
+Running GridSearchCV for DecisionTree...
+Fitting 10 folds for each of 162 candidates, totalling 1620 fits
+DecisionTree best score: -1.3162555237293865
+DecisionTree best params: {'PCA__n_components': 4, 'model__max_depth': 5, 'model__min_samples_leaf': 4, 'model__min_samples_split': 10}
+
+Running GridSearchCV for RandomForest...
+Fitting 10 folds for each of 648 candidates, totalling 6480 fits
+RandomForest best score: -0.809232146003042
+RandomForest best params: {'PCA__n_components': 10, 'model__max_depth': 10, 'model__min_samples_leaf': 4, 'model__min_samples_split': 2, 'model__n_estimators': 10}
+
+Running GridSearchCV for GradientBoosting...
+Fitting 10 folds for each of 2592 candidates, totalling 25920 fits
+GradientBoosting best score: -0.8876300393508757
+GradientBoosting best params: {'PCA__n_components': 10, 'model__learning_rate': 0.1, 'model__max_depth': 20, 'model__min_samples_leaf': 4, 'model__min_samples_split': 10, 'model__n_estimators': 10}
+
+Y AXIS ALL DATA CV=10
+
+
+Y AXIS NO OPEN DOOR CV=10
+
+
+X AXIS ALL DATA CV=5
+
+
+X AXIS NO OPEN DOOR CV=5
+
+
+Y AXIS ALL DATA CV=5
+
+
+Y AXIS NO OPEN DOOR CV=5
