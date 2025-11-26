@@ -1,0 +1,93 @@
+running grid search for sensor:Id=0:BME680:breathVocEquivalent
+Running GridSearchCV for LinearRegression...
+Fitting 5 folds for each of 6 candidates, totalling 30 fits
+LinearRegression best score: -12.62010981114423
+LinearRegression best params: {'PCA__n_components': 6}
+
+Running GridSearchCV for Ridge...
+Fitting 5 folds for each of 120 candidates, totalling 600 fits
+Ridge best score: -7.437178819812769
+Ridge best params: {'PCA__n_components': 8, 'model__alpha': 100, 'model__solver': 'svd'}
+
+Running GridSearchCV for Lasso...
+Fitting 5 folds for each of 30 candidates, totalling 150 fits
+Lasso best score: -1.3174034083020527
+Lasso best params: {'PCA__n_components': 3, 'model__alpha': 10, 'model__max_iter': 10000}
+
+Running GridSearchCV for ElasticNet...
+Fitting 5 folds for each of 120 candidates, totalling 600 fits
+ElasticNet best score: -1.3174034083020527
+ElasticNet best params: {'PCA__n_components': 3, 'model__alpha': 10, 'model__l1_ratio': 0.5, 'model__max_iter': 10000}
+
+Running GridSearchCV for SVR...
+Fitting 5 folds for each of 192 candidates, totalling 960 fits
+SVR best score: -1.0679101424651012
+SVR best params: {'PCA__n_components': 10, 'model__C': 10, 'model__epsilon': 0.001, 'model__gamma': 'scale', 'model__kernel': 'rbf'}
+
+Running GridSearchCV for RandomForest...
+Fitting 5 folds for each of 648 candidates, totalling 3240 fits
+RandomForest best score: -0.97680050980188
+RandomForest best params: {'PCA__n_components': 10, 'model__max_depth': 10, 'model__min_samples_leaf': 1, 'model__min_samples_split': 5, 'model__n_estimators': 100}
+
+running grid search for sensor:Id=1:BME680:breathVocEquivalent
+Running GridSearchCV for LinearRegression...
+Fitting 5 folds for each of 6 candidates, totalling 30 fits
+LinearRegression best score: -1.4434703300340899
+LinearRegression best params: {'PCA__n_components': 3}
+
+Running GridSearchCV for Ridge...
+Fitting 5 folds for each of 120 candidates, totalling 600 fits
+Ridge best score: -1.4392764877829414
+Ridge best params: {'PCA__n_components': 3, 'model__alpha': 100, 'model__solver': 'svd'}
+
+Running GridSearchCV for Lasso...
+Fitting 5 folds for each of 30 candidates, totalling 150 fits
+Lasso best score: -1.3174034083020527
+Lasso best params: {'PCA__n_components': 3, 'model__alpha': 10, 'model__max_iter': 10000}
+
+Running GridSearchCV for ElasticNet...
+Fitting 5 folds for each of 120 candidates, totalling 600 fits
+ElasticNet best score: -1.3174034083020527
+ElasticNet best params: {'PCA__n_components': 3, 'model__alpha': 10, 'model__l1_ratio': 0.5, 'model__max_iter': 10000}
+
+Running GridSearchCV for SVR...
+Fitting 5 folds for each of 192 candidates, totalling 960 fits
+SVR best score: -1.4642212934898142
+SVR best params: {'PCA__n_components': 6, 'model__C': 0.1, 'model__epsilon': 0.2, 'model__gamma': 'scale', 'model__kernel': 'rbf'}
+
+Running GridSearchCV for RandomForest...
+Fitting 5 folds for each of 648 candidates, totalling 3240 fits
+RandomForest best score: -1.3277345473870321
+RandomForest best params: {'PCA__n_components': 10, 'model__max_depth': 5, 'model__min_samples_leaf': 4, 'model__min_samples_split': 5, 'model__n_estimators': 50}
+
+running grid search for sensor:Id=2:BME680:breathVocEquivalent
+Running GridSearchCV for LinearRegression...
+Fitting 5 folds for each of 6 candidates, totalling 30 fits
+LinearRegression best score: -1.1992958810736962
+LinearRegression best params: {'PCA__n_components': 4}
+
+Running GridSearchCV for Ridge...
+Fitting 5 folds for each of 120 candidates, totalling 600 fits
+Ridge best score: -1.1992960039723444
+Ridge best params: {'PCA__n_components': 4, 'model__alpha': 0.01, 'model__solver': 'auto'}
+
+Running GridSearchCV for Lasso...
+Fitting 5 folds for each of 30 candidates, totalling 150 fits
+Lasso best score: -1.1949138437980968
+Lasso best params: {'PCA__n_components': 4, 'model__alpha': 0.1, 'model__max_iter': 10000}
+
+Running GridSearchCV for ElasticNet...
+Fitting 5 folds for each of 120 candidates, totalling 600 fits
+ElasticNet best score: -1.1949858499459203
+ElasticNet best params: {'PCA__n_components': 4, 'model__alpha': 0.1, 'model__l1_ratio': 0.9, 'model__max_iter': 10000}
+
+Running GridSearchCV for SVR...
+Fitting 5 folds for each of 192 candidates, totalling 960 fits
+SVR best score: -1.0902134295689638
+SVR best params: {'PCA__n_components': 6, 'model__C': 10, 'model__epsilon': 0.2, 'model__gamma': 'scale', 'model__kernel': 'rbf'}
+
+Running GridSearchCV for RandomForest...
+Fitting 5 folds for each of 648 candidates, totalling 3240 fits
+RandomForest best score: -1.1226300118644468
+RandomForest best params: {'PCA__n_components': 4, 'model__max_depth': 20, 'model__min_samples_leaf': 4, 'model__min_samples_split': 2, 'model__n_estimators': 10}
+
