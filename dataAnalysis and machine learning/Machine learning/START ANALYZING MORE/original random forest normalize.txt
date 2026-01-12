@@ -1,0 +1,13 @@
+
+			MSE 	EUCLIDIAN 	R2
+column to take 	Gradient functions 	Outlier functions 			
+VOC smoothed 	NaN 	NaN 	-0.713416 	-1.003363 	0.259959
+cutOutliers 	-1.110745 	-1.340717 	-0.12225
+cutOutliersPerColumn 	-0.860726 	-1.188264 	0.120265
+cutOutliersUpper 	-0.769109 	-1.062619 	0.211725
+cutOutliersUpperPerColumn 	-0.768792 	-1.054905 	0.215173
+createGradient 	NaN 	-0.753705 	-1.088668 	0.21517
+cutOutliers 	-1.07703 	-1.340069 	-0.129259
+cutOutliersPerColumn 	-0.880632 	-1.199053 	0.086277
+cutOutliersUpper 	-0.889252 	-1.180154 	0.087173
+cutOutliersUpperPerColumn 	-0.90636 	-1.179214 	0.050235
