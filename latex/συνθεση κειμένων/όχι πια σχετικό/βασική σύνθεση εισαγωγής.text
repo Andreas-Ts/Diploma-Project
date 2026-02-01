@@ -1,0 +1,77 @@
+
+----------------------------------------------------------------------------------------------------------
+Sensors for indoor air quality monitoring and assessment through Internet of Things: a systematic review
+
+
+
+
+Introduction
+
+Indoor air pollution (IAP) is ranked among the top five environmental public health risks by the Science Advisory Board of Environmental Protection Agency (EPA) (Environmental Protection Agency 2019). Studies reveal that human exposure to harmful air pollutants can be two to five times, and occasionally around 100 times higher as compared to outdoor air pollution levels (Cincinelli and Martellini 2017; Anand et al. 2019; Babu and Suthar 2020). The impact of these concentrations is more relevant to the people who spend more than 90% of their routine time indoors (Spiru and Simona 2017; Marques et al. 2019a). The health effects of rising IAP concentrations are not thoroughly analyzed. However, indoor air quality (IAQ) is directly associated to a wide range of health problems including deficits in lung functionality (Kurmi et al. 2012); chronic respiratory disease (Perez-Padilla et al. 2010); development disorders (Wang and Pinkerton 2007; Perera 2008); heart disease (Samet et al. 2016); and damage to kidneys, liver, brain, and nervous system (Neurology 2018). Several factors are contributing to the deterioration of IAQ levels including inorganic and organic contaminants; particulate matter (PM), volatile organic compounds (VOCs), gases (radon, ozone, carbon monoxide, and sulfur dioxide), and biological particles such as pollen, fungi, and bacteria (Cincinelli and Martellini 2017). The definition of IAP generally includes airborne pollutions, introduction and distribution of outdoor air particles, and the fluctuating levels of relative humidity and temperature. It is not possible to overlook humidity and temperature since these thermal comfort parameters affect indoor containment levels and underlie several complaints regarding poor air quality.
+
+World Health Organization (WHO) reports around 8 million deaths globally every year due to air pollution, out of which 4.3 million die just because of household air pollution sources ( World Health Organization 2015; Apte and Salvi 2016). Global Burden of Disease Report reveals that IAP is the leading cause of Disability-Adjusted Life Years (DALYs) within Southeast Asia and is recognized as the third potential reason behind DALYs on a global level. More than 3 billion people, around half of the world’s population, rely on biomass fuel including wood charcoal, crop residue, wood, and animal dung cakes for everyday cooking and heating activities (Landrigan 2017). China reports 420,000 deaths annually because of the IAP caused by solid fuels. Rural homes in the developing countries have a high concentration of PM and other air pollutants such as sulfur dioxide, nitrogen dioxide, carbon monoxide, hydrocarbon complexes, formaldehyde, free radicals, phenols, silica, cadmium, lead, iron, carbon radicals, and other organic and inorganic substances (Zi et al. 2016; Liu et al. 2018b; Fan et al. 2018). Most of the deaths due to IAP are reported in middle- and low-income countries, with 52,000 deaths in Europe, 82,000 deaths in the USA, 212,000 deaths in the Eastern Mediterranean region, 739,000 in the African region, 1.2 million deaths in the Western Pacific region, and 1.5 million in Southeast Asia (Chen et al. 2019). Other than this, 9000 people died in high-income countries due to IAP (Ahmed et al. 2019). Although middle- and low-income countries report the primary burden of deaths due to IAP, the death rate is also rising in developed countries due to the common tendency of people to spend more time indoors (Briggs 2003). In this scenario, it is crucial to find reliable and cost-effective methods to monitor the impact of IAP on the health of building occupants.
+
+----------------------------------------------------------------------------------------------------------
+Review of low-cost sensors for indoor air quality: Features and applications
+
+
+The concern about the negative impacts of indoor air quality (IAQ) on human health has fueled a growing awareness, even though most air quality (AQ) regulations and atmospheric chemistry research have historically focused on outdoor air. Humans spend more than 90% of their time indoors in developed countries[Citation1] and poor IAQ has been estimated to be the ninth-largest factor of disease risk.[Citation2] The World Health Organization (WHO) states that, nowadays, household air pollution is one of the main causes of premature death and disease in the developing world, attributing >3.8 million premature deaths per year to household exposure to smoke from inefficient cooking practices and fuels indoors[Citation3] compared to 4.2 million deaths attributed to ambient (outdoor) air pollution. The mixture of indoor air pollutants derives from outdoor infiltration and from indoor source emissions (such as furniture and paintings, cleaning products, indoor activities, etc.[Citation4]). The concentrations of those pollutants, which include a variety of particulate matter, biological pollutants and around 400 gas compounds, are ruled by multiple indoor and outdoor factors.[Citation5,Citation6]
+
+---------------------------------------------------------------------------------
+-------
+Measurements of Indoor Air Quality
+
+door air quality (IAQ) is basically defined as the circumstances within the house
+which usually comprise air quality admittance to views, daylight, lovely sound
+situations, resident activities, and thermal relief. IAQ is also demarcated by the
+illustration of air pollutant concentrations (gaseous compounds and particles such
+as non-biological and bioaerosols) and thermal circumstances which could be
+harmful and influence the fitness, coziness, and enactment of a building’s inhabitants
+(Satsangi et al. 2014; USEPA 2020). IAQ definitions can be different and depends on
+perceptions of the human user, indoor air space, and source contribution profile to
+indoor air pollution (Bluyssen 2009).
+IAP is considered within the five top risks to public health (USEPA 2020). The
+disclosure leads to health hazards including respiratory and cardiovascular syn-
+dromes and their carcinogenic effects (lung cancer and childhood leukemia) (Frank-
+lin 2007; Lin et al. 2013). The World Health Organization (WHO) recognizes an
+array of pollutants like particulates (PM), carbon dioxide (CO 2 ), nitrogen dioxide
+(NO 2 ), carbon monoxide (CO), radon (Rn), formaldehyde, polycyclic aromatic
+hydrocarbons (PAHs), and volatile organic compounds (VOCs) (benzene, naphtha-
+lene, trichloroethylene, and tetrachloroethylene) for assessing IAQ (WHO 2010).
+Around 4 lakh impulsive demises due to air pollution were reported in 2019 by the
+European Union (European Environment Agency 2019). Therefore, it is serious to
+afford declarative and conceptual consciousness about the survival of air pollutants
+and their sources, formation methods, limit values, and health effects along with
+their measurement methods and principles (Rohra et al. 2018, 2020; Pipal et al.
+2021).
+2 A. S. Pipal and A. Taneja
+The IAP led to greater than four million premature deaths in offspring and adults
+as per the WHO report in 2012. It is also responsible for 1.5 million deaths and 2.7%
+of the worldwide burden of illness (WHO 2010). IAP is one of the nine utmost
+substantial global burdens of disease risk (Forouzanfar et al. 2015). In this connec-
+tion, the climate variation, environmental ruin, quick growth in urban areas, and
+epidemics are the global challenges. In order to overcome these global issues, the
+review and modification are highly required in the current understanding/outdated
+methods of evaluating man-made effects on the environment, multidisciplinary
+tactics of integrated valuations, and sustainable environment development methods
+
+Consequently, these steps are to abstract what has been educated and relate it to
+the individual atmosphere which comprises the plans for keeping good IAQ. This
+has expanded significant importance in scientific community and public awareness
+during the COVID-19 pandemic period. IAQ has been debasing due to excessive
+emissions of air pollutants and directly results the extent of COVID-19. The PM 2.5
+magnifies COVID-19 infectivity which permitting to the epidemiological study led
+in Italy (Borro et al. 2020). It was shown that growth (10–25 μg/m 3 ) in PM 2.5
+concentration is responsible for increasing the infection rate at three times and
+enhance (twice) the mortality case. An epidemiological assessment was conducted
+by Cole et al. (2020) to find the association between air quality and COVID-19
+losses in 355 municipalities of the Netherlands by a deleterious binomial regression
+model with chemical transport modeling (Cole et al. 2020).
+
+
+---------------------------------------------------------
+
+Achieving better indoor air quality with IoT systems for future buildings: Opportunities and challenges
+
+1. Introduction
+Short-term and chronic exposure to air pollutants has been linked to increased morbidity in cardiovascular, respiratory disease and inflammation (Jiang et al., 2021; Xue et al., 2022; Zhang et al., 2022), which ultimately contributes to higher mortality rate (Abbey et al., 1999). Recent studies also revealed that the indoor environment contains different pollutants, which increases the disease burden for occupants (Mestl and Edwards, 2011). Considering that the majority of individuals spend more than 85 % of their time indoors (Klepeis et al., 2001), indoor air quality (IAQ) significantly impacts overall well-being (Ali et al., 2021). Therefore, obtaining reliable IAQ information is crucial in maintaining a satisfactory environment.

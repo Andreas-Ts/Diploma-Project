@@ -1,0 +1,26 @@
+As an emerging technology, it is essential to define what exactly is
+meant by low-cost air sensors firstly. The review article by Rai et al.
+(2017) acknowledged the lack of any universally agreed definition.
+
+It stated, “anything costing less than the instrumentation cost re-
+quired for demonstrating compliance with the air quality regulations
+
+can be termed as low-cost”. They ended up using the term low-cost
+for sensors costing a few 10's of US dollars in their article.
+Morawska et al. (2018) defined low-cost air pollutant sensors as
+“technologies which promise a revolutionary advance in air quality
+monitoring, through massive increases in spatial and temporal data
+
+resolution, thus providing answers to scientific questions and appli-
+cations for end users” and used the term low-cost sensor for sensors
+
+costing b100 US dollars. This definition is in-line with the paradigm
+shift vision described by the United States Environmental Protection
+Agency (U. S. EPA) (Snyder et al., 2013). It can be achieved if sensors
+of lower-cost are deployed in abundance.
+
+
+Although the choice of internal components like microcontroller units and sensors used in the projects exhibited a certain homogeneity, the individuality of the device design lied in how those components were used and encased in the hardware enclosure. It ranged from devices having wrist-watch like hardware design, ultra-low powered battery-free design, low-noise design, electromagnetic interference-free design, and various web-based interfaces for continuous indoor air quality monitoring, among others.
+However, the most important challenge associated with low-cost sensor technology is the lack of data reliability. The fact that was disregarded by most of the studies as there was no sensor performance test or even calibration done by the majority of the research projects. The use of low-cost sensors to develop the device without any prior testing was the prevalent practice. To exacerbate the problem, the studies that tested sensor performance showed that the measurement errors could indeed be very high when compared to professional-grade reference equipment. Another important conclusion in this context is that calibration and validation methods varied significantly with each project due to the lack of any standardized practice in place. The reported validation results also lacked any uniformity (R2, percentage errors, SEE). It puts a significant limitation on the comparison of device performance & design, and a consequent failure to understand the advancements in this field. The abundance of grey literature makes the situation even worse.
+With just two studies testing the long-term stability and only one study checking the cross-sensitivity of the sensors, the situation seems very bleak. Now, with this review, the information is gathered, but it still lacks more studies, especially the ones conducted with a thorough check of device performance to ensure data reliability from the low-cost sensors.
+While this review generally observed a murky outlook on most aspects discussed, there were several promising results as well. Studies with a high correlation between the reference instrument and low-cost device advocate that this can be the technology of the (near) future. The responsibility to drive this emerging technology forward lies in the scientific community. With a standardized sensor performance assessment and a credible and mandatory validation process, the results can inspire more confidence than they currently do. Hence, the two most prominent future requirements in this field of study would be: i) an increased number of studies with a thorough analysis of sensor calibration/validation and device performance assessment; and ii) a uniform sensor/device validation method.

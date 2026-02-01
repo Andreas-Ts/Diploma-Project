@@ -1,0 +1,143 @@
+17% were due to strokes, 25% were due to COPD, and 26% were due to respiratory disease [1]. It is
+evident from many studies that the concentration levels of indoor air pollutants are two to four times
+higher than those of outdoor air pollutants [2–5]. In the U.S., on average, people spend 22.25 h per day
+inside buildings, and 1.44 h in cars or other transportation modes [6,7]. With higher concentrations
+of pollutants inside buildings, IAQ is one of the world’s highest environmental health risks [8,9],
+which cannot be ignored.
+The impact on human health owing to the indoor environment is, broadly speaking, either BRI or
+SBS. BRI relates to symptoms that are clinically defined, which are diagnosed with directly airborne
+building contaminants [5–8]. On the other hand, SBS is a collection of symptoms for which the cause is
+unclear [10–12]. It is to be noted that SBS is a consequence of poor indoor air quality [13]. Besides this,
+the symptoms caused by psychological illnesses—such as headaches, fatigue, nausea, hyperventilation,
+and fainting—are referred to as Mass Psychogenic Illness (MPI) [14]. Building-associated illnesses
+Sustainability 2020, 12, 9045; doi:10.3390/su12219045 www.mdpi.com/journal/sustainability
+
+Sustainability 2020, 12, 9045 2 of 38
+not only cause symptoms, but can also cause an enormous economic loss. In the U.S., SBS affects 10
+to 25 million people, and results in an estimated $82 billion to $104 billion loss every year, owing to
+productivity loss [15–19]. The US EPA estimated a $140 billion annual direct medical expenditure
+related to IAQ problems [20,21].
+SBS has become a widely-studied subject in recent years; the following health manifestations
+have been identified by medical studies: anxiety, depression, environmental discomfort and job strain
+(psychological symptoms); asthma, allergies, malaise, headache, throat dryness, coughs, sputum,
+ocular issues, rhinitis, wheezing, skin dryness, and eye pain (physical symptoms/psychosomatic
+symptoms) [22–24]. Klas et al. [25] found that SBS is related to temperature, air intake, building
+dampness, exposure to static electricity, indoor smoke, noise, and the building’s age. In addition,
+the level of physical response is related to age, employment duration, asthma symptoms, and
+psychological states.
+The contributors of SBS and BRI can be divided into four categories: (1) physical (e.g., temperature,
+humidity, ventilation, illuminance, noise, air quality, etc.); (2) biological; (3) chemical (e.g., radioactive
+substances, MVOCS, formaldehyde, plasticizer, fine dust, etc.) concentrations; (4) psychosocial
+and individual traits (e.g., gender, age, atopy, hereditary disease, smoking, psychological state,
+etc.) [26–28]. The indoor thermal comfort criteria were recommended by the ASHRAE Standard
+55-2017, which specifies an indoor operative temperature between 68.5 ◦F and 75 ◦F in the winter, and
+between 75 ◦F and 80.5 ◦F in the summer [29]. Similarly, the recommended indoor relative humidity
+given by the by US EPA is between 30% and 60%, in order to reduce mold growth [30].
+The presence of indoor air pollutants is a major factor that directly affects human health [31].
+Indoor air pollutants may include O3, CO, CO2, SO2, NO2, particulate matter (PM), and TVOC,
+which can cause tiredness, Acute Respiratory Infections (ARI), COPD, and lung cancer [28,32].
+Indoor Air Quality, the Vulnerable Population, and Asthma
+A 2015 report showed that air pollution does not affect everyone in the same way; certain
+vulnerable populations (e.g., children, the elderly, and cardiopulmonary patients, etc.) are more
+susceptible than others [33]. The US EPA defined the ‘risk population’ as being those who possess a
+significantly higher probability of developing a condition, illness or other abnormal status, and divided
+them into five groups, namely: (1) children aged less than or equal to 13 years; (2) older people aged
+greater or equal to 65 years; (3) a young person with asthma, who is less or equal than the age of 18 years;
+(4) legal adults with asthma; (5) people with COPD [34]. Children and older people are more sensitive
+than others with regards to indoor air pollution [35–39]. While the immune and metabolic systems
+of children are still developing, and their organs are immature, they are exposed to air pollutants
+due to which they suffer from frequent respiratory infections [40,41]. Older people are affected by
+IAQ due to weaker immune systems, undiagnosed respiratory conditions, and cardiovascular health
+conditions. A hazardous substance can aggravate heart diseases, strokes, and lung diseases such as
+chronic bronchitis and asthma [42,43].
+Asthma is a chronic disease that often causes an exacerbation of disease activity, some of which
+result in hospitalizations. Air quality measures—such as PM2.5, NO2, O3, and dampness-related
+contaminants—play a significant role in asthma exacerbation, as well as disease progression. Asthmatic
+children spend 60% of their waking hours in school. A recent large-scale study [44] showed that
+co-exposure to elevated endotoxin levels and PM2.5 was synergistically correlated with increased
+emergency room visits, especially for asthma among children. Exposure to higher concentrations
+of endotoxin and NO2 was also synergistically associated with increased asthma attacks, despite
+below-normal geometric mean concentrations of PM2.5, O3 and NO2 compared to EPA NAAQ
+standards [44,45]. A 2015 update to the 2000 review of the Institute of Medicine [46] suggested
+that—in addition to endotoxin levels—dampness, and dampness-related agents are also important
+environmental quality indicators for asthma.
+
+Sustainability 2020, 12, 9045 3 of 38
+According to the ALA ‘State of the Air® 2020’ report, 45.8% of people in the U.S. live in counties
+with unhealthy levels of air pollution; among these, 22 million people are elderly (equal or over age 65),
+and 34.2 million are children (less than age 18); 2.5 million of the children, and more than 10.6 million
+of the elderly people, have asthma; 7 million people have COPD; 77,000 people have lung cancer;
+9.3 million have cardiovascular issues; and 18.7 million live in poverty [47].
+Particularly with an increase in urbanization, the importance of IAQ cannot be understated.
+For this reason, we conducted a systematic review of air quality sensors, guidelines, and measurement
+studies for IAQ management. Section 2 discusses common air pollutants—such as O3, CO, CO2, SO2,
+NO2, PM, and TVOCs—that affect IAQ. Section 3 provides a detailed review of the currently-used
+air quality sensors for O3, CO, CO2, SO2, NO2, PM, and TVOCs, their measurement tolerances, and
+their measuring ranges. Section 4 discusses air quality-related guidelines, such as U.S. EPA NAAQS,
+OSHA, WHO, ACGIH, ANSI/ASHRAE, CAAQS, and NIOSH. In addition to the discussions related to
+common air pollutants and air quality guidelines, we provide a thorough list of the air quality studies
+conducted between 2015 and 2019 in Section 5. This is followed by discussions and recommendations
+in Section 6, and the conclusion in Section 7.
+2. Common Air Pollutants that Affect IAQ
+The most common air pollutants that affect IAQ are O3, CO, CO2, SO2, NO2, PM, and VOCs.
+Here, we discuss the pathophysiologic mechanisms of each of these air pollutants:
+O3, as a pollutant, is the result of a chemical reaction between NO2 and VOCs in exposure to
+sunlight. It can be worse in both hot and cold environments [48]. The sources are from the emission
+of chemical solvents, electric utilities, and gasoline vapors. It can lead to lung inflammation and
+airway narrowing [49]. People with underlying diseases, children, and the elderly are the highest risk
+populations for O3 pollutants [50].
+CO is a toxic gas that is odorless, colorless, and tasteless. Various sources of this gas are from
+unvented fuel and gas type space heaters, leaky chimneys and furnaces, tobacco smoke, furnace
+backdraft, gas-type water heaters, wood stoves and fireplaces, gas-powered equipment, and worn or
+poorly-adjusted and maintained combustion devices. It can cause fatigue, chest pain, angina, reduced
+brain function, impaired vision and coordination, dizziness, nausea, flu-like symptoms, and fetal
+death [51].
+CO2 is defined by both the EPA and IPCC as an anthropogenic air pollutant, which is colorless
+and odorless. The primary source of indoor CO2 pollutants is the occupant’s respiration. The US EPA
+BASE shows that high CO2 concentrations are associated with an increased prevalence of many SBS
+symptoms [52,53].
+SO2 is the major precursor to the ambient PM2.5 level [54]. The combustion of coal, oil, and gas
+that contains sulfur are the leading sources of the indoor SO2 concentration [55]. Mostly, outdoor
+SO2 concentrations are 20% to 70% higher than indoors [56]. Short-term exposure to SO2 can cause
+respiratory illnesses, airway inflammation, and varying degrees of toxic symptoms [57–59]. Asthmatics,
+children, and older adults are potentially susceptible to this pollutant [54,55].
+NO2 is a highly reactive gas which is related to the development of ozone and PM2.5. NO2
+primarily gets into the air from the burning of fuel. Similarly to sulfur dioxide, it can cause respiratory
+symptoms and airway inflammation. Asthmatics, children, and older adults are at higher risk from
+this pollutant [60].
+PM is a mixture of solid and liquid particles embodied in the air, including acids, organic chemicals,
+soot, metals, soil, and dust. Particle pollution can be categorized by its size (diameter), which includes
+PM10 (2.5 μm to 10 μm), PM2.5 (less than 2.5 μm) and PM1.0 (less than 1.0 μm) [61]. PM10 affects
+the nasal and oral cavities, the pharynx, the larynx, and the upper trachea. PM2.5 are fine inhalable
+particles that form sediments on the surface of epithelial cells in the bronchioles and alveoli. PM1.0
+can lead inward to internal organs, including the heart and brain [62,63]. “PM2.5 and PM1.0 can lead
+to pulmonary infection and generate vascular and endothelial dysfunction, alterations in heart rate
+
+Sustainability 2020, 12, 9045 4 of 38
+variability, coagulation, and cardiac autonomic function” [64]. PM is estimated to cause of 3.3 million
+deaths per year worldwide [65]. Children, the elderly, and people with heart and lung disease are the
+high-risk populations for PM pollutants [50].
+VOCs represent a diverse set of hazardous organic chemicals that participate in atmospheric
+photochemical reactions, which are considered to be one of the major contributors to SBS [6,66,67].
+The WHO classifies both indoor and outdoor VOCs as Very-VOCs (VVOCs), VOCs, and Semi-VOCs
+(SVOCs) according to their boiling points [68]. Many studies have shown that the concentrations of
+many indoor VOCs were markedly higher than their outdoor counterparts [69–71]. The main indoor
+VOC sources include high-emission building materials, furnishings, aerosol sprays, pesticides, dry
+knitted products, office equipment such as copiers, and laser printers [6,67,70,72]. The US EPA issued a
+list of hazardous air pollutants, which include a total of 187 VOCs [73]. In addition, the ANSI/ASHRAE
+62.1-2016 standard provides the Reference Exposure Levels (RELs) of 32 specific types of indoor
+VOCs for the general population [74]. The most common indoor VOCs—such as benzene, ethylene,
+formaldehyde, methylene chloride, tetrachloroethylene, toluene, xylene, and 1,3-butadiene—have been
+proven to be contributors of human carcinogens, irritants and toxicants [75–77]. TVOCs are used as a
+measure of the total volume of indoor VOC concentrations [78,79]. “Acute exposure to indoor TVOCs
+can cause eye, nose and throat irritation, headaches, loss of coordination and nausea, damage to the
+liver, kidney and central nervous system, respiratory disease and some cause cancer” [67]. Asthmatics,
+young children, and elderly people are more vulnerable to the effects of exposure to TVOCs [6,77,79,80].
+In addition to common air pollutants, the indoor temperature and relative humidity significantly
+affect IAQ. Fang et al. (1998) found out the overt linear correlation between the acceptability and
+enthalpy of IAQ. The results also identified that, under a constant pollution level, IAQ would decline
+with the increase of temperature and relative humidity [81]. Berglund and Cain (1989) concluded
+that the temperature’s effect on IAQ was linear and stronger than humidity; the effect of the relative
+humidity on the acceptability of IAQ was higher in the dew point range of 11–20 ◦C than in the range
+of 2–11 ◦C, and relative humidity under 50% was acceptable to the IAQ performance [82].
+

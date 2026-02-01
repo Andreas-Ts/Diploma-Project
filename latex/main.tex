@@ -1,0 +1,79 @@
+
+\documentclass[12pt, a4paper]{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{doi}
+\usepackage{titling}
+\usepackage{microtype}
+\renewcommand{\figurename}{Εικόνα}
+\renewcommand{\figureautorefname}{Εικόνα}
+\renewcommand{\tableautorefname}{Πίνακας}
+\renewcommand{\sectionautorefname}{Ενότητα}
+\renewcommand{\subsectionautorefname}{Υποενότητα}
+\usepackage{placeins}
+\usepackage{fontspec}
+\usepackage{xcolor}
+%\usepackage[resetlabels,labeled]{multibib}
+
+\usepackage{textcomp, gensymb} %Generic symbols for both text and math mode package
+\setmainfont[
+  BoldFont = Cambria Bold,
+  ItalicFont = Cambria Italic,
+  BoldItalicFont = Cambria Bold Italic
+]{Cambria}
+%\setmainfont{Times New Roman}
+
+\usepackage{indentfirst}
+\usepackage{enumitem}
+
+
+
+% και ρυθμίζουμε το μέγεθος εσοχής
+\setlength{\parindent}{2em}  % π.χ. 2em
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[a4paper,top=2.54cm,bottom=2.54cm,left=3cm,right=2cm,marginparwidth=1.75cm,]{geometry}
+ \usepackage[
+  backend=biber,
+  bibencoding=auto,
+  style=ieee]
+{biblatex}
+\addbibresource{theory.bib}
+\addbibresource{project.bib}
+%\addbibresource{references.bib}
+
+\pretitle{
+  \begin{center}
+    \LARGE
+    \includegraphics[width=0.8\textwidth,height=5cm]{εικόνες/logo Πανεπιστημίου.jpg}\\[\bigskipamount]
+}
+\posttitle{\end{center}}
+
+\begin{document}
+
+
+\title{Διπλωματική}
+\author{Ανδρέας Τσιρώνης}
+\date{May 2025}
+
+
+
+%\maketitle
+\newpage
+
+\tableofcontents
+\renewcommand{\contentsname}{Περιεχόμενα}
+\newpage
+\part {Θεωρία}
+\include{introduction}
+
+\part {Περιγραφή εργασίας}
+\include{τεχνολογίες που χρησιμοποιήθηκαν/Προγραμματισμός μικροελεκτών}
+\part {Αναφορές}
+
+\renewcommand{\refname}{Αναφορές}
+% \bibliographystyle{ieeetr} % or try: alpha, ieee, apa, etc.
+% \bibliography{bibliography/project_bibliography,bibliography/theory_bibliography} % refers to references.bib
+
+\printbibliography[]
+\end{document}
