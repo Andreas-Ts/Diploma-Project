@@ -8,6 +8,9 @@
 % Last update: Oct 25, 2014
 %
 %%%%%%
+
+
+
 % Class Information
 \def\filename{ceid-thesis}
 \def\fileversion{1.0}
@@ -21,19 +24,33 @@
 \RequirePackage{amsmath}
 \RequirePackage{fancyhdr}
 
+
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 \ProcessOptions
+
 \LoadClass[a4paper,11pt]{book}
 
+\RequirePackage{polyglossia}
+\RequirePackage{textcomp}
+\RequirePackage{gensymb}
 
-\usepackage{polyglossia}
-\setdefaultlanguage{greek}
-\setotherlanguages{english}
+\AtBeginDocument{%
+  \setdefaultlanguage{greek}
+  \setotherlanguages{english}
 
-\usepackage{fontspec}
-\setmainfont{FreeSerif}
-\setsansfont{FreeSans}
-\setmonofont{FreeMono}
+  \setmainfont{Cambria}[
+    BoldFont = *,
+    ItalicFont = *,
+    BoldItalicFont = *
+  ]
+
+  \newfontfamily\greekfonttt{FreeMono}
+}
+
+
+
+%%%%%
+
 
 \pagestyle{fancy}
 % Title Page and Front Matter

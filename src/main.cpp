@@ -12,7 +12,7 @@ void setup() {
   while (selectedIP == ""){
     setNetworkConnections();
   } 
-  //Flash led to have for connection purposes
+  //Flash led to showcase that we are going to connect purposes
   pinMode(LED_BUILTIN, OUTPUT);
  
  
@@ -28,8 +28,7 @@ void setup() {
 }
 
 void loop() {
-  static 
-  bool newReadingJustOccured =false;
+  static bool newReadingJustOccured =false;
 
   newReadingJustOccured = loopSensor();
   bool hasDoneNetworkSetAction =false;

@@ -19,11 +19,13 @@ bool setupCCS811();
 
 bool loopSensor();
 
+//loopBME680() polls iaqSensor.run() and returns true via haveNewData when new sensor data is available, calling addMessageToBuffer() in that case. 
+//It always calls updateBME680State() and then checkIaqSensorStatus(false) before returning.
+
 bool loopBME680();
 
 bool loopCCS811();
 
-void IRAM_ATTR ccs811Interrupt();
 
 // Helper functions declarations for the bme680 bsec
 bool checkIaqSensorStatus(bool atSetup);

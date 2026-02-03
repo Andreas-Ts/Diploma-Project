@@ -7,7 +7,7 @@
 #include "bsec.h"
 #include <esp_wifi.h>
 #include <math.h>
-#include <Adafruit_CCS811.h>
+
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <HTTPClient.h>
