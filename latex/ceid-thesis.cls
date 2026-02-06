@@ -38,13 +38,7 @@
   \setdefaultlanguage{greek}
   \setotherlanguages{english}
 
-  \setmainfont{Cambria}[
-    BoldFont = *,
-    ItalicFont = *,
-    BoldItalicFont = *
-  ]
-
-  \newfontfamily\greekfonttt{FreeMono}
+ \setmainfont{Libertinus Serif}
 }
 
 
@@ -496,7 +490,7 @@
 	        \begin{tikzpicture}[remember picture, overlay]
 	            \draw(0,0) % circle's center (relative)
 				circle (2cm) % circle #1 radius
-				circle (5.6cm);
+				circle (5.6cm);/
                 	\node[draw=none, align=center] at (3.5,-1) {\textbf{ΔΙΠΛΩΜΑΤΙΚΗ}  \\ \textbf{ΕΡΓΑΣΙΑ}  \\[5pt] ΠΑΤΡΑ,  \\ #3 \\ #4};
                    \node[draw=none, text width=3.5cm, align=center] at (-3.5,-1) {\textbf{#2}};
 			\node[draw=none,text width=#5cm, align=center] at (0,3) {\fontsize{9}{10.8}\selectfont \textbf{#1} \fontsize{7}{8.4}\selectfont};   
