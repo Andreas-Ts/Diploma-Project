@@ -28,7 +28,7 @@
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 \ProcessOptions
 
-\LoadClass[a4paper,11pt]{book}
+\LoadClass[a4paper,12pt]{book}
 
 \RequirePackage{polyglossia}
 \RequirePackage{textcomp}
@@ -38,7 +38,9 @@
   \setdefaultlanguage{greek}
   \setotherlanguages{english}
 
- \setmainfont{Libertinus Serif}
+
+  \setmainfont{Libertinus Serif}
+  \setmonofont{Libertinus Mono}
 }
 
 
