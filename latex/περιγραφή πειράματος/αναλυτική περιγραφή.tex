@@ -1,0 +1,74 @@
+\subsection{Αναλύτικη περιγραφή ενός πειράματος και πως φαίνεται στην ιστοσελίδα}
+
+
+Στην εικόνα \ref{fig:defaultSite},φαίνεται η αρχική κατάσταση της ιστοσελίδας που αλλελπιδρά ο χρήστης.
+Είναι φτιαγμένη με σκοπό να μην χρειάζονται ειδικές γνώσεις για να χειριστεί κάποιος την εφαρμογή.
+
+Στο κάτω μέρος υπάρχει το κομμάτι που ο χρήστης δηλώνει υγρασία και θερμοκρασία,αλλά όπως αναφέρθηκε και προηγούμενης,δεν χρησιμοποιήθηκε στα προκειμένα πειράματα.
+Δίνεται πρόσβαση στο url που κατευθείνει τον χρήστη στην grafana όπου υπάρχει η οπτικοποίηση σε ζωντανό χρόνο.
+Επίσης,υπάρχει κομπί για μία περιγραφή της διαδικασίας του πειράματος και δυνατότητα να αποσταλούν τα σημερίνα log του server στον χρήστη.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{}
+    \caption{Αρχική μορφή της ιστοσελίδας}
+    \label{fig:defaultSite}
+\end{figure}
+
+Αφού ο χρήστης έχει κλείσει τα παράθυρα και την πόρτα και έχει περιμένει κάποια λεπτά, ώστε η τιμή VOC να αυξηθεί από την κατάσταση που το δωμάτια έχει ανοιχτά το παράθυρο και την μπαλκονόπορτα,
+που θα αρχίζουμε να τα λέμε και τα δύο παράθυρα,γιατί και τα δύο επιτελούν τον ρόλο του να αερίζουν το δωμάτιο με εξωτερικό αέρα.
+
+Αφού παρατηρηθεί από την grafana ότι οι τιμές VOC έχουν σταθεροποιηθεί σχετικά,δηλώνει ότι θέλει να ξεκινήσει καινούργιο πείραμα,πατώντας το κουμπί \textbf{Ξεκίνα καινούργιο πείραμα}.
+Ο server αποθηκεύει στο collection  \texttt{UserInput} της βάσης δεδομένων,document με \texttt{userInputCategory="ExperimentState"} και \texttt{uexperimentState="StartingExperiment"} και την χρονική στιγμή της αποθήκευσης του document.
+Έπειτα εμφανίζεται η παρακάτω μορφή της ιστοσέλίδας \ref{fig:afterInsertingStart}. 
+
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{}
+    \caption{Η ιστοσελίδα αφού έχει ξεκίνησει πείραμα}
+    \label{fig:afterInsertingStart}
+\end{figure}
+
+Αφού περιμένουμε τουλάχιστον 1 με 2 λεπτά,για να υπάρχει περιθώριο δεδομένων ο χρήστης πατάει το κουμπί \textbf{},
+για να προχωρήσει στην σελίδα που φαίνεται στην εικόνα \ref{fig:InsertingSourcePollutantDetails}.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{}
+    \caption{Η σελίδα που δηλώνονται οι λεπτομέρειες του πειράματος}
+    \label{fig:InsertingSourcePollutantDetails}
+\end{figure}
+
+\FloatBarrier 
+
+
+\subsubsection{Λεπτομέρειες τις σελίδας εισαγωγής πηγής ρύπων }
+
+
+
+
+\paragraph{Τύπος Ρύπου,Αντικείμενο προέλευσης,ποσότητα που χρησιμοποείται}
+
+\paragraph{Δωμάτιο}
+
+\paragraph{Θέση πηγής ρύπου}
+
+\paragraph{Συνθήκες του δωματίο που ισχύουν}
+
+\begin{itemize}
+  \item
+  \item 
+  \item 
+\end{itemize}
+\subsubsection{Εισαγωγή πηγής ρύπου}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{}
+    \caption{Η σελίδα αφότου δηλώθηκε η είσοδος πηγής ρήπου}
+    \label{fig:sourcePollutantInserted}
+\end{figure}
+
+
+\FloatBarrier 

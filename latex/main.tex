@@ -110,12 +110,14 @@
 \maketitle
 
 
-
 %\maketitle
 \newpage
 
 \tableofcontents
 \renewcommand{\contentsname}{Περιεχόμενα}
+
+\mainmatter
+
 \newpage
  	\chapter {Θεωρία}
 \include{introduction}
@@ -126,7 +128,11 @@
 \include{περιγραφή κώδικα/περιγραφή κώδικα μικροελεκτή}
 \include{τεχνολογίες που χρησιμοποιήθηκαν/τεχνολογίες σχετικά με το server}
 \include{περιγραφή πειράματος/περιγραφή πειράματος}
-part {Αναφορές}
+\include{τεχνολογίες που χρησιμοποιήθηκαν/jupyter notebook και βιβλιοθήκες της python που χρησιμοποιήθηκαν}
+\include{περιγραφή κώδικα/περιγραφή κώδικα jupyter lab}
+
+\backmatter
+\chapter {Αναφορές}
 
 \renewcommand{\refname}{Αναφορές}
 % \bibliographystyle{ieeetr} % or try: alpha, ieee, apa, etc.
