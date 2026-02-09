@@ -13,7 +13,6 @@
 \usepackage{placeins}
 \usepackage{fontspec}
 \usepackage{xcolor}
-\usepackage{subcaption}
 
 \usepackage{graphicx}
 \usepackage{epstopdf}
@@ -115,20 +114,19 @@
 %\maketitle
 \newpage
 
-\renewcommand{\contentsname}{Περιεχόμενα}
 \tableofcontents
+\renewcommand{\contentsname}{Περιεχόμενα}
 \newpage
-\mainmatter
-\chapter{Θεωρία}
+ 	\chapter {Θεωρία}
 \include{introduction}
-\chapter{Περιγραφή εργασίας}
+
+ 	\chapter{Περιγραφή εργασίας}
 \include{τεχνολογίες που χρησιμοποιήθηκαν/esp32 και bme680}
 \include{τεχνολογίες που χρησιμοποιήθηκαν/Προγραμματισμός μικροελεκτών}
 \include{περιγραφή κώδικα/περιγραφή κώδικα μικροελεκτή}
 \include{τεχνολογίες που χρησιμοποιήθηκαν/τεχνολογίες σχετικά με το server}
-
-\backmatter
-\chapter{Αναφορές}
+\include{περιγραφή πειράματος/περιγραφή πειράματος}
+part {Αναφορές}
 
 \renewcommand{\refname}{Αναφορές}
 % \bibliographystyle{ieeetr} % or try: alpha, ieee, apa, etc.

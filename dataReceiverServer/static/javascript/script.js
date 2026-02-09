@@ -116,9 +116,7 @@ function downloadLogFile() {
             text ="Δεν έχει εισαχθεί πηγή ρύπου αλλά θα ληφθούν υπόψη οι τιμές. Είναι για να δούμε το πείραμα σε κατάσταση ηρεμίας"
          }
          else {
-            text = "Άσε τον ρύπο να εξελιχτεί με βάση τις συνθήκες που δώσατε για τουλάχιστον 30 λεπτά."+
-         "Στα 45 λεπτά, θα εμφανίστει και ακουστεί ειδοποίηση για να βγάλετε την πηγή.\n"+
-         "Αν έγινε κάποιο λάθος στην εισαγωγή πηγής, πάτα το κουμπί \"Διαγραφή της προηγούμενης εισαγωγής ρύπου\".";
+            text = "Αν έγινε κάποιο λάθος στην εισαγωγή πηγής, πάτα το κουμπί \"Διαγραφή της προηγούμενης δήλωσης κατάστασης πειράματος\".";
          }
          experimentStateText.textContent = text;
           createDeleteButton("InsertingSourcePollutant");  
@@ -207,7 +205,7 @@ function areAllSensorsStable(experimentStateText,submitExperimentStateElement){
 function createDeleteButton(experiment_state){
       console.log("hii from delete");
         deleteButton = document.createElement("button");
-         deleteButton.textContent = "Διαγραφή δεδομένων προηγούμενων πειραμάτων";
+         deleteButton.textContent = "Διαγραφή της προηγούμενης δήλωσης κατάστασης πειράματος";
          deleteButton.className = "delete-button";
          deleteButton.id = "delete-last-source-insertion";
         
