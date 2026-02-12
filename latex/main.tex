@@ -109,9 +109,13 @@
 
 \maketitle
 
-
+\approval
 %\maketitle
 \newpage
+\include{ευχαριστίες και abstact/dedication}
+\include{ευχαριστίες και abstact/abstract}
+\include{ευχαριστίες και abstact/ευχαριστίες}
+
 
 \tableofcontents
 \renewcommand{\contentsname}{Περιεχόμενα}
@@ -133,11 +137,10 @@
 \include{περιγραφή κώδικα/περιγραφή κώδικα jupyter lab}
 
 \backmatter
-\chapter {Αναφορές}
 
-\renewcommand{\refname}{Αναφορές}
 % \bibliographystyle{ieeetr} % or try: alpha, ieee, apa, etc.
 % \bibliography{bibliography/project_bibliography,bibliography/theory_bibliography} % refers to references.bib
+\section{Βιβλιογραφία}
+\printbibliography[heading=bibnumbered]
 
-\printbibliography[]
 \end{document}
