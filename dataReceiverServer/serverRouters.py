@@ -84,11 +84,24 @@ class utilityUrl(serverRouters):
         pass
     def getLogs(self):
         log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "logs"))
-        log_file_path = os.path.join(log_dir, "server_requests.log")
-        if not os.path.exists(log_file_path):
-            return render_template('base.html', temp_error="Log file does not exist.")
-        
-        return send_file(log_file_path, as_attachment=True)
+
+        if not os.path.isdir(log_dir):
+            return render_template('base.html', temp_error="Log directory does not exist.")
+
+        # Get all matching log files
+        log_files = [
+            os.path.join(log_dir, f)
+            for f in os.listdir(log_dir)
+            if f.startswith("server_requests_") and f.endswith(".log")
+        ]
+
+        if not log_files:
+            return render_template('base.html', temp_error="No log files found.")
+
+        # Pick the most recently modified file
+        latest_log = max(log_files, key=os.path.getmtime)
+
+        return send_file(latest_log, as_attachment=True)
     def checkStability(self):
         try:
             total_result ={"id:0":self.srvFunc.checkSensorStability(0),
