@@ -95,7 +95,7 @@
         \begin{center}
 
         \begin{minipage}{2.5cm}
-            \includegraphics[width=2.5cm]{static/figures/PatrasLogo.png}
+            \includegraphics[width=2.5cm]{εικόνες/PatrasLogo.png}
 		\vspace{5pt}
         \end{minipage}
 
@@ -270,7 +270,7 @@
 
 \uppertitleback{
     \begin{minipage}{2cm}
-        \includegraphics[width=2cm]{static/figures/PatrasLogo.png}
+        \includegraphics[width=2cm]{εικόνες/PatrasLogo.png}
     \end{minipage}
     \hspace{0.5cm}
     \begin{minipage}{12cm}
@@ -492,7 +492,7 @@
 	        \begin{tikzpicture}[remember picture, overlay]
 	            \draw(0,0) % circle's center (relative)
 				circle (2cm) % circle #1 radius
-				circle (5.6cm);/
+				circle (5.6cm);
                 	\node[draw=none, align=center] at (3.5,-1) {\textbf{ΔΙΠΛΩΜΑΤΙΚΗ}  \\ \textbf{ΕΡΓΑΣΙΑ}  \\[5pt] ΠΑΤΡΑ,  \\ #3 \\ #4};
                    \node[draw=none, text width=3.5cm, align=center] at (-3.5,-1) {\textbf{#2}};
 			\node[draw=none,text width=#5cm, align=center] at (0,3) {\fontsize{9}{10.8}\selectfont \textbf{#1} \fontsize{7}{8.4}\selectfont};   
@@ -529,7 +529,7 @@
 	        \begin{tikzpicture}[remember picture, overlay]
 			\draw[thick] (-5.8,-5.8) rectangle (5.8,5.8); 
 			\draw[dashed] (-6,-6) rectangle (6,6); 
-			\node at (-4.6,4.4){\includegraphics[width=1.8cm]{static/figures/PatrasLogo.png}};
+			\node at (-4.6,4.4){\includegraphics[width=1.8cm]{εικόνες/PatrasLogo.png}};
                    \node[draw=none, text width=9cm, align=left] at (1,4.3) {ΠΑΝΕΠΙΣΤΗΜΙΟ ΠΑΤΡΩΝ \\ ΠΟΛΥΤΕΧΝΙΚΗ ΣΧΟΛΗ \\ ΤΜΗΜΑ ΜΗΧΑΝΙΚΩΝ ΗΛΕΚΤΡΟΝΙΚΩΝ ΥΠΟΛΟΓΙΣΤΩΝ ΚΑΙ ΠΛΗΡΟΦΟΡΙΚΗΣ};
                    \node[draw=none, text width=9cm, align=center] at (0,2.3) {ΔΙΠΛΩΜΑΤΙΚΗ ΕΡΓΑΣΙΑ};
 			\node[draw=none,text width=#5cm, align=center] at (0,0) {\fontsize{11}{13.2}\selectfont \textbf{#1} \fontsize{8}{9.6}\selectfont};   
@@ -548,7 +548,7 @@
 	        \begin{tikzpicture}[remember picture, overlay]
 			\draw[thick] (-5.8,-5.8) rectangle (5.8,5.8); 
 			\draw[dashed] (-6,-6) rectangle (6,6);
-			\node at (-4.6,4.4){\includegraphics[width=1.8cm]{static/figures/PatrasLogo.png}};
+			\node at (-4.6,4.4){\includegraphics[width=1.8cm]{εικόνες/PatrasLogo.png}};
                    \node[draw=none, text width=9cm, align=left] at (1,4.3) {ΠΑΝΕΠΙΣΤΗΜΙΟ ΠΑΤΡΩΝ \\ ΠΟΛΥΤΕΧΝΙΚΗ ΣΧΟΛΗ \\ ΤΜΗΜΑ ΜΗΧΑΝΙΚΩΝ ΗΛΕΚΤΡΟΝΙΚΩΝ ΥΠΟΛΟΓΙΣΤΩΝ ΚΑΙ ΠΛΗΡΟΦΟΡΙΚΗΣ};
                    \node[draw=none, text width=9cm, align=center] at (0,2.3) {ΔΙΠΛΩΜΑΤΙΚΗ ΕΡΓΑΣΙΑ};
 			\node[draw=none,text width=#5cm, align=center] at (0,0) {\fontsize{11}{13.2}\selectfont \textbf{#1} \fontsize{8}{9.6}\selectfont};   

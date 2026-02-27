@@ -35,9 +35,11 @@ default cropped.png}
 δηλώνει ότι θέλει να ξεκινήσει καινούργιο πείραμα, 
 πατώντας το κουμπί \textbf{Ξεκίνακαινούργιο πείραμα}.
 
-Ο server αποθηκεύει στο collection \texttt{UserInput} της βάσης δεδομένων,
+Ο server αποθηκεύει στο collection 
+\texttt{UserInput} της βάσης δεδομένων,
 document με \texttt{userInputCategory=ExperimentState}
-και \texttt{experimentState=StartingExperiment} και την χρονική στιγμή της αποθήκευσης
+και \texttt{experimentState=\linebreak
+StartingExperiment} και την χρονική στιγμή της αποθήκευσης
 του document.
 Έπειτα εμφανίζεται η παρακάτω μορφή της ιστοσελίδας \ref{fig:afterInsertingStart}.
 
@@ -78,7 +80,8 @@ inputs.png}
 
 Η φόρμα έχει σαν προεπιλεγμένη τιμή στο κάθε πεδίο, την τιμή που μπορεί να βρεθεί στην
 αμέσως προηγούμενη
-\texttt{experimentState=InsertingSourcePollutant} δήλωση του χρήστη.
+\texttt{experimentState= \linebreak
+InsertingSourcePollutant} δήλωση του χρήστη.
 Αυτή η προεπιλογή ρυθμίστηκε σε ιστοσελίδα και server,
 σε πολλές περιπτώσεις έχουμε κατασταλάξει σε αρκετές από τις παραμέτρους που θα
 χρησιμοποιήσουμε σε έναν ή πολλούς κύκλους πειραμάτων.
@@ -191,7 +194,8 @@ after insertion.png}
 Όταν ο χρήστης πατήσει \textbf{Απομάκρυνση πηγής ρύπου και τερματισμός
 πειράματος},δηλώνει τέλος του πειράματος στην βάση δεδομένων,
 με κατάσταση
-\texttt{experimentState=InsertingSourcePollutant=RemovingSourcePollutant}.
+\texttt{ExperimentState= \linebreak
+RemovingSourcePollutant}.
 
 Αφαιρεί την πηγή ρύπου, ανοίγει τα παράθυρα και αφήνει τον χώρο να αεριστεί.
 Περιμένει τις τιμές των αισθητήρων να πέσουν στα επίπεδα καθαρού αέρα,

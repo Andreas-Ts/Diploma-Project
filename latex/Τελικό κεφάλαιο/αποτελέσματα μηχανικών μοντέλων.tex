@@ -1,0 +1,96 @@
+\section{Αποτελέσματα μηχανικών μοντέλων}
+
+Τα παρακάτω αποτελέσματα που δίνονται, είναι μόνο για το \texttt{Support Vector Regression} με την συνάρτηση \texttt{normalize} σαν scaler, 
+Παρόλο που άλλα μοντέλα, όπως τα \texttt{Random Forest Regressor} και \texttt{Gradient \linebreak Boosting Regressor},μπορεί να έβγαλαν καλύτερα αποτελέσματα σε κάποιες περιπτώσεις.
+θα διατηρήσουμε το \texttt{Support Vector Regression} ,που είχε τα πιο σταθερά καλά αποτελέσματα. 
+
+Θα παραθέσουμε τα αποτελέσματα για όλα τα δεδομένα, όπως και για δύο ξεχωριστές υποπεριπτώσεις επιλογής των δεδομένων με βάση τις θέσεις ρύπων πιο κοντά στους αισθητήρες.
+Δηλαδή, θα πάρουμε όλα τα πειράματα για την πιο κοντινή θέση ρύπου σε κάθε αισθητήρα. Θα πάρουμε και για τους τρεις αισθητήρες, οπότε θα έχουμε για κάθε αισθητήρα και μηχανικό μοντέλο 
+μια θέση που βρίσκεται κάτω από μισό μέτρο σε απόσταση και δύο ακόμα που θα είναι πάνω από ένα μέτρο.
+Αντίστοιχα, θα μελετήσουμε την υποπερίπτωση όπου παίρνουμε τις δύο πιο κοντινές θέσης πηγή ρύπου ανά αισθητήρα, με παρόμοιο τρόπο όπως περιεγράφηκε για την πιο κοντινή θέση ρύπου.
+
+Επίσης, θα πάρουμε σαν έξτρα υποπεριπτώσεις την χρήση ή όχι συνάρτησης διαχείρισης των outliers,μία περίπτωση για διαχείρσηση outliers στο σύνολο των δεδομένων και ένα ακόμα ανά στήλη.
+
+% Θα τα τοποθετήσουμε στην αρχή 3 πίνακες,που παρουσιάζουν τα τελικά αποτελέσματα όλων των περιπτώσεων 
+% Πιο κάτω θα παραθέσουμε τα διαγράμματα για την κάθε υποπερίπτωση,όπως και τους hyperparameters των τελικών μοντέλων:
+
+
+\subsection{Αποτελέσματα πινάκων}
+
+\setlength{\tabcolsep}{4pt}
+
+%------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{Αποτελέσματα – Όλα τα δεδομένα}
+\label{tab:all_data}
+\begin{tabularx}{\textwidth}{|
+    >{\raggedright\arraybackslash}p{3cm} |
+    >{\raggedright\arraybackslash}p{3cm} |
+    X | X | X | X |}
+\hline
+\toprule
+\textbf{Διαχείριση Outliers} & 
+\textbf{Μέθοδος} &
+\textbf{$R^2$} &
+\textbf{MSE} &
+\textbf{Μέση Ευκλείδεια Απόσταση} &
+\textbf{Σχετικό Διάγραμμα} \\
+\midrule
+Όχι        & Όλα τα δεδομένα & 0.294992  & 0.684208  & 1.003398 & \autoref{fig:all_data_} \\
+Ολική      & Όλα τα δεδομένα & -0.073574 & 1.036164  & 1.293871 & \autoref{fig:all_data_Global_Outliers} \\
+Ανά στήλη  & Όλα τα δεδομένα & 0.175861  & 0.810631  & 1.160190 & \autoref{fig:all_data_Outliers_Per_Column} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%------------------------------------------------
+\begin{table}[h!]
+\centering
+\small
+\caption{Αποτελέσματα – Μόνο η πιο κοντινή πηγή}
+\label{tab:closest_data}
+\begin{tabularx}{\textwidth}{|
+    >{\raggedright\arraybackslash}p{3cm} |
+    >{\raggedright\arraybackslash}p{3cm} |
+    X | X | X | X |}
+\hline
+\toprule
+\textbf{Διαχείριση Outliers} & 
+\textbf{Μέθοδος} &
+\textbf{$R^2$} &
+\textbf{MSE} &
+\textbf{Μέση Ευκλείδεια Απόσταση} &
+\textbf{Σχετικό Διάγραμμα} \\
+\midrule
+Όχι        & Πιο κοντινή πηγή & 0.636293 & 0.347179 & 0.699629 & \autoref{fig:closest} \\
+Ολική      & Πιο κοντινή πηγή & 0.796589 & 0.350702 & 0.796589 & \autoref{fig:closest_Global_Outliers} \\
+Ανά στήλη  & Πιο κοντινή πηγή & 0.835465 & 0.148242 & 0.519056 & \autoref{fig:closest_Outliers_Per_Column} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%------------------------------------------------
+\begin{table}[h!]
+\centering
+\caption{Αποτελέσματα – Δύο πιο κοντινές πηγές}
+\label{tab:second_closest_data}
+\begin{tabularx}{\textwidth}{|
+    >{\raggedright\arraybackslash}p{3cm} |
+    >{\raggedright\arraybackslash}p{3cm} |
+    X | X | X | X |}
+\hline
+\toprule
+\textbf{Διαχείριση Outliers} & 
+\textbf{Μέθοδος} &
+\textbf{$R^2$} &
+\textbf{MSE} &
+\textbf{Μέση Ευκλείδεια Απόσταση} &
+\textbf{Σχετικό Διάγραμμα} \\
+\midrule
+Όχι        & Δύο κοντινές πηγές & -0.421104 & 1.506079 & 1.469430 & \autoref{fig:two_closest} \\
+Ολική      & Δύο κοντινές πηγές & 0.507745  & 0.572824 & 1.026803 & \autoref{fig:two_closest_Global_Outliers} \\
+Ανά στήλη  & Δύο κοντινές πηγές & 0.481814  & 0.564319 & 1.002284 & \autoref{fig:two_closest_Outliers_Per_Column} \\
+\bottomrule
+\end{tabularx}
+\end{table}

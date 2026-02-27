@@ -146,8 +146,8 @@ To \texttt{\_id} είναι το κύριο κλειδί του document, δηλ
 Ο πίνακας λειτουργεί ως δοχείο ή κοντέινερ (container  ) που εμφανίζει την οπτικοποίηση και παρέχει διάφορες ρυθμίσεις για την αλληλεπίδραση με αυτήν. 
 Στη διαμόρφωση του πίνακα καθορίζεται ο τρόπος παρουσίασης των δεδομένων.
 
-Στο δικό μας dashboard, χρησιμοποιήσαμε το infinity  data source plugin 
-\url{https://grafana.com/docs/plugins/yesoreyeram-infinity-datasource/latest/},οπού τραβάει δεδομένα από κάποιο server που λειτουργεί με REST API 
+Στο δικό μας dashboard, χρησιμοποιήσαμε το infinity  data source plugin,
+όπου τραβάει δεδομένα από κάποιο server που λειτουργεί με REST API 
 και διαχειρίζεται διάφορες μορφές δεδομένων όπως JSON, CSV, GraphQL, XML, and HTML endpoints.
 Αποτελεί μια καθολικά καλή εναλλακτική αν δεν υπάρχει κάποια εξειδικευμένο plugin για την πηγή δεδομένων που το θέλουμε. Υπάρχει plugin για την mongodb αλλά δεν είναι ελεύθερη προς χρήση.
 
@@ -156,10 +156,11 @@ To \texttt{\_id} είναι το κύριο κλειδί του document, δηλ
 \begin{center}
 \fbox{\detokenize{http://personal-laptop.local:8080/timeSeriesEndpoints/getTimeSeriesData}}\linebreak 
 \fbox{\detokenize{?start=${__from}&end=${__to}&Id=N}}
+\linebreak
 Με N να είναι ο αριθμός id της συσκευής που θέλουμε τα δεδομένα
 \end{center}
 
-Οπού το \texttt{\detokenize{http://personal-laptop.local:8080/}} αποτελεί τον τρόπο 
+Όπου το \texttt{\detokenize{http://personal-laptop.local:8080/}} αποτελεί τον τρόπο 
 να έχουμε πρόσβαση στον σέρβερ μας κα είναι σταθερό σε κάθε http αίτηση, 
 το timeSeriesEndpoints/getTimeSeriesData αποτελεί το endpoints 
 που στέλνει στον χρήστη τα δεδομένα από κάποια αρχική χρονική στιγμή έως κάποια τελική χρονική στιγμή.
@@ -173,7 +174,7 @@ To \texttt{\_id} είναι το κύριο κλειδί του document, δηλ
 Στα πειράματα μας, η συσκευή με \textbf{Id=0} είναι με μπλε χρώμα η χρονοσειρά,
 η συσκευή  \textbf{Id=1} είναι με πράσινο και ο αισθητήρας \textbf{Id=0} είναι με κίτρινο.
 
-Κατά την διάρκεια των πειραμάτων, εστιάσαμε κυρίως στους πίνακες με τα πεδία \textbf{Ακρίβεια} και \textbf{VOC από BME680},οπού αντιστοιχούν στις ψηφιακές εξόδους του BME680 \texttt{BME680:iaqAccuracy} 
+Κατά την διάρκεια των πειραμάτων, εστιάσαμε κυρίως στους πίνακες με τα πεδία \textbf{Ακρίβεια} και \textbf{VOC από BME680},όπου αντιστοιχούν στις ψηφιακές εξόδους του BME680 \texttt{BME680:iaqAccuracy} 
 και \texttt{BME680:breathVocEquivalent}.
 
 \begin{figure}[!htbp]
