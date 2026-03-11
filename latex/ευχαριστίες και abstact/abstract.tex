@@ -6,11 +6,12 @@
 Η ποιότητα του εσωτερικού αέρα (Indoor Air Quality,IAQ) αποτελεί ένα πολύ σημαντικό κομμάτι της υγείας και ποιότητας ζωής των ανθρώπων,ειδικά στην σημερινή επόχη.
 Χάρη στους αισθητήρες αέρα φτηνού κόστους (Low Cost gas Sensors,LCS), που έχουν αναπτυχθεί πολύ την τελευταία δεκαπενταετία,μας δίνει την δυνατότητα να μελετήσουμε τον IAQ με πιο προσιτό τρόπο και σε μεγαλύτερη κλίμακα.
 Ένα σημαντικός παράγοντας του IAQ είναι οι πηγές ρύπου που μπορεί να υπάρχουν στον εσωτερικό χώρο,με την άμεση αντιμετώπιση τους να είναι ένα από τους καλύτερους τρόπους βελτιώσεις του IAQ.
-Σε αυτή την εργασία επιχειρήσαμε να εξερευνήσουμε ένα τομέα που δεν έχει ερευνηθεί έως τώρα από κάποια άλλη έρευνα,την εύρεση της θέσης μίας πηγής ρύπου στον εσωτερικό χώρο,χρησιμοποιώντας αισθητήρες αέρα φτηνού κώστους.
-Αναπτύξαμε ένα δικτύο αισθητήρων Intertet Of Things (IoT),με τους μικροελεκτές ESP32 και τους αισθητήρες BME680 που έχει LCS Ημιαγωγό Μεταλλικού Οξειδίου (Metal Oxide Semiconductors,MOS),χρησιμοποιώντας το  Bosch Software Environmental Cluster (BSEC) για την εξαγωγή των τιμών breath VOC.
+Σε αυτή την εργασία επιχειρήσαμε να εξερευνήσουμε ένα τομέα που δεν έχει ερευνηθεί έως τώρα από κάποια άλλη έρευνα,την εύρεση της θέσης μίας πηγής ρύπου στον εσωτερικό χώρο,χρησιμοποιώντας αισθητήρες αέρα φτηνού κόστους.
+
+Αναπτύξαμε ένα δίκτυο αισθητήρων Intertet Of Things (IoT),με τους μικροελεκτές ESP32 και τους αισθητήρες BME680 που έχει LCS Ημιαγωγό Μεταλλικού Οξειδίου (Metal Oxide Semiconductors,MOS),χρησιμοποιώντας το  Bosch Software Environmental Cluster (BSEC) για την εξαγωγή των τιμών breath VOC.
 Πραγματοποιήσαμε μία σειρά πειραμάτων σε όλο το εύρος ενός δωματίου σπιτιού,χρησιμοποιώντας φαρμακευτικό αλκοόλ και αιθανόλη σαν ρύπο και πηγή που εξετάζαμε.
 Χρησιμοποιήσαμε μηχανικά μοντέλα παλινδρόμησης και τριπλευρικό εντοπισμό για την εύρεση της θέσης της πηγή ρύπου μες στο χώρο.
-Δεν κατάφεραν οι αισθητήρες να δώσουν αποτελέσματα που να ξεχωρίζουν τις διαφορετικές θέσεις της πηγής ρύπου σε όλο το δωμάτια,αλλά είχαμε επιτυχεμένες περιπτώσεις για υποομάδες πειραμάτων,
+Δεν κατάφεραν οι αισθητήρες να δώσουν αποτελέσματα που να ξεχωρίζουν τις διαφορετικές θέσεις της πηγής ρύπου σε όλο το δωμάτια,αλλά είχαμε επιτυχημένες περιπτώσεις για υποομάδες πειραμάτων,
 όπου η υπερευαισθησία των MOS αισθητήρων στους ρύπους μπορούσε να ξεχωρίσει ,μας κάνει αρκετά αισιόδοξους για μελλοντικές μελέτες.
 
 \end{abstract}
@@ -18,14 +19,15 @@
 \renewcommand{\abstractname}{Abstract}
 \begin{abstract}
 
-Indoor Air Quality (IAQ) is a very important part of people's health and quality of life, especially in today's environment.
-Thanks to low-cost gas sensors (LCS), which have been developed extensively over the last fifteen years, we are now able to study IAQ in a more accessible way and on a larger scale.
-An important factor in IAQ is the sources of pollution that may exist indoors, and addressing them directly is one of the best ways to improve IAQ.
-In this project, we attempted to explore an area that has not been researched by any other study to date: locating a source of pollution indoors using inexpensive air sensors.
-We developed an Internet of Things (IoT) sensor network with ESP32 microcontrollers and BME680 sensors with LCS Metal Oxide Semiconductors (MOS), using Bosch Software Environmental Cluster (BSEC) to extract breath VOC values.
-We conducted a series of experiments throughout a room in a house, using rubbing alcohol and ethanol as the pollutant and source we were testing.
-We used mechanical regression models and triangulation to find the location of the pollutant source within the space.
-The sensors were unable to provide results that distinguished between different locations of the pollutant source throughout the room, but we had successful cases for subgroups of experiments
+Indoor Air Quality (IAQ) is a very important aspect of human health and quality of life, especially in the modern era.
+Thanks to low-cost gas sensors (LCS), which have developed significantly over the past fifteen years, it has become possible to study IAQ in a more affordable way and on a larger scale.
+An important factor affecting IAQ is the presence of pollutant sources in indoor environments. Their prompt identification and mitigation is one of the most effective ways to improve IAQ.
+In this study, we attempted to explore a field that has not yet been investigated by previous research: the localization of a pollutant source within an indoor environment using low-cost air sensors.
+
+We developed an Internet of Things (IoT) sensor network using ESP32 microcontrollers and BME680 sensors equipped with Metal Oxide Semiconductor (MOS) low-cost gas sensing elements. We used the Bosch Software Environmental Cluster (BSEC) library to extract breath VOC values.
+A series of experiments was conducted throughout the entire area of a room in a residential house, using medical alcohol and ethanol as the pollutant and source under investigation.
+We applied mechanical regression models and trilateration techniques to estimate the location of the pollutant source within the space.
+Although the sensors were not able to produce results that clearly distinguished between different pollutant source positions across the entire room, there were successful cases within subgroups of experiments. The high sensitivity of the MOS sensors to pollutants allows us to remain optimistic about future research in this field.
 
 
 

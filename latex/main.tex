@@ -190,79 +190,79 @@
                 \thesisPlaceDate
             \end{center}
             %
-        %     \cleardoublepage
+        %      \cleardoublepage
 
-        %     \if@twoside\new@tpage
-        %         \noindent
-        %         \begin{minipage}[t]{\textwidth}
-        %             \@uppertitleback
-        %         \end{minipage}
-        %         \par
-        %         \vfill
-        %        \begin{center}
-        %             \LARGE \bfseries \@title
-        %         \end{center}
-        %         \ifx\@subtitle\@empty\else
+        %      \if@twoside\new@tpage
+        %          \noindent
+        %          \begin{minipage}[t]{\textwidth}
+        %              \@uppertitleback
+        %          \end{minipage}
+        %          \par
+        %          \vfill
         %         \begin{center}
-        %             \LARGE \@subtitle
-        %         \end{center}
-        %         \fi
-        %         %
-        %         \vspace{5mm}
-        %         %
-        %         \begin{center}
-        %             \huge{\textsc{\@translator}}\\
-        %             \vspace{3mm}
-        %             \normalsize{\toutis}\\
-        %             \vspace{3mm}
-        %             \large{\textbf{\authorNameCapital}}
-        %         \end{center}
-        %         %
-        %         \vspace{5mm}
-        %         %
-        %         \hspace{1mm}
+        %              \LARGE \bfseries \@title
+        %          \end{center}
+        %          \ifx\@subtitle\@empty\else
+        %          \begin{center}
+        %              \LARGE \@subtitle
+        %          \end{center}
+        %          \fi
+                 
+        %          \vspace{5mm}
+                 
+        %          \begin{center}
+        %              \huge{\textsc{\@translator}}\\
+        %              \vspace{3mm}
+        %              \normalsize{\toutis}\\
+        %              \vspace{3mm}
+        %              \large{\textbf{\authorNameCapital}}
+        %          \end{center}
+                 
+        %          \vspace{5mm}
+                 
+        %          \hspace{1mm}
 
-        %    \vfill
+        %     \vfill
 
-        %         \begin{minipage}{15cm}
-        %         \begin{tabbing}
-        %             \large \textbf{\supervisorname :} 
-        %             \=\@supervisor\\
-        %             \>\@supervisorSecond\\
+        %          \begin{minipage}{15cm}
+        %          \begin{tabbing}
+        %              \large \textbf{\supervisorname :} 
+        %              \=\@supervisor\\
+        %              \>\@supervisorSecond\\
         %         \end{tabbing}
         %         \end{minipage}
         %         \vspace{1mm}
         %    \vfill
 
         %         \begin{minipage}{\textwidth}
-        %             \@approval
-        %         \end{minipage}
+        %              \@approval
+        %          \end{minipage}
 
-        %     \vfill
-        %     \begin{center}
-        %         \thesisPlaceDate
-        %     \end{center}
-        %     %
-        %     \fi
-           \new@tpage
-           \begin{minipage}[b]{\textwidth}
-             \@mysig
-           \end{minipage}
+        %      \vfill
+        %      \begin{center}
+        %          \thesisPlaceDate
+        %      \end{center}
+        %      %
+        %      \fi
+        %    \new@tpage
+        %    \begin{minipage}[b]{\textwidth}
+        %      \@mysig
+        %    \end{minipage}
 
             \cleardoublepage
             \if@twoside\new@tpage
-                \noindent
-                \begin{minipage}[t]{\textwidth}
-                    \@uppertitleback
-                \end{minipage}
-                \par
-                \vfill
-                \noindent
-                \vfill
-                \noindent
-                \@middletitleback
-                \par
-                \vfill
+                 \noindent
+                 \begin{minipage}[t]{\textwidth}
+                %     \@uppertitleback
+                 \end{minipage}
+                 \par
+                 \vfill
+                 \noindent
+                 \vfill
+                 \noindent
+                % \@middletitleback
+                 \par
+                 \vfill
                 \noindent
                 \begin{minipage}[b]{\textwidth}
                     \@lowertitleback
@@ -323,7 +323,7 @@
 
 % }
 
-\middletitleback{
+\lowertitleback{
     \vspace{3cm}
     \textenglish{Copyright} \textenglish{\copyright}\textenglish{--All rights reserved}\ \ \@author, \copyrightYear.\\
     Με την επιφύλαξη παντός δικαιώματος.\\[12pt]
@@ -649,7 +649,7 @@
 %  	\supervisorSecond{Σωτήριος Νικολετσέας}
 %      \edef\supervisorSecondTitle{ΔΕΠ}
 % "Επιβλέπων" ή "Επιβλέπουσα", ανάλογα με το φύλο του Επιβλέποντα Καθηγητή
-	\edef\supervisorMaleFemale{Επιβλέπων}
+	\edef\supervisorMaleFemale{Επιβλέπων Καθηγητής}
 % Τόπος, μήνας και έτος
 	\edef\thesisPlaceDate{Πάτρα,Φεβρουάριος 2026}
 % Ημερομηνία Εξέτασης
@@ -700,7 +700,7 @@
 \include{περιγραφή κώδικα/περιγραφή κώδικα μικροελεκτή}
 \include{τεχνολογίες που χρησιμοποιήθηκαν/τεχνολογίες σχετικά με το server}
 \include{περιγραφή πειράματος/περιγραφή πειράματος}
-\include{τεχνολογίες που χρησιμοποιήθηκαν/jupyter notebook και βιβλιοθήκες της python που χρησιμοποιήθηκαν}
+\include{τεχνολογίες που χρησιμοποιήθηκαν/jupyter notebook και βιβλιοθήκες της Python που χρησιμοποιήθηκαν}
 \include{περιγραφή κώδικα/περιγραφή κώδικα jupyter lab}
 \include{περιγραφή κώδικα/κώδικας οπτικοποίησης}
 \include{περιγραφή κώδικα/Προσέγγιση που ακολουθήθηκε για τα μηχανικά μοντέλα}

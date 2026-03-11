@@ -1,1 +1,0 @@
-http://localhost:8080/timeSeriesEndpoints/getTimeSeriesData?start=${__from}&end=${__to}&Id=1
