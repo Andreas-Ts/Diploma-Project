@@ -1,6 +1,6 @@
 # Code that was created for the Bachelor thesis "Indoor pollutant location detection using sensor networks and machine learning"
 
-The presentation and whole text are given at the [Παρουσίαση Διπλωματικής εργασίας] και (Παρουσίαση Διπλωματικής εργασίας.pdf)[Διπλωματική Εργασία Ανδρέας Τσιρώνης](Διπλωματική Εργασία Ανδρέας Τσιρώνης.pdf).
+The presentation and whole thesis are given at the file named "Παρουσίαση Διπλωματικής εργασίας.pdf" and Διπλωματική Εργασία Ανδρέας Τσιρώνης respectively.
 Below, the Greek and English abstract it will be showcased.
 
 ## Περίληψη
@@ -37,6 +37,9 @@ Indoor Air Quality (IAQ) is a very important aspect of human health and qualityo
 ## File Structure
 
 ├───dataAnalysis and machine learning # Data transformation, data mining and machine learning pipelines
+
 ├───dataReceiverServer # Everything regarding the web application, except the database and the Grafana local server
-├───include # The header files used for the ESP32 microcontrollers code.Alls the libraries are being united into the custom_headers.h
+
+├───include # The header files used for the ESP32 microcontrollers code. Alls the libraries are being united into the custom_headers.h
+
 ├───src # code of the ESP32 microcontrollers
